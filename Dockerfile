@@ -44,6 +44,11 @@ RUN ln -s /usr/bin/nodejs /usr/bin/node \
     # install grunt
     && npm install -g grunt-cli
 
+# Apache2 SSL
+RUN mkdir /etc/apache2/ssl \
+	&& openssl req -x509 -nodes -days 365 -new -newkey rsa:2048 -subj "/C=US/ST=Denial/L=Goa/O=Dis/CN=www.passbolt.com" -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt \
+	&& chmod 600 /etc/apache2/ssl/* \
+	&& a2enmod ssl
 
 # Install and configure gnupg
 RUN pecl install gnupg \
@@ -68,12 +73,16 @@ RUN rm -f /etc/apache2/sites-enabled/* \
     && a2ensite 000-default.conf
 
 # Configure php
-RUN echo "memory_limit=1024M" > /etc/php5/apache2/conf.d/20-memory-limit.ini \
-    && echo "memory_limit=1024M" > /etc/php5/cli/conf.d/20-memory-limit.ini
+RUN echo "memory_limit=256M" > /etc/php5/apache2/conf.d/20-memory-limit.ini \
+    && echo "memory_limit=256M" > /etc/php5/cli/conf.d/20-memory-limit.ini
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
+
+# Generate the gpg server key
+ADD /conf/gpg_server_key_public.key /home/www-data/gpg_server_key_public.key
+ADD /conf/gpg_server_key_private.key /home/www-data/gpg_server_key_private.key
 
 # Special hack for macosx, to let www-data able to write on mounted volumes.
 # See docker bug: https://github.com/boot2docker/boot2docker/issues/581.

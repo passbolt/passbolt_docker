@@ -1,6 +1,6 @@
 # PASSBOLT DEBIAN DOCKER CONTAINER
 
-ERRATUM : THIS IS A DEMO CONTAINER. DO NOT USE IT IN PRODUCTION.
+ATTENTION : THIS IS A DEMO CONTAINER. DO NOT USE IT IN PRODUCTION.
 
 How to use it
 -------------
@@ -20,14 +20,36 @@ It contains the following options :
 - MYSQL_USERNAME : valid username for the database.
 - MYSQL_PASSWORD : valid password for the database.
 - MYSQL_DATABASE : name of the database to be used.
+- ADMIN_USERNAME : email of the admin user.
+- ADMIN_FIRST_NAME : first name of the admin user.
+- ADMIN_LAST_NAME : last name of the admin user.
 
 Enter the values corresponding to your settings. The most important setting is PASSBOLT_DIR. You can keep the default values for the rest.
 
-3) Finally, you can build and run the container :
+3) Generate the gpg server key.
+```
+	cd /path/to/docker/files
+	./bin/generate_gpg_server_key.sh
+```
+
+4) (optional) Configure the smtp server.
+
+In the PASSBOLT_DIR, edit the file app/Config/email.php.
+
+If you don't configure a smtp server, emails notifications won't be sent. User won't be able to finalize their registration.
+
+5) Finally, you can build and run the container.
 ```
 	cd /path/to/docker/files
 	docker build -t passbolt_debian .
 	./launch-container.sh
+```
+If a smtp server has been configured you will receive a registration email at the email you defined in the conf.sh file.
+
+If no smtp server has been configured, you can still finalize the registration process. Take a look at the end of the docker logs,
+you will find the admin user registration link.
+```
+docker logs passbolt | awk '/The user has been registered with success/{print $0}'
 ```
 
 Behavior
@@ -38,5 +60,3 @@ A few consideration :
 - There should be a valid username, password and database on the mysql server.
 - If the database exists but without passbolt installed, then passbolt will be installed normally.
 - If the database exists and already has a passbolt installed, then no db installation will be done and the existing data will be kept.
-
-

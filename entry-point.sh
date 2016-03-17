@@ -1,10 +1,13 @@
 #!/bin/bash
+
+########################################################
+## Configure Mysql
+########################################################
+
 IS_MYSQL_LOCAL=1
-if [[ $MYSQL_HOST != "localhost" ]];
-then
+if [ $MYSQL_HOST != "localhost" ]; then
     IS_MYSQL_LOCAL=0
 fi
-
 
 # If Mysql is local (no persistence), we reset everything and create the database.
 if [ $IS_MYSQL_LOCAL == 1 ]; then
@@ -40,16 +43,41 @@ else
     echo "ok"
 fi
 
+########################################################
+## Restart services
+########################################################
+
 # Restart the apache2 service
 service apache2 restart
 
 # Start the memcached service
 service memcached restart
 
+########################################################
+## Prepare the source code
+########################################################
+
 # Default configuration files
 cp -a /var/www/passbolt/app/Config/app.php.default /var/www/passbolt/app/Config/app.php
 cp -a /var/www/passbolt/app/Config/core.php.default /var/www/passbolt/app/Config/core.php
 cp -a /var/www/passbolt/app/webroot/js/app/config/config.json.default /var/www/passbolt/app/webroot/js/app/config/config.json
+
+# gpg
+GPG_SERVER_KEY_FINGERPRINT=`gpg -n --with-fingerprint /home/www-data/gpg_server_key_public.key | awk -v FS="=" '/Key fingerprint =/{print $2}' | sed 's/[ ]*//g'`
+/var/www/passbolt/app/Console/cake passbolt app_config write GPG.serverKey.fingerprint $GPG_SERVER_KEY_FINGERPRINT
+/var/www/passbolt/app/Console/cake passbolt app_config write GPG.serverKey.public /home/www-data/gpg_server_key_public.key
+/var/www/passbolt/app/Console/cake passbolt app_config write GPG.serverKey.private /home/www-data/gpg_server_key_private.key
+chown www-data:www-data /home/www-data/gpg_server_key_public.key
+chown www-data:www-data /home/www-data/gpg_server_key_private.key
+
+# overwrite the core configuration
+/var/www/passbolt/app/Console/cake passbolt core_config gen-cipher-seed
+/var/www/passbolt/app/Console/cake passbolt core_config gen-security-salt
+/var/www/passbolt/app/Console/cake passbolt core_config write App.fullBaseUrl https://192.168.99.100
+
+# overwrite the database configuration
+# @TODO based on the cake task DbConfigTask implement a task to manipulate the dabase configuration
+#/var/www/passbolt/app/Console/cake passbolt db_config ${MYSQL_HOST} ${MYSQL_USERNAME} ${MYSQL_PASSWORD} ${MYSQL_DATABASE}
 
 DATABASE_CONF=/var/www/passbolt/app/Config/database.php
 # Set configuration in file
@@ -80,11 +108,10 @@ else
     echo "passbolt is not installed in this database. Proceeding.."
 fi
 
-
 # Install passbolt
-if [[ $IS_PASSBOLT_INSTALLED == "0"]]; then
+if [ $IS_PASSBOLT_INSTALLED == "0" ]; then
     echo "Installing"
-    su -s /bin/bash -c "/var/www/passbolt/app/Console/cake install" www-data
+    su -s /bin/bash -c "/var/www/passbolt/app/Console/cake install --admin-username ${ADMIN_USERNAME} --admin-first-name=${ADMIN_FIRST_NAME} --admin-last-name=${ADMIN_LAST_NAME}" www-data
     echo "We are all set. Have fun with Passbolt !"
     echo "Reminder : THIS IS A DEMO CONTAINER. DO NOT USE IT IN PRODUCTION!!!!"
 fi
