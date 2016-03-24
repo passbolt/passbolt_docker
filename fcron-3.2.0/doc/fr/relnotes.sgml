@@ -1,0 +1,30 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<sect1 id="relnotes">
+    <title>Release notes: &fcron; &version;</title>
+    <itemizedlist>
+	 <listitem>
+	    <para>PAM support has not been tested thoroughly. Help from a PAM
+	       expert would be appreciated (to audit the PAM code in fcron, and
+	       test it). You can disable PAM use in configure, using
+	       "--with-pam=no".</para>
+	 </listitem>
+    </itemizedlist>
+</sect1>
+
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "")
+End:
+-->

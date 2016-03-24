@@ -1,0 +1,23 @@
+#!/bin/sh
+
+
+PREVIOUS=`cat ./VERSION`
+
+
+if test $PREVIOUS != $1; then
+    cd doc
+    for i in *
+    do
+    if test $i != RCS; then
+    if echo $i | egrep -e '[[:upper:]]+' > /dev/null; then
+	echo $i
+	sed -e "s:fcron version [0-9\.]*:fcron version $1:" < $i > tmp
+	mv -f tmp $i
+	chown $USER $i
+	rm -f tmp
+    fi
+    fi
+    done    
+fi
+
+

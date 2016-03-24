@@ -1,0 +1,323 @@
+############################
+# fcron's Makefile  ########
+############################
+
+# @configure_input@
+
+
+# The following should not be edited manually (use configure options)
+# If you must do it, BEWARE : some of the following is also defined
+# in config.h, so you must modify config.h AND Makefile in order
+# to set the same values in the two files.
+
+FCRON_ALLOW	= fcron.allow
+FCRON_DENY	= fcron.deny
+FCRON_CONF	= fcron.conf
+
+SRCDIR		:= @srcdir@
+# Useful to build packages
+# you may want to use this var with a : 'make DESTDIR=dir install'
+DESTDIR		:=
+
+# Where should we install it ?
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+DESTSBIN	= @sbindir@
+DESTBIN		= @bindir@
+ETC		= @sysconfdir@
+FCRONTABS	= @FCRONTABS@
+PIDDIR		= @PIDDIR@
+FIFODIR		= @FIFODIR@
+PIDFILE		= @PIDFILE@
+REBOOT_LOCK	= @REBOOT_LOCK@
+FIFOFILE	= @FIFOFILE@
+FCRON_SHELL	= @FCRON_SHELL@
+SENDMAIL	= @SENDMAIL@
+FCRON_EDITOR	= @FCRON_EDITOR@
+OPTIM		:= @CFLAGS@
+LDFLAGS		:= @LDFLAGS@
+CPPFLAGS	:= @CPPFLAGS@ -I. -I${SRCDIR}
+LIBS		:= @LIBS@
+LIBOBJS		:= @LIBOBJS@
+DEFS		:= @DEFS@ 
+CC		:= @CC@
+INSTALL		:= @INSTALL@
+STRIP		:= @STRIP@
+ROOTNAME	:= @ROOTNAME@
+ROOTGROUP	:= @ROOTGROUP@
+USERNAME 	:= @USERNAME@
+GROUPNAME	:= @GROUPNAME@
+SYSFCRONTAB	:= @SYSFCRONTAB@
+DEBUG		:= @DEBUG@
+BOOTINSTALL	:= @BOOTINSTALL@
+ANSWERALL	:= @ANSWERALL@
+USEPAM		:= @USEPAM@
+FCRONDYN	:= @FCRONDYN@
+SYSTEMD_DIR     := @SYSTEMD_DIR@
+
+# Options
+#	-DDEBUG		even more verbose
+#	-DCHECKJOBS     send a mail containing the exact shell command
+#			for each execution of each job.
+#	-DFOREGROUND=[0|1]    default run in foreground ?
+#OPTION=	-DCHECKJOBS
+#OPTION=	-O3 -mcpu=i686
+OPTION := 
+
+
+####################################
+# Should not be changed under this #
+####################################
+
+VERSION := @VERSION@
+CFLAGS += $(OPTIM) $(OPTION) $(DEFS) $(CPPFLAGS)
+ifeq ($(FCRONDYN), 1)
+LIBOBJS := socket.o $(LIBOBJS)
+endif
+OBJSD := fcron.o cl.o subs.o mem.o save.o temp_file.o log.o database.o job.o conf.o u_list.o exe_list.o lavg_list.o env_list.o fcronconf.o filesubs.o $(LIBOBJS)
+OBJSTAB := fcrontab.o cl.o subs.o mem.o save.o temp_file.o  log.o fileconf.o allow.o read_string.o u_list.o env_list.o fcronconf.o filesubs.o
+OBJSDYN := fcrondyn.o subs.o mem.o log.o allow.o read_string.o fcronconf.o filesubs.o
+OBJCONV := convert-fcrontab.o cl.o subs.o mem.o save.o log.o u_list.o env_list.o fcronconf.o filesubs.o
+OBJSIG := fcronsighup.o subs.o mem.o log.o allow.o fcronconf.o filesubs.o
+HEADERSALL := config.h $(SRCDIR)/global.h $(SRCDIR)/cl.h $(SRCDIR)/log.h $(SRCDIR)/subs.h $(SRCDIR)/mem.h $(SRCDIR)/save.h $(SRCDIR)/option.h $(SRCDIR)/dyncom.h
+
+# this is a regular expression :
+# do not ci automaticaly generated files and doc (done by doc's Makefile)
+RCSNOCI:=.*\(.html\|VERSION\|MANIFEST\|configure\|install.sh\|config.log\|config.status\|config.h\|config.cache\|Makefile\|doc.*\|CVS.*\|.git.*\)
+
+RUN_NON_PRIVILEGED := @RUN_NON_PRIVILEGED@
+ifeq ($(RUN_NON_PRIVILEGED), 1)
+	BINMODE:=111
+	BINMODESIGHUP:=111
+else
+	BINMODE:=6111
+	BINMODESIGHUP:=4110
+endif
+
+ifeq ($(FCRONDYN), 1)
+all: fcron fcrontab fcrondyn convert-fcrontab files/fcron.conf initscripts documentation
+else
+all: fcron fcrontab convert-fcrontab files/fcron.conf
+endif
+
+fcron: $(OBJSD)
+	$(CC) $(CFLAGS) -o $@ $(OBJSD) $(LIBS)
+
+fcrontab: fcronsighup $(OBJSTAB)
+	$(CC) $(CFLAGS) -o $@ $(OBJSTAB) $(LIBS)
+
+fcrondyn: $(OBJSDYN)
+	$(CC) $(CFLAGS) -o $@ $(OBJSDYN) $(LIBS)
+
+fcronsighup: $(OBJSIG)
+	$(CC) $(CFLAGS) -o $@ $(OBJSIG) $(LIBS)
+
+convert-fcrontab: $(OBJCONV)
+	$(CC) $(CFLAGS) -o $@ $(OBJCONV) $(LIBS)
+
+exe_list_test: exe_list.o u_list.o exe_list_test.o log.o subs.o
+	$(CC) $(CFLAGS) -o $@  exe_list.o u_list.o exe_list_test.o log.o subs.o $(LIBS)
+
+%.o: $(SRCDIR)/%.c $(HEADERSALL) $(SRCDIR)/%.h
+	$(CC) $(CFLAGS) -DPIDFILE="\"${PIDFILE}\"" -DREBOOT_LOCK="\"${REBOOT_LOCK}\"" \
+	-DFIFOFILE="\"${FIFOFILE}\"" -DETC="\"${ETC}\"" \
+	-DFCRON_SHELL="\"${FCRON_SHELL}\"" -DFCRON_CONF="\"${FCRON_CONF}\"" \
+	-DFCRONTABS="\"${FCRONTABS}\"" \
+	-DFCRON_ALLOW="\"${FCRON_ALLOW}\"" -DFCRON_DENY="\"${FCRON_DENY}\"" \
+	-DFCRON_SHELL="\"${FCRON_SHELL}\"" -DSENDMAIL="\"${SENDMAIL}\"" \
+	-DFCRON_EDITOR="\"${FCRON_EDITOR}\"" -DBINDIREX="\"${DESTBIN}\"" \
+	-c $<
+
+initscripts:
+	@(if test ! -d script; then mkdir script ; fi ; \
+		for F in sysVinit-launcher fcron.sh fcron.init.suse fcron.init.systemd ; do \
+	    		$(SRCDIR)/script/gen-in.pl $(SRCDIR)/script/$${F}.in script/$${F} ./ ; \
+		done)
+
+documentation:
+	$(MAKE) -C doc doc-if-none
+
+install: install-staged strip perms 
+ifeq ($(BOOTINSTALL), 1)
+	$(SRCDIR)/script/boot-install "$(INSTALL) -o $(ROOTNAME)" $(DESTSBIN) $(DEBUG) $(FCRONTABS) $(ANSWERALL) $(SRCDIR)
+endif
+ifneq ($(SYSTEMD_DIR), no)
+	if test ! -d $(DESTDIR)$(SYSTEMD_DIR); then $(INSTALL) -m 755 -d $(DESTDIR)$(SYSTEMD_DIR) ; fi
+	$(INSTALL) -m 644 script/fcron.init.systemd $(DESTDIR)$(SYSTEMD_DIR)/fcron.service
+endif
+
+install-staged: all
+
+# needed by boot-install script :
+	echo `fcron -V 2>&1 | grep "^fcron "` > PREVIOUS_VERSION && chmod a+rw PREVIOUS_VERSION
+
+	$(SRCDIR)/script/user-group $(USERNAME) $(GROUPNAME) $(ANSWERALL) $(SRCDIR)
+
+# check if the directories we use exist, and if not, create them
+	if test ! -d $(DESTDIR)$(DESTSBIN); then $(INSTALL) -m 755 -d $(DESTDIR)$(DESTSBIN) ; fi
+	if test ! -d $(DESTDIR)$(DESTBIN); then $(INSTALL) -m 755 -d $(DESTDIR)$(DESTBIN) ; fi
+	if test ! -d $(DESTDIR)$(ETC); then $(INSTALL) -m 755 -d $(DESTDIR)$(ETC) ; fi
+	if test ! -d $(DESTDIR)$(PIDDIR); then $(INSTALL) -m 755 -d $(DESTDIR)$(PIDDIR) ; fi
+	if test ! -d $(DESTDIR)$(FIFODIR); then $(INSTALL) -m 755 -d $(DESTDIR)$(FIFODIR) ; fi
+# create the spool dir
+	$(INSTALL) -m 755 -d $(DESTDIR)$(FCRONTABS)
+
+	$(INSTALL) -m 755 fcron $(DESTDIR)$(DESTSBIN)
+	$(INSTALL) -m 755 fcrontab $(DESTDIR)$(DESTBIN)
+	$(INSTALL) -m 755 fcronsighup $(DESTDIR)$(DESTBIN)
+ifeq ($(FCRONDYN), 1)
+	$(INSTALL) -m 755 fcrondyn $(DESTDIR)$(DESTBIN)
+endif
+	if test ! -f $(DESTDIR)$(ETC)/fcron.allow -a ! -f $(DESTDIR)$(ETC)/fcron.deny ; then $(INSTALL) -m 644 $(SRCDIR)/files/fcron.allow $(DESTDIR)$(ETC) ; $(INSTALL) -m 644 $(SRCDIR)/files/fcron.deny $(DESTDIR)$(ETC) ; fi
+	test -f $(DESTDIR)$(ETC)/fcron.conf || $(INSTALL) -m 644 files/fcron.conf $(DESTDIR)$(ETC)
+
+	$(MAKE) -C doc install-staged
+
+
+perms: install-staged strip
+# Note : we don't use "chown user:group file" because some systems use ":"
+#        and others "." as separator.
+	chown $(ROOTNAME) $(DESTDIR)$(DESTSBIN) 
+	chgrp $(ROOTGROUP) $(DESTDIR)$(DESTSBIN) 
+	chown $(ROOTNAME) $(DESTDIR)$(DESTBIN) 
+	chgrp $(ROOTGROUP) $(DESTDIR)$(DESTBIN) 
+	chown $(ROOTNAME) $(DESTDIR)$(ETC) 
+	chgrp $(ROOTGROUP) $(DESTDIR)$(ETC) 
+	chown $(ROOTNAME) $(DESTDIR)$(FIFODIR) 
+	chgrp $(ROOTGROUP) $(DESTDIR)$(FIFODIR) 
+	chown $(ROOTNAME) $(DESTDIR)$(PIDDIR) 
+	chgrp $(ROOTGROUP) $(DESTDIR)$(PIDDIR) 
+
+# change spool dir mode
+	chown $(USERNAME) $(DESTDIR)$(FCRONTABS)
+	chgrp $(GROUPNAME) $(DESTDIR)$(FCRONTABS)
+	chmod 770 $(DESTDIR)$(FCRONTABS)
+
+	chown $(ROOTNAME) $(DESTDIR)$(DESTSBIN)/fcron
+	chgrp $(ROOTGROUP) $(DESTDIR)$(DESTSBIN)/fcron
+	chmod 110 $(DESTDIR)$(DESTSBIN)/fcron
+
+	chown $(USERNAME) $(DESTDIR)$(DESTBIN)/fcrontab
+	chgrp $(GROUPNAME) $(DESTDIR)$(DESTBIN)/fcrontab
+	chmod $(BINMODE) $(DESTDIR)$(DESTBIN)/fcrontab
+
+	chown $(ROOTNAME) $(DESTDIR)$(DESTBIN)/fcronsighup
+	chgrp $(GROUPNAME) $(DESTDIR)$(DESTBIN)/fcronsighup
+	chmod $(BINMODESIGHUP) $(DESTDIR)$(DESTBIN)/fcronsighup
+
+ifeq ($(FCRONDYN), 1)
+	chown $(USERNAME) $(DESTDIR)$(DESTBIN)/fcrondyn
+	chgrp $(GROUPNAME) $(DESTDIR)$(DESTBIN)/fcrondyn
+	chmod $(BINMODE) $(DESTDIR)$(DESTBIN)/fcrondyn
+endif
+	chown $(ROOTNAME) $(DESTDIR)$(ETC)/fcron.allow $(DESTDIR)$(ETC)/fcron.deny
+	chgrp $(GROUPNAME) $(DESTDIR)$(ETC)/fcron.allow $(DESTDIR)$(ETC)/fcron.deny
+	chmod 640 $(DESTDIR)$(ETC)/fcron.allow $(DESTDIR)$(ETC)/fcron.deny
+
+	chown $(ROOTNAME) $(DESTDIR)$(ETC)/fcron.conf
+	chgrp $(GROUPNAME) $(DESTDIR)$(ETC)/fcron.conf
+	chmod 640 $(DESTDIR)$(ETC)/fcron.conf
+ifeq ($(USEPAM), 1)
+	$(SRCDIR)/script/install-pam-conf $(SRCDIR) $(DESTDIR)$(ETC) $(ROOTNAME) $(ROOTGROUP) "$(INSTALL)"
+endif
+
+# in order to get correct rights when upgrading :
+
+	find $(DESTDIR)$(FCRONTABS) -type f \( -name "*.orig" -a ! -name "$(ROOTNAME).orig" -a ! -name "$(SYSFCRONTAB).orig" \) -exec chown $(USERNAME) {} \; -exec chgrp $(GROUPNAME) {} \; -exec chmod 640 {} \;
+	find $(DESTDIR)$(FCRONTABS) -type f \( -name "$(ROOTNAME).orig" -o -name "$(SYSFCRONTAB).orig" \) -exec chown $(ROOTNAME) {} \; -exec chgrp $(GROUPNAME) {} \; -exec chmod 600 {} \;
+	# First, remove the potential fcrontab.sig, or it could not get removed by fcronsighup if it becomes root:root 600
+	rm -f $(DESTDIR)$(FCRONTABS)/fcrontab.sig
+	find $(DESTDIR)$(FCRONTABS) -type f ! -name "*.orig" -exec chown $(ROOTNAME) {} \; -exec chgrp $(ROOTGROUP) {} \; -exec chmod 600 {} \;
+
+	$(MAKE) -C doc perms
+
+# strip executables
+strip: install-staged
+ifneq ($(DEBUG), 1)
+	strip $(DESTDIR)$(DESTSBIN)/fcron
+	strip $(DESTDIR)$(DESTBIN)/fcrontab
+	strip $(DESTDIR)$(DESTBIN)/fcronsighup
+ifeq ($(FCRONDYN), 1)
+	strip $(DESTDIR)$(DESTBIN)/fcrondyn
+endif
+endif
+
+install-boot: install 
+	$(SRCDIR)/script/boot-install "$(INSTALL) -o $(ROOTNAME)" $(DESTSBIN) $(DEBUG) $(FCRONTABS)  $(ANSWERALL) $(SRCDIR)
+
+install-restart: install
+ifeq ($(DEBUG), 1)
+	kill -TERM `pidof fcron` || exit 0
+	/etc/init.d/fcron restart
+endif
+
+uninstall:
+	rm -f $(DESTDIR)$(DESTSBIN)/fcron
+	rm -f $(DESTDIR)$(DESTBIN)/fcrontab
+	rm -f $(DESTDIR)$(DESTBIN)/fcronsighup
+	rm -f $(DESTDIR)$(DESTBIN)/fcrondyn
+	$(MAKE) -C doc uninstall
+	$(SRCDIR)/script/boot-uninstall
+
+clean:
+	rm -f *.o core
+	rm -f fcron fcrontab fcrondyn fcronsighup convert-fcrontab files/fcron.conf
+	$(MAKE) -C doc clean
+
+ciclean: clean
+	find ./ -name "*~" -exec rm -f {} \;
+	rm -fR autom4te*
+
+vclean: ciclean
+	rm -f config.log config.status config.h config.cache Makefile PREVIOUS_VERSION \
+            files/fcron.conf script/fcron.init.suse script/fcron.init.systemd \
+            script/fcron.sh script/sysVinit-launcher
+	$(MAKE) -C doc clean
+
+
+files/fcron.conf: $(SRCDIR)/files/fcron.conf.in config.h
+	if test ! -d files; then mkdir files ; fi
+	$(SRCDIR)/script/gen-in.pl $(SRCDIR)/files/fcron.conf.in files/fcron.conf ./
+
+updatedoc:
+	$(MAKE) -C doc doc
+
+indent:
+	indent -linux -i4 --no-tabs --leave-optional-blank-lines \
+            --start-left-side-of-comments --procnames-start-lines \
+            --dont-cuddle-else *.c *.h
+
+configure: configure.in
+# update configure script, then Makefile and config.h, and finally 
+# run make tar using the new Makefile (needed because the version
+# is set in the configure.in file)
+	autoconf
+	./configure
+	@($(MAKE) tar && \
+		echo "---------------------------------------------" && \
+		echo "Success !" && \
+		echo "(Please ignore the following make error" && \
+		echo " and run your latest make command again)" && \
+		echo "---------------------------------------------" && \
+		exit 999)
+
+ci: ciclean
+# the symbolic links verX_X_X has been created since version 2.9.4
+	@(find ./ -type f ! -regex '.*RCS.*' ! -regex "$(RCSNOCI)" \
+          -exec ci -l -Nver`echo $(VERSION) | tr '.' '_'` {} \;)
+# ci the doc files
+	$(MAKE) -C doc ci
+
+tar: configure updatedoc vclean ciclean
+
+	echo $(VERSION) > ./VERSION
+
+	$(MAKE) -C doc tarclean
+
+	@(find ./ -type f ! -regex '.*RCS.*' ! -regex '.*CVS.*' ! -regex '.*\.git.*' ! -regex '.*debug/.*'| \
+             sed -e "s:^\./:fcron-$(VERSION)/:" > MANIFEST)
+	@(cd ..; ln -s fcron fcron-$(VERSION))
+	(cd ..; tar -czvf fcron-$(VERSION).src.tar.gz `cat fcron/MANIFEST`)
+	@(cd ..; rm -f fcron-$(VERSION))
+
+	@(cd ..; mv -f fcron-$(VERSION).src.tar.gz old-fcron-pkg/)

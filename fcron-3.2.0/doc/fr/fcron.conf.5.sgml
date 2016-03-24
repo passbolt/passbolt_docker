@@ -1,0 +1,202 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<refentry id="fcron.conf.5">
+  <refmeta>
+    <refentrytitle>fcron.conf</refentrytitle>
+    <manvolnum>5</manvolnum>
+    <refmiscinfo>Fcron &version; <![%devrelease; [
+(<emphasis>development</emphasis> release)]]></refmiscinfo>
+    <refmiscinfo>&date;</refmiscinfo>
+  </refmeta>
+  <refnamediv>
+    <refname>fcron.conf</refname>
+    <refpurpose>Fichier de configuration pour fcron et fcrontab</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Description</title>
+    <abstract>
+      <para>Cette page décrit la syntaxe utilisée dans le fichier de
+        configuration de <link linkend="fcrontab.1">&fcrontab;</link>(1),
+        <link linkend="fcrondyn.1">&fcrondyn;</link>(1) et
+        <link linkend="fcron.8">&fcron;</link>(8).
+      </para>
+    </abstract>
+    <para>Les lignes blanches, les lignes débutant par le symbole dièse
+      «&nbsp;#&nbsp;») (qui sont considérées comme étant des commentaires),
+      les espaces ou les tabulations placées en début de ligne sont ignorées.
+      Chaque ligne d'un fichier de configuration &fcron.conf est de la forme
+      <blockquote><para>nom = valeur</para></blockquote> où les espaces autour
+      du signe d'égalité «&nbsp;=&nbsp;» sont ignorés et optionnels.
+      Les espaces en fin de ligne sont également ignorées.
+    </para>
+    <para>Les noms suivants sont reconnus (leur valeur par défaut est
+      entre parenthèses)&nbsp;:
+    </para>
+    <para>
+      <variablelist><title>Variables valides dans un fichier fcron.conf</title>
+	<varlistentry>
+	  <term><varname>fcrontabs</varname>=<replaceable>répertoire</replaceable>
+            (<filename>&fcrontabsdir;</filename>)
+          </term>
+	  <listitem>
+	    <para>Répertoire spool de &fcron;.</para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>pidfile</varname>=<replaceable>chemin-fichier</replaceable>
+            (<filename>&fcron.pid;</filename>)
+          </term>
+	  <listitem>
+	    <para>Emplacement du fichier pid de &fcron; (nécessaire au bon
+              fonctionnement de &fcrontab;).
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>fifofile</varname>=<replaceable>chemin-fichier</replaceable>
+            (<filename>&fcron.fifo;</filename>)
+          </term>
+	  <listitem>
+	    <para>Emplacement du fichier fifo de &fcron; (nécessaire à
+              &fcrondyn; pour communiquer avec fcron).
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>fcronallow</varname>=<replaceable>chemin-fichier</replaceable>
+            (<filename>&etc;/&fcron.allow;</filename>)
+          </term>
+	  <listitem>
+            <para>Emplacement du fichier fcron.allow.</para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>fcrondeny</varname>=<replaceable>chemin-fichier</replaceable>
+            (<filename>&etc;/&fcron.deny;</filename>)
+          </term>
+	  <listitem>
+	    <para>Emplacement du fichier fcron.deny.</para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>shell</varname>=<replaceable>chemin-fichier</replaceable>
+            (<filename>&shell;</filename>)
+          </term>
+	  <listitem>
+	    <para>Emplacement du shell par défaut appelé par &fcron; pour le
+              lancement d'une tâche.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>sendmail</varname>=<replaceable>chemin-fichier</replaceable>
+            (<filename>&sendmail;</filename>)
+          </term>
+	  <listitem>
+	    <para>Emplacement du programme d'envoi des courriels appelé par
+              &fcron; pour envoyer les sorties produites par la tâche.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>editor</varname>=<replaceable>chemin-fichier</replaceable>
+            (<filename>&editor;</filename>)
+          </term>
+	  <listitem>
+	    <para>Emplacement de l'éditeur de texte par défaut lors de
+              l'invocation de la commande «&nbsp;fcrontab -e&nbsp;».
+            </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>Tous les chemins fichiers sont complets et absolus
+      (c-à-d débutant par un «&nbsp;/&nbsp;»).
+    </para>
+    <para>Pour exécuter simultanément plusieurs instances de &fcron; sur la
+      même machine, vous devez utiliser un fichier de configuration différent
+      pour chaque instance. Chaque instance doit avoir un
+      <varname>fcrontabs</varname>, <varname>pidfile</varname> et
+      <varname>fifofile</varname> différent. Ensuite, utiliser l'option
+      <parameter>-c</parameter> de la ligne de commande de
+      <link linkend="fcron.8">&fcron;</link>(8) pour indiquer à quel fichier de
+      configuration (ou à quelle instance) se référer.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Fichiers</title>
+    <variablelist>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.conf.location;</filename></term>
+	<listitem>
+          <para>Fichier de configuration de &fcron;, &fcrontab et &fcrondyn;&nbsp;:
+            contient les chemins (répertoire spool, fichier pid) et les
+            programmes par défaut à utiliser (éditeur, shell, etc.). Voir
+            <link linkend="fcron.conf.5">&fcron.conf</link>(5) pour plus
+            de détails.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.allow;</filename></term>
+	<listitem>
+	  <para>Utilisateurs autorisés à utiliser &fcrontab; et &fcrondyn;
+            (un seul nom par ligne, le nom spécial «&nbsp;all&nbsp;» signifiant
+            tout le monde).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.deny;</filename></term>
+	<listitem>
+	  <para>Utilisateurs qui ne sont pas autorisés à utiliser
+            &fcrontab; et &fcrondyn; (même format que le fichier précédent).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/pam.d/fcron</filename> (ou
+          <filename>&etc;/pam.conf</filename>)
+        </term>
+	<listitem>
+	  <para>Fichier de configuration <productname>PAM</productname> pour
+            &fcron;. Voir &pam;(8) pour plus de détails.
+          </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  &manpage-foot;
+
+  <refsect1>
+    <title>Traduction</title>
+    <para>Ce document est une traduction réalisée par Alain Portal
+      &lt;aportal AT univ-montp2 DOT fr&gt; le 6 février 2006.
+    </para>
+    <para>L'équipe de traduction a fait le maximum pour réaliser une adaptation
+      française de qualité. La version anglaise la plus à jour de ce document
+      est toujours consultable via la commande&nbsp;: «&nbsp;<emphasis>LANG=en
+      man 5 fcron.conf</emphasis>&nbsp;».
+      N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas,
+      toute erreur dans cette page de manuel.
+    </para>
+  </refsect1>
+
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "refentry" "")
+End:
+-->

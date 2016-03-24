@@ -10,7 +10,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     # persistent &runtime deps. \
     ca-certificates curl libpcre3 librecode0 libsqlite3-0 libxml2 --no-install-recommends \
     # unix tools \
-    nano wget openssh-client \
+    nano wget openssh-client cron sendmail \
     # versioning & package manager \
     git npm \
     # phpize dependencies \
@@ -80,15 +80,21 @@ RUN echo "memory_limit=256M" > /etc/php5/apache2/conf.d/20-memory-limit.ini \
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
 
-# Generate the gpg server key
-ADD /conf/gpg_server_key_public.key /home/www-data/gpg_server_key_public.key
-ADD /conf/gpg_server_key_private.key /home/www-data/gpg_server_key_private.key
-
 # Special hack for macosx, to let www-data able to write on mounted volumes.
 # See docker bug: https://github.com/boot2docker/boot2docker/issues/581.
 RUN usermod -u 1000 www-data \
     && usermod -a -G staff www-data \
     && chown -Rf www-data:www-data /var/www/
+
+# Generate the gpg server key
+ADD /conf/gpg_server_key_public.key /home/www-data/gpg_server_key_public.key
+ADD /conf/gpg_server_key_private.key /home/www-data/gpg_server_key_private.key
+
+# fcron
+ADD ./fcron-3.2.0 /usr/local/fcron
+RUN cd /usr/local/fcron; ./configure --with-editor=/usr/bin/nano \
+	&& cd /usr/local/fcron; make \
+	&& cd /usr/local/fcron; make install
 
 ADD /entry-point.sh /entry-point.sh
 RUN chmod 0755 /entry-point.sh

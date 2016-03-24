@@ -1,0 +1,152 @@
+#!/bin/sh
+# Check if the user and group given in arguments
+#  exit in /etc/passwd and /etc/group, and create
+#  them if necessary.
+#
+
+
+# take 4 arguments : 	username
+# 			groupname
+#                       automatic answer
+#                       the src dir
+
+PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin"
+if test -d /usr/ucb; then
+    PATH=/usr/ucb:$PATH
+fi
+
+if test $# -ne 4; then
+    echo "Too few/many arguments"
+    exit 1
+fi
+
+USERNAME=$1
+GROUPNAME=$2
+ANSWER=$3
+SRCDIR=$4
+
+INSTALL="nothing"
+INSTALLED=0
+
+if test `uname -s` = "FreeBSD"; then
+  IS_FREEBSD=1
+else
+  IS_FREEBSD=0
+fi
+
+if test $IS_FREEBSD -eq 1; then
+  CMD="pw groupadd $GROUPNAME"
+else
+  CMD="groupadd $GROUPNAME"
+fi
+
+echo -n "Checking if group $GROUPNAME exists ... "
+if $SRCDIR/script/has_usrgrp.pl -group "$GROUPNAME"; then
+  echo "yes."
+  INSTALLED=1
+else
+  echo "no."
+  if test -z "$CMD"; then
+    echo "Could not determine the command to use to add a group."
+    echo "Please add group \"GROUPNAME\" manually"
+    echo "(or choose another groupname with configure script)."
+    exit 1
+  fi
+  if test "$ANSWER" -eq 2; then
+    while test \( ! -z "$INSTALL" \) -a \( "$INSTALL" != "y" \) -a \( "$INSTALL" != "n" \);
+    do
+      echo "Would you like to add $GROUPNAME in /etc/passwd with the following command ?"
+      echo "    $CMD"
+      echo "If you use NYS, ldap, etc, you should add the group manually (say no here)"
+      echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+      read INSTALL NOTHING
+    done
+    if test \( -z "$INSTALL" \) -o \( "$INSTALL" = "y" \); then
+      if $CMD; then
+        INSTALLED=1
+      fi
+    fi
+  elif test "$ANSWER" -eq 1; then
+    # automatic answer given by configure script (option --with-answer-all)
+    if $CMD; then
+      INSTALLED=1
+    fi
+  fi    
+fi
+
+
+if test "$INSTALLED" -eq 0; then
+  echo
+  echo "Group \"$GROUPNAME\" does not exist : please create it or choose"
+  echo "another groupname with configure script."
+  exit 1
+fi
+
+INSTALL="nothing"
+INSTALLED=0
+
+echo -n "Checking if user $USERNAME exists ... "
+if $SRCDIR/script/has_usrgrp.pl -user "$USERNAME"; then
+  echo "yes."
+  INSTALLED=1
+else
+  echo "no."
+  CMD=""
+  if test "$IS_FREEBSD" -eq 1; then
+    CMD="pw useradd $USERNAME -c $USERNAME"
+  elif useradd -D 2> /dev/null; then
+    CMD="useradd -c '$USERNAME' -g $GROUPNAME $USERNAME"
+  elif adduser -D 2> /dev/null; then
+    CMD="adduser -c '$USERNAME' -g $GROUPNAME $USERNAME"
+  fi
+  if test -z "$CMD"; then
+    echo "Could not determine the command to use to add a user."
+    echo "Please add user \"$USERNAME\" (group \"GROUPNAME\") manually"
+    echo "(or choose another username with configure script)."
+    exit 1
+  fi
+  if test "$ANSWER" -eq 2; then
+    while test \( ! -z "$INSTALL" \) -a \( "$INSTALL" != "y" \) -a \( "$INSTALL" != "n" \);
+    do
+      echo "Would you like to add $USERNAME in /etc/passwd with the following command ?"
+      echo "    $CMD"
+      echo "If you use NYS, ldap, or similar, you should add the user manually (say no here)"
+      echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+      read INSTALL NOTHING
+    done
+    if test \( -z "$INSTALL" \) -o \( "$INSTALL" = "y" \); then
+      if $CMD; then
+        INSTALLED=1
+      fi
+    fi
+  elif test "$ANSWER" -eq 1; then
+    # automatic answer given by configure script (option --with-answer-all)
+    if $CMD; then
+      INSTALLED=1
+    fi
+  fi    
+fi
+
+
+if test "$INSTALLED" -eq 0; then
+  echo
+  echo "User \"$USERNAME\" does not exist : please create it or choose another"
+  echo "username with configure script."
+  exit 1
+else
+  USERGID="`$SRCDIR/script/has_usrgrp.pl -user "$USERNAME" -printgid`"
+  GID="`$SRCDIR/script/has_usrgrp.pl -group "$GROUPNAME" -printgid`"
+  if test \( "$USERGID" = "" \) -o \( "$GID" = "" \); then
+    echo "Could not check if \"$USERNAME\" is in the group \"$GROUPNAME\" :"
+    echo "please do it manually."
+  fi
+
+  if test "$GID" -ne "$USERGID"; then
+    echo
+    echo "User $USERNAME exists, but is not in the group $GROUPNAME."
+    echo "Please set its group to \"$GROUPNAME\" (id $GID) manually"
+    echo "(or choose another user and/or group)."
+    exit 1
+  fi
+fi
+

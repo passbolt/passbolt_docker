@@ -1,0 +1,248 @@
+fcron (2.9.5-1) unstable; urgency=low
+
+  * New upstream version.
+
+  * Fix init script.
+    Closes: #262886
+
+  * Merged change from BSP.
+    Closes: #232986
+
+ -- Russell Coker <russell@coker.com.au>  Sun, 31 Oct 2004 05:39:00 +1100
+
+fcron (2.9.4-3.1) unstable; urgency=low
+
+  * NMU during BSP.
+  * ./configure uses now --with-sendmail without checks (closes: #232986).
+
+ -- Sebastian Muszynski <do2ksm@linkt.de>  Fri, 19 Mar 2004 16:54:57 +0100
+
+fcron (2.9.4-3) unstable; urgency=high
+
+  * Made it depend on exim4|mail-transport-agent.
+    Closes: #228570
+
+ -- Russell Coker <russell@coker.com.au>  Tue, 20 Jan 2004 17:36:00 +1100
+
+fcron (2.9.4-2) unstable; urgency=high
+
+  * Accidentally uploaded a version compiled with debugging code, so this
+    version has a correct compile.
+
+ -- Russell Coker <russell@coker.com.au>  Thu,  4 Jan 2004 22:31:00 +1100
+
+fcron (2.9.4-1) unstable; urgency=high
+
+  * New upstream with SE Linux.  Upstream has old SE Linux so patched for new
+    SE Linux.
+
+ -- Russell Coker <russell@coker.com.au>  Thu,  4 Jan 2004 22:25:00 +1100
+
+fcron (2.9.3-3) unstable; urgency=high
+
+  * Added patch for ./configure checking for SE Linux from Torsten Knodt
+    <tk-debian@datas-world.de>.  Also added the SE Linux patch.
+    Closes: #193610
+
+ -- Russell Coker <russell@coker.com.au>  Sat, 17 May 2003 13:55:00 +1000
+
+fcron (2.9.3-2) unstable; urgency=high
+
+  * Changes for warnings, I think it fixes #169451.
+
+ -- Russell Coker <russell@coker.com.au>  Sun, 17 Nov 2002 14:12:00 +0100
+
+fcron (2.9.3-1) unstable; urgency=high
+
+  * New upstream version.
+
+ -- Russell Coker <russell@coker.com.au>  Sat,  2 Nov 2002 22:09:00 +0100
+
+fcron (2.9.2-2) unstable; urgency=high
+
+  * Made it not try to use -lsecure for non-SE systems.
+    Closes: #163680
+
+  * Added fcrondyn to package.
+    Closes: #163808
+
+  * This is a 2.x.x release.
+    Closes: #112146
+
+ -- Russell Coker <russell@coker.com.au>  Sat, 26 Oct 2002 21:25:00 +0200
+
+fcron (2.9.2-1) unstable; urgency=high
+
+  * New upstream version.
+
+  * Temporarily taking over maintenance.
+
+ -- Russell Coker <russell@coker.com.au>  Sun,  6 Oct 2002 07:14:00 +0200
+
+fcron (1.0.3-5) unstable; urgency=high
+
+  * Fix infinite loop on midmontly code. Thanks to Guy Geens
+    <ggeens@iname.com> for the patch (closes: #143497)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Thu, 18 Apr 2002 16:45:55 -0300
+
+fcron (1.0.3-4) unstable; urgency=high
+
+  * Merge in new es, fr, ru templates (closes: #136099, #136484, #137646)
+  * Fix bug in code that showed up with the glibc nice() fix (closes: #143044)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Tue, 16 Apr 2002 10:49:17 -0300
+
+fcron (1.0.3-3) unstable; urgency=high
+
+  * SECURITY FIX: Close /tmp exploitable race in fcrontab. Thanks to
+    Colin Phipps <cph@cph.demon.co.uk> for reporting the bug and
+    supplying a patch (closes: #102930)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Fri,  6 Jul 2001 22:22:42 -0300
+
+fcron (1.0.3-2) unstable; urgency=low
+
+  * Do not abort postinst if dpkg-statoverride returns non-zero
+    status (closes: #100905)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Wed, 20 Jun 2001 02:24:19 -0300
+
+fcron (1.0.3-1) unstable; urgency=medium
+
+  * New upstream source:
+    - Fixes a crash when truncating long messages (not exploitable)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sun, 15 Apr 2001 16:41:02 -0300
+
+fcron (1.0.2-4) unstable; urgency=low
+
+  * Restore default umask settings before running a job.  Do note that not
+    setting the umask explicitly in a cronjob that creates files sensitive
+    to it IS asking for trouble, though (closes: #93123)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sat,  7 Apr 2001 23:59:10 -0300
+
+fcron (1.0.2-3) unstable; urgency=low
+
+  * Make sure postinst and postrm will exit with status 0
+    upon successful completion
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sun,  1 Apr 2001 02:10:14 -0300
+
+fcron (1.0.2-2) unstable; urgency=low
+
+  * Build-depends only in mail-transport-agent, as autobuilders will not
+    use the OR dependency
+  * Trash dpkg-statoverride entries on purge
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Wed, 14 Mar 2001 15:00:45 -0300
+
+fcron (1.0.2-1) unstable; urgency=low
+
+  * New upstream source
+    - Fixes bootrun option
+    - shell variables containing "_" are now accepted.
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sat, 10 Mar 2001 23:25:39 -0300
+
+fcron (1.0.1-1) unstable; urgency=low
+
+  * New upstream source
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Mon, 26 Feb 2001 17:53:46 -0300
+
+fcron (1.0.0-1) unstable; urgency=low
+
+  * New upstream source
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Mon, 26 Feb 2001 09:29:13 -0300
+
+fcron (0.9.5-3) unstable; urgency=low
+
+  * Added german template. Thanks go to Joerg Rieger
+    (closes: #84261). This would have been done much sooner,
+    if I had actually received the report from the BTS.
+  * Fixed lintian warnings, and added lintian override file
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Thu, 22 Feb 2001 22:47:34 -0300
+
+fcron (0.9.5-2) unstable; urgency=low
+
+  * Better handling of dpkg-overriding in postinst
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sat,  3 Feb 2001 21:52:15 -0200
+
+fcron (0.9.5-1) unstable; urgency=high
+
+  * Converted to dpkg-statoverride instead of suidregister
+  * New upstream version
+  * Upstream fixed a severe security hole (another local root exploit)
+  * Minor updates to bring package up-to-date with policy 3.5.0.0
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Wed, 31 Jan 2001 10:44:43 -0200
+
+fcron (0.9.4-1) unstable; urgency=high
+
+  * New upstream version
+  * Real fix for local root exploit in fcrontab
+  * Re-enables user crontabs disabled by 0.9.3-5 to -7
+  * Root fcrontab protected against non-root access at filesystem level.
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sun, 31 Dec 2000 22:41:34 -0200
+
+fcron (0.9.3-7) unstable; urgency=low
+
+  * Fixed sendmail invoke path, and build-depends
+    (closes: #79414)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Tue, 12 Dec 2000 10:15:00 -0200
+
+fcron (0.9.3-6) unstable; urgency=high
+
+  * Make sure the security workaround is enabled
+    by suidunregistering fcrontab.
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sun, 10 Dec 2000 00:23:40 -0200
+
+fcron (0.9.3-5) unstable; urgency=high
+
+  * Disable fcrontab for users, as it is currently a local root exploit.
+    I'll reenable it after a fix is ready and tested. 
+  * All user fcrontabs are moved to /var/spool/fcron/rxdisabled to make 
+    sure they're not run until the fix is ready.
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sat,  9 Dec 2000 16:21:36 -0200
+
+fcron (0.9.3-4) unstable; urgency=low
+
+  * Fixed double negative in package description
+  * Fixed bogus .orig.tar.gz source
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Fri,  8 Dec 2000 18:31:20 -0200
+
+fcron (0.9.3-3) unstable; urgency=low
+
+  * Added postinst message (using debconf) to
+    reduce probability of bogus bug reports against
+    anacron.
+  * First upload to Debian (closes: #76497)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Wed,  6 Dec 2000 21:56:42 -0200
+
+fcron (0.9.3-2) unstable; urgency=low
+
+  * Fixed maintainer address in control file
+  * Changed package description in control file
+  * Better Depends: line
+  * Better init.d script reload behaviour, now it
+    will freshen up saved uid/gids in fcrontabs.
+  * Updated README.Debian
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sat,  2 Dec 2000 22:03:45 -0200
+
+fcron (0.9.3-1) unstable; urgency=low
+
+  * Initial Package. (Closes: #76497)
+
+ -- Henrique de Moraes Holschuh <hmh@debian.org>  Sat, 11 Nov 2000 23:10:37 -0200

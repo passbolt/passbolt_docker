@@ -1,0 +1,124 @@
+#!/bin/sh
+#
+# chkconfig: 2345 40 60
+# description: fcron is a scheduler especially useful for people \
+#              who are not running their system all the time.
+# processname: fcron
+# pidfile: /var/run/fcron.pid
+# config: /var/spool/fcron/*
+
+### BEGIN INIT INFO
+# Provides:          fcron
+# Required-Start:    $remote_fs $syslog $time
+# Required-Stop:     $remote_fs $syslog
+# Should-Start:
+# Should-Stop: 
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Fcron job service
+# Description:       Fcron job service
+### END INIT INFO
+
+
+export PATH="/sbin:/usr/sbin:/bin:/usr/bin"
+
+FUNCTION=0
+SBIN=@@DESTSBIN@
+REBOOT_LOCK=@@REBOOT_LOCK@
+
+EXEC="$SBIN/fcron"
+
+TARGETS="{start|stop|status|restart|reload|force-reload}"
+
+# Source function library.
+# the 'status' function is considered to be here only if $FUNCTION = 1 and
+# the condrestart action is only implemented in that case
+if test -f /etc/init.d/functions; then
+    . /etc/init.d/functions
+    FUNCTION=1
+    STARTCMD="daemon $EXEC -b"
+    STOPCMD="killproc fcron"
+    FINALECHO="echo"
+    TARGETS="{start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+elif start-stop-daemon --version > /dev/null; then
+    STARTCMD="start-stop-daemon --start --quiet --exec $EXEC -- -b"
+    STOPCMD="start-stop-daemon --stop --quiet --exec $EXEC"
+    FINALECHO="echo ."
+else
+    STARTCMD="$EXEC -b"
+    STOPCMD="killall -TERM $EXEC"
+    FINALECHO="echo ."
+fi
+
+RETVAL=0
+
+
+#  See how we were called.
+case "$1" in
+  start)
+	if test $FUNCTION -eq 1; then
+	    status fcron >/dev/null 2>&1 && exit 0
+	fi
+	[ -x "$EXEC" ] || exit 5
+	echo -n "Starting fcron"
+	$STARTCMD
+	RETVAL=$?
+	if test -d /var/lock/subsys/; then
+	    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/fcron
+	fi
+	$FINALECHO
+	;;
+  stop)
+	if test $FUNCTION -eq 1; then
+	    status fcron >/dev/null 2>&1 || exit 0
+	fi
+	echo -n "Shutting down fcron"
+	$STOPCMD
+	RETVAL=$?
+	if test -d /var/lock/subsys/; then
+	    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/fcron
+	fi
+	if test \( "$RUNLEVEL" = "0" -o "$RUNLEVEL" = "6" \) \
+	    -a -f "$REBOOT_LOCK" ; then
+	    # Make sure the lock file is deleted on reboot/shutdown
+	    # in case the OS doesn't do it itself
+	    rm -f "$REBOOT_LOCK"
+	fi
+
+	$FINALECHO
+	;;
+  status)
+	if test $FUNCTION -eq 1; then
+	    status fcron
+	    RETVAL=$?
+	fi
+	;;
+  restart)
+	$0 stop
+	sleep 0.5
+	$0 start
+	RETVAL=$?
+	;;
+  reload|force-reload)
+	if test $FUNCTION -eq 1; then
+	    status fcron >/dev/null 2>&1 || exit 7
+	fi
+	killall -HUP fcron
+	RETVAL=$?
+	;;
+  condrestart|try-restart)
+	if test $FUNCTION -eq 1; then
+	    status fcron >/dev/null 2>&1 || exit 0
+	    $0 restart
+	    RETVAL=$?
+	else
+	    echo "Usage: fcron $TARGETS"
+	    exit 2
+	fi
+	;;
+  *)
+	echo "Usage: fcron $TARGETS"
+	exit 2
+esac
+
+exit $RETVAL

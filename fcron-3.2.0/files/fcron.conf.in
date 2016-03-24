@@ -1,0 +1,23 @@
+# fcron.conf - Configuration file for fcron(8) and fcrontab(1).
+#	See fcron.conf(5) for syntax and explanations.
+#
+# WARNING : this file must be owned by @@ROOTNAME@:@@GROUPNAME@ and 640.
+#
+
+# The spool directory where fcron stores its files
+fcrontabs	=	@@FCRONTABS@
+
+# The locations of the pid file and the fifo file
+pidfile		=	@@PIDFILE@
+fifofile	=	@@FIFOFILE@
+
+# allow/deny files to determine which users are allowed to use fcrontab
+fcronallow	=	@@ETC@/@@FCRON_ALLOW@
+fcrondeny	=	@@ETC@/@@FCRON_DENY@
+
+# Location of the programs used by fcron
+shell		=	@@FCRON_SHELL@
+sendmail	=	@@SENDMAIL@
+
+# Location of the default editor for "fcrontab -e"
+editor		=	@@FCRON_EDITOR@

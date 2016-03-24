@@ -1,0 +1,35 @@
+#!/bin/sh
+# Install fcron and fcrontab's pam conf files.
+#
+
+
+if test $# -ne 5; then
+  echo "Too few/many arguments"
+  exit 1
+fi
+
+SRCDIR=$1
+ETC=$2
+ROOTNAME=$3
+ROOTGROUP=$4
+INSTALL=$5
+
+for i in fcron fcrontab; do
+# test for both space and tab in the grep
+  if test -f $ETC/pam.d/$i || ( test -f $ETC/pam.conf && grep "$i[ 	]" $ETC/pam.conf 1> /dev/null ); then
+    echo "Seems that there is already some pam conf about $i ..."
+  else
+    if test -d $ETC/pam.d; then
+      $INSTALL -m 644 -o $ROOTNAME -g $ROOTGROUP $SRCDIR/files/$i.pam $ETC/pam.d/$i || exit 1
+    else
+      echo "" >> $ETC/pam.conf || exit 1
+      cat $SRCDIR/files/$i.pam | sed "s/account/$i account/" \
+                               | sed "s/auth/$i auth/" \
+                               | sed "s/session/$i account/" \
+                               | sed "s/password/$i account/" \
+                     >> $ETC/pam.conf || exit 1
+    fi
+  fi
+done
+
+exit 0

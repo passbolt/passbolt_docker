@@ -1,0 +1,1112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>fcron</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Fcron documentation"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Manual pages of fcron"
+HREF="manpages.html"><LINK
+REL="PREVIOUS"
+TITLE="Manual pages of fcron"
+HREF="manpages.html"><LINK
+REL="NEXT"
+TITLE="fcron.conf"
+HREF="fcron.conf.5.html"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Fcron documentation</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="manpages.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="fcron.conf.5.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FCRON.8"
+></A
+>fcron</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1102"
+></A
+><H2
+>Name</H2
+>fcron&nbsp;--&nbsp;daemon to execute scheduled tasks</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN1105"
+></A
+><H2
+>Synopsis</H2
+><P
+><B
+CLASS="COMMAND"
+>fcron</B
+>  [-c <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+>] [-d] [-b] [-s <TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+>] [-m <TT
+CLASS="REPLACEABLE"
+><I
+>num</I
+></TT
+>] [-q <TT
+CLASS="REPLACEABLE"
+><I
+>num</I
+></TT
+>]</P
+><P
+><B
+CLASS="COMMAND"
+>fcron</B
+>  [-c <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+>] [-d] [-f] [-o] [-y] [-p <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+>] [-l <TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+>]</P
+><P
+><B
+CLASS="COMMAND"
+>fcron</B
+>  [-n <TT
+CLASS="REPLACEABLE"
+><I
+>dir</I
+></TT
+>]</P
+><P
+><B
+CLASS="COMMAND"
+>fcron</B
+>  [-h]</P
+><P
+><B
+CLASS="COMMAND"
+>fcron</B
+>  [-V]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1140"
+></A
+><H2
+>Description</H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> should be started from <TT
+CLASS="FILENAME"
+>/etc/rc</TT
+> or
+<TT
+CLASS="FILENAME"
+>/etc/rc.local</TT
+>. Unless the <CODE
+CLASS="OPTION"
+>-f</CODE
+> (or
+<CODE
+CLASS="OPTION"
+>--foreground</CODE
+>) option is given, it will return immediately, so
+you don't need to start it with '&#38;'.</P
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> loads users <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>s (see <A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5)</A
+>) files previously installed by
+<B
+CLASS="COMMAND"
+>fcrontab</B
+> (see <A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(1)</A
+>). Then, <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> calculates the time
+and date of each job's next execution, and determines how long it has to sleep,
+and sleeps for this amount of time. When it wakes up, it checks all jobs loaded
+and runs them if needed. When a job is executed, <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> forks, changes its user
+and group permissions to match those of the user the job is being done for,
+executes that job and mails the outputs to the user (this can be changed: see
+<A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5)</A
+>).</P
+><P
+>Informative message about what <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> is doing are sent to
+<SPAN
+CLASS="APPLICATION"
+>syslogd</SPAN
+>(8) under facility <EM
+>cron</EM
+>,
+priority <EM
+>notice</EM
+>. Warning and error messages are sent
+respectively at priority <EM
+>warning</EM
+> and
+<EM
+>error</EM
+>.</P
+><P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Note: </B
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> sleeps at least 20 seconds after it has been started before
+executing a job to avoid to use too much resources during system boot.</P
+></BLOCKQUOTE
+></DIV
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1171"
+></A
+><H2
+>Options</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-f</CODE
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--foreground</CODE
+></B
+></DT
+><DD
+><P
+>		    Don't fork to the background. In this mode, <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> will
+output informational message to standard error as well as to syslogd.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-b</CODE
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--background</CODE
+></B
+></DT
+><DD
+><P
+>Force running in background, even if <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> has been
+compiled to run in foreground as default.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-s</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--savetime</CODE
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+></B
+></DT
+><DD
+><P
+>Save <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>s on disk every 
+		     <TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+> sec (default is 1800).</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-m</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>num</I
+></TT
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--maxserial</CODE
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>num</I
+></TT
+></B
+></DT
+><DD
+><P
+>Set to <TT
+CLASS="REPLACEABLE"
+><I
+>num</I
+></TT
+> the maximum number
+		     of serial jobs which can run simultaneously. By default,
+		     this value is set to 1.</P
+><P
+><EM
+>See also</EM
+>: option <A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIAL"
+><CODE
+CLASS="VARNAME"
+>serial</CODE
+></A
+> in <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5).</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-q</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>num</I
+></TT
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--queuelen</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>num</I
+></TT
+></B
+></DT
+><DD
+><P
+>Set to n the number of jobs the serial queue and
+the lavg queue can contain.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-c</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--configfile</CODE
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+></B
+></DT
+><DD
+><P
+>Make <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> use config file
+<TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+> instead of default config file
+<TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+>. To interact with that running
+<SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> process, <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> must use the same config file (which is defined by
+<SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>'s option <CODE
+CLASS="OPTION"
+>-c</CODE
+>). That way, several <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> processes
+can run simultaneously on an only system (but each <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> process *must* have a
+different spool dir and pid file from the other processes).</P
+></DD
+><DT
+><A
+NAME="FCRON.8.ONCE"
+></A
+><B
+><CODE
+CLASS="OPTION"
+>-o</CODE
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--once</CODE
+></B
+></DT
+><DD
+><P
+>Execute all jobs that need to be run at the time <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>
+was started, wait for them, then return. Sets <A
+HREF="fcron.8.html#FCRON.8.FIRSTSLEEP"
+><CODE
+CLASS="VARNAME"
+>--sleeptime</CODE
+></A
+> to 0.
+May be especially useful when used with options <CODE
+CLASS="OPTION"
+>-y</CODE
+> and
+<CODE
+CLASS="OPTION"
+>-f</CODE
+> in a script run, for instance, at dialup connection.</P
+><P
+><EM
+>See also</EM
+>: fcrontab's options <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.STDOUT"
+><CODE
+CLASS="VARNAME"
+>stdout</CODE
+></A
+>.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-y</CODE
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--nosyslog</CODE
+></B
+></DT
+><DD
+><P
+>Don't log to syslog at all. May be useful when running
+in foreground.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-p</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--logfilepath</CODE
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+></B
+></DT
+><DD
+><P
+>If set, log to the file given as argument. <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> will
+                    log to both that file and syslog in parallel unless
+                    <CODE
+CLASS="OPTION"
+>-y</CODE
+> is also set.</P
+></DD
+><DT
+><A
+NAME="FCRON.8.FIRSTSLEEP"
+></A
+><B
+><CODE
+CLASS="OPTION"
+>-l</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--firstsleep</CODE
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+></B
+></DT
+><DD
+><P
+>Sets the initial delay (in seconds) before any job is
+executed, default to 20 seconds.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-n</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>dir</I
+></TT
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--newspooldir</CODE
+>
+<TT
+CLASS="REPLACEABLE"
+><I
+>dir</I
+></TT
+></B
+></DT
+><DD
+><P
+>Create <TT
+CLASS="REPLACEABLE"
+><I
+>dir</I
+></TT
+> as a new spool
+directory for <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>. Set correctly its mode and owner. Then, exit.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-h</CODE
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--help</CODE
+></B
+></DT
+><DD
+><P
+>Display a brief description of the options.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-V</CODE
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--version</CODE
+></B
+></DT
+><DD
+><P
+>Display an informational message about <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>,
+including its version and the license under which it is distributed.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-d</CODE
+></B
+>, <B
+><CODE
+CLASS="OPTION"
+>--debug</CODE
+></B
+></DT
+><DD
+><P
+>Run in debug mode (more details on stderr -- if option
+<CODE
+CLASS="OPTION"
+>-f</CODE
+> is set -- and in log file)</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1322"
+></A
+><H2
+>Return values</H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> returns 0 on normal exit, and 1 on
+error.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1326"
+></A
+><H2
+>Signals</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><CODE
+CLASS="CONSTANT"
+>SIGTERM</CODE
+></B
+></DT
+><DD
+><P
+>Save configuration (time remaining until next
+execution, time and date of next execution, etc), wait for all running jobs and
+exit.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="CONSTANT"
+>SIGUSR1</CODE
+></B
+></DT
+><DD
+><P
+>Force <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> to reload its configuration.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="CONSTANT"
+>SIGUSR2</CODE
+></B
+></DT
+><DD
+><P
+>Make <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> print its current schedule on syslog. It
+also toggles on/off the printing on debug info on syslog.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="CONSTANT"
+>SIGHUP</CODE
+></B
+></DT
+><DD
+><P
+>Tell <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> to check if there is any configuration
+update (this signal is used by <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5))</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1353"
+></A
+><H2
+>Conforming to</H2
+><P
+>Should be POSIX compliant.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1356"
+></A
+><H2
+>Files</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+></B
+></DT
+><DD
+><P
+>Configuration file for <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and
+<SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>: contains paths (spool dir, pid file) and default programs to use
+(editor, shell, etc). See <A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5)</A
+>
+for more details.</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.allow</TT
+></B
+></DT
+><DD
+><P
+>Users allowed to use <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (one
+name per line, special name "all" acts for everyone)</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.deny</TT
+></B
+></DT
+><DD
+><P
+>Users who are not allowed to use <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and
+<SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (same format as allow file)</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.d/fcron</TT
+> (or
+<TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.conf</TT
+>)</B
+></DT
+><DD
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>PAM</SPAN
+> configuration file for
+<SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>. Take a look at <SPAN
+CLASS="APPLICATION"
+>pam</SPAN
+>(8) for more details.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1392"
+></A
+><H2
+>See also</H2
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrondyn.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8).</A
+></TD
+></TR
+><TR
+><TD
+>If you're learning how to use fcron from scratch, I suggest
+ that you read the HTML version of the documentation (if your are not reading it
+ right now! :) ): the content is the same, but it is easier to navigate thanks
+to the hyperlinks.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1411"
+></A
+><H2
+>Author</H2
+><P
+>Thibault Godouet <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="manpages.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fcron.conf.5.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Manual pages of fcron</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="manpages.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>fcron.conf</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

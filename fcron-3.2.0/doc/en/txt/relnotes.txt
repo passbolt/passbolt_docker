@@ -1,0 +1,17 @@
+   #Fcron documentation Fcron: how and why? Changes Todo
+
+   Copyright © 2000-2014 Thibault Godouet Fcron 3.2.0          Web page :
+                                                      http://fcron.free.fr
+   _______________________________________________________________________
+
+             Fcron documentation
+   Prev Chapter 1. Fcron: how and why? Next
+   _______________________________________________________________________
+
+1.4. Release notes: fcron 3.2.0
+
+     * Nothing special to be aware of in this release.
+   _______________________________________________________________________
+
+   Prev    Home Next
+   Changes  Up  Todo

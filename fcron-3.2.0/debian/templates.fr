@@ -1,0 +1,28 @@
+Template: fcron/anacronwarn
+Type: note
+Description: Warning: interactions with anacron!
+ If you have the anacron package in the 'removed' but not 'purged' state
+ (i.e. anacron configuration files are still around the system), the fcron
+ package will cause harmless side effects, such as reports of anacron being
+ started at boot up.
+ .
+ DO NOT FILE BUGS AGAINST ANACRON IF YOU HAVE FCRON INSTALLED IN THE
+ SYSTEM. They will be either reassigned to fcron to be summarily closed by
+ me, or summarily closed by the anacron maintainer himself.
+ .
+ More information about this issue is available in
+ /usr/share/doc/fcron/README.Debian
+Description-fr: Attention : interférences avec anacron !
+ Si le paquet anacron a été supprimé (« removed ») mais non purgé
+ (« purged ») -- ce qui signifie que les fichiers de configuration
+ d'anacron sont toujours présents --, fcron fera des actions
+ inattendues mais sans conséquence, telles que des rapports disant
+ qu'anacron est lancé au démarrage.
+ .
+ N'EFFECTUEZ PAS DE RAPPORT DE BOGUE CONTRE ANACRON SI VOUS AVEZ FCRON
+ INSTALLÉ SUR VOTRE SYSTÈME. Il sera soit réassigné à fcron et fermé
+ sans autre forme de procès par moi-même, soit fermé directement par le
+ responsable d'anacron.
+ .
+ Vous pouvez consulter /usr/share/doc/fcron/README.Debian pour plus
+ d'informations.

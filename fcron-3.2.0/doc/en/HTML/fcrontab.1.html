@@ -1,0 +1,858 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>fcrontab</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Fcron documentation"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Manual pages of fcron"
+HREF="manpages.html"><LINK
+REL="PREVIOUS"
+TITLE="fcron.conf"
+HREF="fcron.conf.5.html"><LINK
+REL="NEXT"
+TITLE="fcrontab"
+HREF="fcrontab.5.html"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Fcron documentation</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="fcron.conf.5.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="fcrontab.5.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FCRONTAB.1"
+></A
+>fcrontab</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1583"
+></A
+><H2
+>Name</H2
+>fcrontab&nbsp;--&nbsp;manipulate per-user fcrontab
+	    files</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="FCRONTAB.1.SYNOPSIS"
+></A
+><H2
+>Synopsis</H2
+><P
+><B
+CLASS="COMMAND"
+>fcrontab</B
+>  [-c
+	       <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+>] [-n]  <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+>  [<TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+> | -u
+		  <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+>]</P
+><P
+><B
+CLASS="COMMAND"
+>fcrontab</B
+>  [-c
+	       <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+>] [-n] {-l | -r | -e | -z} [<TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+> | -u
+		  <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+>]</P
+><P
+><B
+CLASS="COMMAND"
+>fcrontab</B
+>  [-h]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1617"
+></A
+><H2
+>Description</H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcrontab</SPAN
+> is the program intended to
+	    install, edit, list and remove the tables used by <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8)</A
+> daemon. As <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> internally
+	    uses a non-human readable format (this is needed because <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>
+	    saves more informations than the user gives, for example the time
+	    and date of next execution), the user cannot edit directly his
+	    <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> (the one used by <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>).</P
+><P
+>When a user
+	    installs a <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>, the source file is saved in the spool
+	    directory (<TT
+CLASS="FILENAME"
+>/usr/local/var/spool/fcron</TT
+>) to allow future
+	    editions, and a formatted file is generated for the <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> daemon,
+	    which is signaled once about ten seconds before the next minute for
+	    all changes made previously. The daemon is not informed of the changes
+	    immediately but at most once a minute
+	    to keep ill disposed users from blocking the daemon by installing
+	    <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>s over and over (ie. denial of service attack). We will call
+	    "<EM
+>fcrontab</EM
+>" the source file of the <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>
+	    in the following.</P
+><P
+>A user can install a <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> if
+	    he is listed in the <TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.allow</TT
+> and not
+	    (unless by the keyword all) listed in
+	    <TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.deny</TT
+> (see section "<A
+HREF="fcrontab.1.html#FCRONTAB.1.FILES"
+>files</A
+>" below). If neither
+	    <TT
+CLASS="FILENAME"
+>fcron.allow</TT
+> nor <TT
+CLASS="FILENAME"
+>fcron.deny</TT
+>
+	    exist, all users are allowed. None of these files have to exist, but
+	    if they do, the deny file takes precedence.</P
+><P
+>The first
+	    form of the command is used to install a new <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> file, from
+	    any named file or from standard input if the pseudo-filename "-" is
+	    given, replacing the previous one (if any): each user can have only
+	    one <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>.</P
+><P
+>For instance, root can create a
+	    systemwide fcrontab file, say <TT
+CLASS="FILENAME"
+>/etc/fcrontab</TT
+>,
+	    and run "<B
+CLASS="COMMAND"
+>fcrontab</B
+>
+	    <TT
+CLASS="FILENAME"
+>/etc/fcrontab</TT
+>" to install the new version after
+	    each change of the file. Or (s)he can create a new fcrontab running
+	    a simple "<B
+CLASS="COMMAND"
+>fcrontab</B
+>", and then maintain it using
+	    "<B
+CLASS="COMMAND"
+>fcrontab</B
+> <CODE
+CLASS="OPTION"
+>-e</CODE
+>". Same
+	    considerations apply to a non privileged user.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1651"
+></A
+><H2
+>Options</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-u</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+></B
+></DT
+><DD
+><P
+>Specify the user whose <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> will be managed, or
+		     "systab" for the system fcrontab.  Should only be
+		     used by root. If not given, the <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> file of the
+		     user invoking <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> will be handled. It may be useful
+		     since the <SPAN
+CLASS="APPLICATION"
+>su</SPAN
+>(8) command may
+		     confuse <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>.  <DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Note: </B
+>the
+		     '<TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+>' in the <A
+HREF="fcrontab.1.html#FCRONTAB.1.SYNOPSIS"
+>synopsys</A
+> is equivalent
+		     to a '<CODE
+CLASS="OPTION"
+>-u</CODE
+>
+		     <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+>'.</P
+></BLOCKQUOTE
+></DIV
+></P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-l</CODE
+></B
+></DT
+><DD
+><P
+>List user's current <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> to standard
+		     output.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-e</CODE
+></B
+></DT
+><DD
+><P
+>Edit user's current <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> using either the editor
+		     specified by the environment variable
+		     <CODE
+CLASS="ENVAR"
+>VISUAL</CODE
+>, or <CODE
+CLASS="ENVAR"
+>EDITOR</CODE
+> if
+		     <CODE
+CLASS="ENVAR"
+>VISUAL</CODE
+> is not set. If none or them are set,
+		     <B
+CLASS="COMMAND"
+>/usr/bin/vi</B
+> will be used.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-r</CODE
+></B
+></DT
+><DD
+><P
+>Remove user's <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-z</CODE
+></B
+></DT
+><DD
+><P
+>Reinstall user's <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> from its source code. All
+		     informations <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> may have kept in the binary
+		     <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> (such as the last execution time and date) will
+		     be forgotten (ie. lost).</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-n</CODE
+></B
+></DT
+><DD
+><P
+>Ignore previous version. If this option is not given,
+		     <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> will try to keep as much information as possible
+		     between old and new version of the <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> (time and
+		     date of next execution, if job is in serial queue, etc) if
+		     the line hasn't been modified (same fields, same shell
+		     command).</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-c</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+></B
+></DT
+><DD
+><P
+>Make <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> use config file
+		     <TT
+CLASS="REPLACEABLE"
+><I
+>file</I
+></TT
+> instead of default config
+		     file <TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+>. To
+		     interact with a running <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> process, <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> must
+		     use the same config file as the process. That way, several
+		     <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> processes can run simultaneously on an only
+		     system.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-d</CODE
+></B
+></DT
+><DD
+><P
+>Run in debug mode. In this mode, many informational
+		     messages will be output in order to check if anything went
+		     wrong.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-h</CODE
+></B
+></DT
+><DD
+><P
+>Display a brief description of the options.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-V</CODE
+></B
+></DT
+><DD
+><P
+>Display an informational message about <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>,
+		     including its version and the license under which it is
+		     distributed.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1736"
+></A
+><H2
+>Return values</H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcrontab</SPAN
+> returns 0 on
+	    normal exit and 1 on error.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1740"
+></A
+><H2
+>Conforming to</H2
+><P
+>Should be POSIX compliant.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="FCRONTAB.1.FILES"
+></A
+><H2
+>Files</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+></B
+></DT
+><DD
+><P
+>Configuration file for <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and
+		     <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>: contains paths (spool dir, pid file) and
+		     default programs to use (editor, shell, etc). See <A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5)</A
+> for more
+		     details.</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.allow</TT
+></B
+></DT
+><DD
+><P
+>Users allowed to use <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (one name
+		     per line, special name "all" acts for everyone)</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.deny</TT
+></B
+></DT
+><DD
+><P
+>Users who are not allowed to use <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and
+		     <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (same format as allow file)</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.d/fcron</TT
+> (or
+		  <TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.conf</TT
+>)</B
+></DT
+><DD
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>PAM</SPAN
+> configuration file for
+		     <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>. Take a look at pam(8) for more details.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1778"
+></A
+><H2
+>See also</H2
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrondyn.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8).</A
+></TD
+></TR
+><TR
+><TD
+>If you're learning how to use fcron from scratch, I suggest
+ that you read the HTML version of the documentation (if your are not reading it
+ right now! :) ): the content is the same, but it is easier to navigate thanks
+to the hyperlinks.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1797"
+></A
+><H2
+>Author</H2
+><P
+>Thibault Godouet <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fcron.conf.5.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fcrontab.5.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>fcron.conf</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="manpages.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>fcrontab</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,3425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>fcrontab</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Fcron documentation"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Manual pages of fcron"
+HREF="manpages.html"><LINK
+REL="PREVIOUS"
+TITLE="fcrontab"
+HREF="fcrontab.1.html"><LINK
+REL="NEXT"
+TITLE="fcrondyn"
+HREF="fcrondyn.1.html"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Fcron documentation</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="fcrontab.1.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="fcrondyn.1.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FCRONTAB.5"
+></A
+>fcrontab</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1807"
+></A
+><H2
+>Name</H2
+>fcrontab&nbsp;--&nbsp;tables for driving fcron</DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1810"
+></A
+><H2
+>Description</H2
+><P
+>A <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> is a file containing all tables used by the
+<SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8) daemon. In other words, it is the means for a user to tell the daemon
+"execute this command at this moment". Each user has his own <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>, whose
+commands are executed as his owner (only root can run a job as another using the
+option <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNAS"
+><CODE
+CLASS="VARNAME"
+>runas</CODE
+></A
+> (see below)).</P
+><P
+>Blank lines, line beginning by a hash sign (#) (which are
+considered comments), leading blanks and tabs are ignored. Each line in a
+fcrontab file can be either</P
+><P
+></P
+><UL
+><LI
+><P
+>an environment setting,</P
+></LI
+><LI
+><P
+>an option setting,</P
+></LI
+><LI
+><P
+>entries based on elapsed system up time,</P
+></LI
+><LI
+><P
+>entries based on absolute time (like normal crontab
+entries), or</P
+></LI
+><LI
+><P
+>entries run periodically.</P
+></LI
+></UL
+><P
+>Any logical line (an entry or an assignment) can be divided into
+several real lines (the lines which end by a newline character) by placing a
+backslash (\) before the newline character (\n).</P
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="AEN1831"
+></A
+><H3
+>The environment settings</H3
+><P
+>The environment settings are of the form</P
+><A
+NAME="AEN1834"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+>name = value</P
+></BLOCKQUOTE
+><P
+>where the blanks around equal-sign (=) are ignored and
+optional. Trailing blanks are also ignored, but you can place the value in
+quotes (simple or double, but matching) to preserve any blanks in the
+value.</P
+><P
+>When <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> executes a command, it always sets
+<CODE
+CLASS="ENVAR"
+>USER</CODE
+>, and <CODE
+CLASS="ENVAR"
+>HOME</CODE
+> as defined in
+<TT
+CLASS="FILENAME"
+>/etc/passwd</TT
+> for the owner of the <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> from which the
+command is extracted. TZ is also defined to the value of the option timezone when this option is used. It also defines <CODE
+CLASS="ENVAR"
+>SHELL</CODE
+> to the value of the SHELL used to run the command. <SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> uses the value of <CODE
+CLASS="ENVAR"
+>SHELL</CODE
+> from the fcrontab if any, otherwise it uses the value from <TT
+CLASS="FILENAME"
+>fcron.conf</TT
+> if any, or in last resort the value from <TT
+CLASS="FILENAME"
+>/etc/passwd</TT
+>. <CODE
+CLASS="ENVAR"
+>HOME</CODE
+> and <CODE
+CLASS="ENVAR"
+>SHELL</CODE
+> may be
+overridden by settings in the <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>, but <CODE
+CLASS="ENVAR"
+>USER</CODE
+> may not.
+Every other environment assignments defined in the user <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+> are then
+made, and the command is executed.</P
+><P
+>By default, fcron will send emails using the email "Content-Type:" header of "text/plain" with the "charset=" parameter set to the charmap / codeset of the locale in which <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8)</A
+> is started up - i.e. either the default system locale, if no LC_* environment variables are set, or the locale specified by the LC_* environment variables (see locale(7)). You can use different character encodings for emailed fcron job output by setting the CONTENT_TYPE and CONTENT_TRANSFER_ENCODING variables in fcrontabs, to the correct values of the mail headers of those names.</P
+><P
+>Plus, the special variable <CODE
+CLASS="VARNAME"
+>MAILTO</CODE
+> allows
+you to tell <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> to whom it has to mail the command's output. Note that
+<CODE
+CLASS="VARNAME"
+>MAILTO</CODE
+> is in fact equivalent to a global declaration of the
+option <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAILTO"
+><CODE
+CLASS="VARNAME"
+>mailto</CODE
+></A
+> (see below). It is only used for backward compatibility, so
+you should use the option <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAILTO"
+><CODE
+CLASS="VARNAME"
+>mailto</CODE
+></A
+> directly.</P
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="UPTENT"
+></A
+><H3
+>Entries based on elapsed system up time</H3
+><P
+>The entries of commands which have to be run once every m
+minutes of <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>'s execution (which is normally the same as m minutes of
+system's execution) are of the form</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>@options frequency command</PRE
+></TD
+></TR
+></TABLE
+><P
+>where frequency is a time value of the form
+value*multiplier+value*multiplier+...+value-in-minutes as "12h02" or "3w2d5h1".
+The first means "12 hours and 2 minutes of fcron execution" while the second
+means "3 weeks, 2 days, 5 hours and 1 minute of fcron execution". The only valid
+multipliers are:</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1870"
+></A
+><P
+><B
+>Table 2-1. Valid time multipliers</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>meaning: </TH
+><TH
+>multipliers:      </TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>months (4 weeks): </TD
+><TD
+>m      </TD
+></TR
+><TR
+><TD
+>weeks (7 days): </TD
+><TD
+>w      </TD
+></TR
+><TR
+><TD
+>days (24 hours): </TD
+><TD
+>d      </TD
+></TR
+><TR
+><TD
+>hours (60 minutes): </TD
+><TD
+>h  </TD
+></TR
+><TR
+><TD
+>seconds: </TD
+><TD
+>s  </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>In place of <TT
+CLASS="REPLACEABLE"
+><I
+>options</I
+></TT
+>, user can put a
+time value: it will be interpreted as
+<SPAN
+CLASS="TOKEN"
+>@first(<TT
+CLASS="REPLACEABLE"
+><I
+>time</I
+></TT
+>)</SPAN
+>. If <A
+HREF="fcrontab.5.html#FCRONTAB.5.FIRST"
+><CODE
+CLASS="VARNAME"
+>first</CODE
+></A
+> option is
+not set, the value of "<CODE
+CLASS="VARNAME"
+>frequency</CODE
+>" is used.</P
+><P
+>This kind of entry does not guarantee a time and date of
+execution (as the job is delayed at each startup by the time elapsed since the
+shutdown), but should be useful for jobs depending on the number of things done
+by the users (for instance, the filesystem should better be checked after a
+certain amount of use by the users rather than every x days, as the system may
+run from 1 day to x days during that x days interval).</P
+><P
+>The time remaining before next execution is saved every 1800
+seconds (to limit damages caused by a crash) and when <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> exits after having
+received a <CODE
+CLASS="CONSTANT"
+>SIGTERM</CODE
+> signal, i.e. when systems go down. Thus,
+this kind of entries is particularly useful for systems that don't run
+regularly. The syntax being very simple, it may also useful for tasks which
+don't need to be run at a specific time and date.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.FIRST"
+><CODE
+CLASS="VARNAME"
+>first</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOLOG"
+><CODE
+CLASS="VARNAME"
+>nolog</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIAL"
+><CODE
+CLASS="VARNAME"
+>serial</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NICE"
+><CODE
+CLASS="VARNAME"
+>nice</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNAS"
+><CODE
+CLASS="VARNAME"
+>runas</CODE
+></A
+> (see below).</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN1921"
+></A
+><P
+><B
+>Example 2-1. Some examples of lines based on elapsed system up
+time</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># Get our mails every 30 minutes 
+@ 30 getmails -all 
+
+# make some security tests every 48 hours of system up time, 
+# force a mail to be sent to root even if there is no output 
+@mailto(root),forcemail 2d /etc/security/msec/cron-sh/security.sh</PRE
+></TD
+></TR
+></TABLE
+></DIV
+></P
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="FCRONTAB.5.TADENT"
+></A
+><H3
+>Entries based on time and date</H3
+><P
+>The second type of <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>'s entries begins by an optional
+"&#38;", which can be immediately followed by an optional number defining the
+frequency of execution (this is equivalent to option <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNFREQ"
+><CODE
+CLASS="VARNAME"
+>runfreq</CODE
+></A
+>) or a
+declaration of options; it has five time and date fields, and a shell command
+:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>&#38;options min hrs day-of-month month day-of-week command</PRE
+></TD
+></TR
+></TABLE
+><P
+>Note that the shell command may be preceded by a user name,
+which is equivalent to <SPAN
+CLASS="TOKEN"
+>runas(<TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+>)</SPAN
+>: as
+it is only here for backward compatibility you should use option <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNAS"
+><CODE
+CLASS="VARNAME"
+>runas</CODE
+></A
+> (see
+below) instead. The frequency is interpreted as: "run this command after x
+matches of time and date fields". The time and date fields are:</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1936"
+></A
+><P
+><B
+>Table 2-2. Time and date fields</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>field: </TH
+><TH
+>allowed values:      </TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>minute: </TD
+><TD
+>0-59      </TD
+></TR
+><TR
+><TD
+>hour: </TD
+><TD
+>0-23      </TD
+></TR
+><TR
+><TD
+>day of month: </TD
+><TD
+>1-31      </TD
+></TR
+><TR
+><TD
+>month: </TD
+><TD
+>1-12 (or names, see below)      </TD
+></TR
+><TR
+><TD
+>day of week: </TD
+><TD
+>0-7 (0 and 7 are both Sunday, or names)</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>A field is always filled by either an asterisk (*), which acts
+as "<SPAN
+CLASS="TOKEN"
+>first-last</SPAN
+>" range, a single number or a list.</P
+><P
+>List are numbers or range separated with commas (,). For
+instance: "2,5,15,23".</P
+><P
+>Ranges of number are of the form
+"<SPAN
+CLASS="TOKEN"
+><TT
+CLASS="REPLACEABLE"
+><I
+>begin</I
+></TT
+>-<TT
+CLASS="REPLACEABLE"
+><I
+>end</I
+></TT
+></SPAN
+>", 
+where "<TT
+CLASS="REPLACEABLE"
+><I
+>begin</I
+></TT
+>" and "<TT
+CLASS="REPLACEABLE"
+><I
+>end</I
+></TT
+>"
+are included. For example, "3-5" specifies the values 3, 4 and 5. You can also
+add an optional "/<TT
+CLASS="REPLACEABLE"
+><I
+>number</I
+></TT
+>" to a range, where the
+<TT
+CLASS="REPLACEABLE"
+><I
+>number</I
+></TT
+> specifies skips of the
+<TT
+CLASS="REPLACEABLE"
+><I
+>number</I
+></TT
+>'s value through the range. For example,
+"0-23/2" can be used in the hours field to specify command execution every other
+hour. Finally, one or several "~<TT
+CLASS="REPLACEABLE"
+><I
+>number</I
+></TT
+>" can be added
+to turn off some specific values in a range. For example, "5-8~6~7" is equivalent to
+"5,8". The final form of a field is:</P
+><A
+NAME="AEN1972"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+>a[-b[/c][~d][~e][...]][,f[-g[/h][~i][~j][...]]][,...]</P
+></BLOCKQUOTE
+><P
+>where the letters are integers.</P
+><P
+>You can also use an asterisk (*) in a field. It acts for
+"<SPAN
+CLASS="TOKEN"
+>first-last</SPAN
+>". For example, a "*" in the field minute means all
+minutes from minute 0 down to minute 59.</P
+><P
+>Ranges can be included in a list as a single number. For
+instance: "2,5-10/2~6,15,20-25,30".</P
+><P
+>Names can also be used for the "month" and "day of week"
+fields. To do so, use the first three letters of the particular day or month
+(case doesn't matter). Please note that names are used exactly as numbers: you
+can use them in a list or a range.</P
+><P
+>If a day of month and a day of week are given, the command
+will execute only when <EM
+>both</EM
+> match with the current time and
+date unless option <A
+HREF="fcrontab.5.html#FCRONTAB.5.DAYOR"
+><CODE
+CLASS="VARNAME"
+>dayor</CODE
+></A
+> is set. For example, with the line
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>5 10 31 * 7 echo ''</PRE
+></TD
+></TR
+></TABLE
+> echo will only be executed
+days which are a Sunday AND a 31th, at 10:05.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.DAYOR"
+><CODE
+CLASS="VARNAME"
+>dayor</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.BOOTRUN"
+><CODE
+CLASS="VARNAME"
+>bootrun</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNFREQ"
+><CODE
+CLASS="VARNAME"
+>runfreq</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOLOG"
+><CODE
+CLASS="VARNAME"
+>nolog</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIAL"
+><CODE
+CLASS="VARNAME"
+>serial</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NICE"
+><CODE
+CLASS="VARNAME"
+>nice</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNAS"
+><CODE
+CLASS="VARNAME"
+>runas</CODE
+></A
+> (see
+below).</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2005"
+></A
+><P
+><B
+>Example 2-2. Some examples of entries based on time and date</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># run mycommand at 12:05, 12:35, 13:05, 13:35, 
+# 14:05 *and* 14:35 everyday 
+&#38; 05,35 12-14 * * * mycommand -u me -o file 
+
+# get mails every hour past 20, 21, 22, and 24 minutes. 
+20-24~23 * * * * getmail 
+
+# save our work of the day every night at 03:45 with a low priority 
+# unless we are sunday, mail the output to jim and run that job 
+# at startup if computer was down at 03:45
+&#38;nice(10),mailto(jim),bootrun 45 03 * * *~0 "save --our work" </PRE
+></TD
+></TR
+></TABLE
+></DIV
+></P
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="FCRONTAB.5.PERIODENT"
+></A
+><H3
+>Entries run periodically</H3
+><P
+>The third type of <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+>'s entries begin by a "%",
+followed by a keyword from one of 3 different lists, and optional options.</P
+><DIV
+CLASS="REFSECT3"
+><A
+NAME="AEN2012"
+></A
+><H4
+>*ly keywords</H4
+><P
+>Those keywords are:</P
+><P
+><CODE
+CLASS="PARAMETER"
+>hourly </CODE
+>, <CODE
+CLASS="PARAMETER"
+>daily </CODE
+>, <CODE
+CLASS="PARAMETER"
+>monthly </CODE
+>, <CODE
+CLASS="PARAMETER"
+>weekly </CODE
+></P
+><P
+>Those keywords tell <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> to run the command
+once from the beginning of the corresponding time interval to the end of that
+time interval. A time interval is, for example, the time from Monday 16:20 to Wednesday 01h43.
+For instance, the keyword <CODE
+CLASS="PARAMETER"
+>weekly</CODE
+> tells <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>
+to run a command once between Monday and Sunday each week.</P
+><P
+>With this two kind of keywords, user must give the needed time
+fields (as defined in "<A
+HREF="fcrontab.5.html#FCRONTAB.5.TADENT"
+>Entries based on time
+and date</A
+>" (see above)) to specify when the command should be run during
+each time interval:</P
+><P
+>	    <DIV
+CLASS="TABLE"
+><A
+NAME="AEN2032"
+></A
+><P
+><B
+>Table 2-3. Needed time fields for each keyword</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>Keywords: </TH
+><TH
+>must be followed by the fields: </TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><CODE
+CLASS="PARAMETER"
+> hourly</CODE
+>,
+<CODE
+CLASS="PARAMETER"
+>midhourly</CODE
+>: </TD
+><TD
+> minutes.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="PARAMETER"
+> daily</CODE
+>,
+<CODE
+CLASS="PARAMETER"
+>middaily</CODE
+>, <CODE
+CLASS="PARAMETER"
+>nightly</CODE
+>,
+<CODE
+CLASS="PARAMETER"
+>weekly</CODE
+>, <CODE
+CLASS="PARAMETER"
+>midweekly</CODE
+>: </TD
+><TD
+> minutes and hours.</TD
+></TR
+><TR
+><TD
+><CODE
+CLASS="PARAMETER"
+> monthly</CODE
+>,
+<CODE
+CLASS="PARAMETER"
+>midmonthly</CODE
+>: </TD
+><TD
+> minutes, hours and days.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></P
+></DIV
+><DIV
+CLASS="REFSECT3"
+><A
+NAME="AEN2058"
+></A
+><H4
+>mid*ly keywords</H4
+><P
+>They are similar to the "*ly" ones:</P
+><P
+><CODE
+CLASS="PARAMETER"
+>midhourly </CODE
+>, <CODE
+CLASS="PARAMETER"
+>middaily </CODE
+>, <CODE
+CLASS="PARAMETER"
+>nightly </CODE
+>, <CODE
+CLASS="PARAMETER"
+>midmonthly </CODE
+>, <CODE
+CLASS="PARAMETER"
+>midweekly </CODE
+></P
+><P
+>They work exactly has the "*ly" keywords, except
+that the time intervals are defined from middle to middle of the corresponding
+"*ly" intervals: <CODE
+CLASS="PARAMETER"
+>midweekly</CODE
+> will run a command once from
+Thursday to Wednesday. Note that <CODE
+CLASS="PARAMETER"
+>nightly</CODE
+> is equivalent to
+<CODE
+CLASS="PARAMETER"
+>middaily</CODE
+>.</P
+><P
+>For example:
+	    <DIV
+CLASS="INFORMALEXAMPLE"
+><P
+></P
+><A
+NAME="AEN2078"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>%nightly,mail(no) * 21-23,3-5 echo "a nigthly entry"</PRE
+></TD
+></TR
+></TABLE
+><P
+></P
+></DIV
+></P
+><P
+>will run the command once each night either between 21:00 and
+23:59, or between 3:00 and 5:59 (it will run as soon as possible. To change
+that, use option <A
+HREF="fcrontab.5.html#FCRONTAB.5.RANDOM"
+><CODE
+CLASS="VARNAME"
+>random</CODE
+></A
+>) and won't send mail (because option <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>
+is set to "no").</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOTICENOTRUN"
+><CODE
+CLASS="VARNAME"
+>noticenotrun</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.STRICT"
+><CODE
+CLASS="VARNAME"
+>strict</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOLOG"
+><CODE
+CLASS="VARNAME"
+>nolog</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIAL"
+><CODE
+CLASS="VARNAME"
+>serial</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NICE"
+><CODE
+CLASS="VARNAME"
+>nice</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNAS"
+><CODE
+CLASS="VARNAME"
+>runas</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RANDOM"
+><CODE
+CLASS="VARNAME"
+>random</CODE
+></A
+> (see
+below).</P
+></DIV
+><DIV
+CLASS="REFSECT3"
+><A
+NAME="AEN2105"
+></A
+><H4
+>*s keywords</H4
+><P
+>They are:</P
+><P
+><CODE
+CLASS="PARAMETER"
+>mins </CODE
+>, <CODE
+CLASS="PARAMETER"
+>hours </CODE
+>, <CODE
+CLASS="PARAMETER"
+>days </CODE
+>, <CODE
+CLASS="PARAMETER"
+>mons </CODE
+>, <CODE
+CLASS="PARAMETER"
+>dow </CODE
+></P
+><P
+>Those keywords act differently, as
+follows:</P
+><P
+>run this command once during EACH time interval specified, ignoring
+the fields below the keyword in the time interval definition (a
+<CODE
+CLASS="PARAMETER"
+>hours</CODE
+> prevents the mins field to be considered as a time
+interval, but it will be used to determine when the line should be run during an
+interval: see the note below) (<CODE
+CLASS="PARAMETER"
+>dow</CODE
+> means "day of
+week").</P
+><P
+>Such a keyword is followed by 5 time and date fields (the same
+fields used for a <A
+HREF="fcrontab.5.html#FCRONTAB.5.TADENT"
+>line based on absolute
+time</A
+> (see above)). Furthermore, there must be some non-matching time and
+dates in the lines with that kind of keyword (i.e. the following is not allowed
+: <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>%hours * 0-23 * * * echo "INCORRECT line!"</PRE
+></TD
+></TR
+></TABLE
+>
+but <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>%hours * 0-22 * * * echo "Ok."</PRE
+></TD
+></TR
+></TABLE
+> is
+allowed).</P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+><B
+>Note: </B
+>a single number in a field is considered as a time interval:
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>%mins 15 2-4 * * * echo</PRE
+></TD
+></TR
+></TABLE
+> will run at 2:15, 3:15
+AND 4:15 every day.</P
+><P
+>But all fields below the keywords are ignored in time
+interval definition: <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>%hours 15 2-4 * * * echo</PRE
+></TD
+></TR
+></TABLE
+>
+will run only ONCE either at 2:15, 3:15 OR 4:15.</P
+></BLOCKQUOTE
+></DIV
+><P
+><EM
+>See also</EM
+>: option <A
+HREF="fcrontab.5.html#FCRONTAB.5.RANDOM"
+><CODE
+CLASS="VARNAME"
+>random</CODE
+></A
+> (see below).</P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="FCRONTAB.5.SHORTCUTS"
+></A
+><H3
+>Vixie cron shortcuts</H3
+><P
+>To ensure a good compatibility with Vixie cron, Vixie cron shortcuts are supported. Generally speaking their usage is not recommended as they lack some of the flexibility brought by fcron. Also where the precise time of execution is not critical, the use <A
+HREF="fcrontab.5.html#UPTENT"
+>lines based on elapsed system up time</A
+> is recommended instead.</P
+><P
+>A task using a Vixie cron shortcut is of the form:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>shortcut command</PRE
+></TD
+></TR
+></TABLE
+><P
+>Below is a list of available shortcuts with their fcron equivalent:</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN2144"
+></A
+><P
+><B
+>Table 2-4. Vixie cron shortcuts </B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><COL><COL><THEAD
+><TR
+><TH
+>shortcut: </TH
+><TH
+>meaning: </TH
+><TH
+>fcron equivalent: </TH
+><TH
+>suggested alternative: </TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>@reboot </TD
+><TD
+>Run once, at startup </TD
+><TD
+>@runatreboot,runonce(true)</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>@yearly </TD
+><TD
+>Run once a year </TD
+><TD
+>0 0 1 1 * </TD
+><TD
+>@ 12m </TD
+></TR
+><TR
+><TD
+>@annually </TD
+><TD
+>(same as @yearly) </TD
+><TD
+>0 0 1 1 * </TD
+><TD
+>@ 12m </TD
+></TR
+><TR
+><TD
+>@monthly </TD
+><TD
+>Run once a month </TD
+><TD
+>0 0 1 * * </TD
+><TD
+>@ 1m </TD
+></TR
+><TR
+><TD
+>@weekly </TD
+><TD
+>Run once a week </TD
+><TD
+>0 0 * * 0 </TD
+><TD
+>@ 1w </TD
+></TR
+><TR
+><TD
+>@daily </TD
+><TD
+>Run once a day </TD
+><TD
+>0 0 * * * </TD
+><TD
+>@ 1d </TD
+></TR
+><TR
+><TD
+>@midnight </TD
+><TD
+>(same as @daily) </TD
+><TD
+>0 0 * * * </TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>@hourly </TD
+><TD
+>Run once an hour </TD
+><TD
+>0 * * * * </TD
+><TD
+>@ 1h </TD
+></TR
+></TBODY
+></TABLE
+></DIV
+><P
+>A few examples:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># run check_laptop_logs.sh at the first minute of every hour:
+@hourly check_laptop_logs.sh
+# run check_web_server.sh and check_file_server.sh every day at exactly
+# midnight, both at the same time:
+@daily check_web_server.sh
+@daily check_file_server.sh
+# run compress_home_made_app_log_files.sh at exactly midnight
+# on the first day of every month:
+@monthly compress_home_made_app_log_files.sh</PRE
+></TD
+></TR
+></TABLE
+><P
+>However you might want to replace those task definitions by something as:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># run check_laptop_logs.sh after every hour of system up time:
+@ 60 check_laptop_logs.sh
+# run check_web_server.sh and check_file_server.sh every night between midnight
+# and 3am, one by after the other:
+%nightly,serial * 0-3 check_web_server.sh
+%nightly,serial * 0-3 check_file_server.sh
+# Run compress_home_made_app_log_files.sh once a month, only at night
+# when the load is low:
+@monthly,lavg(0.5) * 21-23,0-5 * compress_home_made_app_log_files.sh</PRE
+></TD
+></TR
+></TABLE
+><P
+>Last, but not least, it should be noted that tasks defined using a Vixie cron shortcut will only have the same behaviour as in Vixie cron if they are not modified by some earlier option definition. That will be the case if you import a Vixie cron crontab into fcron without modification, or if you precede the task definition by a <A
+HREF="fcrontab.5.html#FCRONTAB.5.RESET"
+><CODE
+CLASS="VARNAME"
+>reset</CODE
+></A
+>, e.g.:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>!serial
+@ 10 fcron_task_1
+@ 25 fcron_task_2
+!reset
+@reboot start_unprivileged_user_program
+@daily cleanup_tmp.sh</PRE
+></TD
+></TR
+></TABLE
+><P
+>In the example above, <A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIAL"
+><CODE
+CLASS="VARNAME"
+>serial</CODE
+></A
+> would apply to the last two tasks if we hadn't used <A
+HREF="fcrontab.5.html#FCRONTAB.5.RESET"
+><CODE
+CLASS="VARNAME"
+>reset</CODE
+></A
+>.</P
+></DIV
+><DIV
+CLASS="REFSECT2"
+><A
+NAME="AEN2207"
+></A
+><H3
+>Options</H3
+><P
+>The options can be set either for every line below the
+declaration or for an individual line. In the first case, the setting is done on
+a whole line immediately after an exclamation mark (!), while it is done after a
+"&#38;", a "%" or a "@" depending on the type of scheduling in the second case. Note
+that an option declaration in a schedule overrides the global declaration of
+that same option.</P
+><P
+>Options are separated by commas (,) and their arguments, if
+any, are placed in parentheses ("(" and ")") and separated by commas. No space
+or surrounding (double-)quote is allowed. A declaration of options is of the form</P
+><A
+NAME="AEN2211"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+><TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>[(<TT
+CLASS="REPLACEABLE"
+><I
+>arg1</I
+></TT
+>[,<TT
+CLASS="REPLACEABLE"
+><I
+>arg2</I
+></TT
+>][...])][,<TT
+CLASS="REPLACEABLE"
+><I
+>option</I
+></TT
+>[(<TT
+CLASS="REPLACEABLE"
+><I
+>arg1</I
+></TT
+>[...])]][...]</P
+></BLOCKQUOTE
+><P
+>where option is either the name of an option or its
+abbreviation. The options are (default value in parentheses):</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Valid options in a <SPAN
+CLASS="SYSTEMITEM"
+>fcrontab</SPAN
+></B
+></P
+><DL
+><DT
+><A
+NAME="FCRONTAB.5.BOOTRUN"
+></A
+><B
+>bootrun</B
+>, <B
+>b</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Run an &#38;-line at <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>'s startup if it should
+have run during system down time.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.DAYAND"
+></A
+><B
+>dayand</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>true</CODE
+>)</P
+><P
+>Perform a logic AND between week and month
+day.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.DAYOR"
+><CODE
+CLASS="VARNAME"
+>dayor</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.DAYOR"
+></A
+><B
+>dayor</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Perform a logic OR between week and month
+day.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.DAYAND"
+><CODE
+CLASS="VARNAME"
+>dayand</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.ERRORONLYMAIL"
+></A
+><B
+>erroronlymail</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Mail output only if job exited with a non-zero status.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAILTO"
+><CODE
+CLASS="VARNAME"
+>mailto</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.FORCEMAIL"
+><CODE
+CLASS="VARNAME"
+>forcemail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOLOG"
+><CODE
+CLASS="VARNAME"
+>nolog</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.EXESEV"
+></A
+><B
+>exesev</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Can a job be executed several times simultaneously
+?</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIALONCE"
+><CODE
+CLASS="VARNAME"
+>serialonce</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGONCE"
+><CODE
+CLASS="VARNAME"
+>lavgonce</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.FIRST"
+></A
+><B
+>first</B
+>, <B
+>f</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>time-value</SPAN
+></EM
+></P
+><P
+>Delay before first execution of a job based on
+system up time ("@"-lines). Useful in the following case: you have several jobs
+running, say, every hour. By setting different first value for each job, you can
+avoid them to run simultaneously everytime. You can also set it to 0, which is
+useful when used in conjunction with option <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.FORCEMAIL"
+></A
+><B
+>forcemail</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Mail output even if zero-length.</P
+><P
+>Setting this option to true will also set <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+> to true.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAILTO"
+><CODE
+CLASS="VARNAME"
+>mailto</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.ERRORONLYMAIL"
+><CODE
+CLASS="VARNAME"
+>erroronlymail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOLOG"
+><CODE
+CLASS="VARNAME"
+>nolog</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.JITTER"
+></A
+><B
+>jitter</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>integer</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>)</P
+><P
+>Run the task between 0 and jitter seconds later than it should have been run. This options only applies to &#38;-lines and is intended for systems where many jobs are supposed to be started at the same minute: the jitter option will randomly spread the start of all those jobs across the first jitter seconds of the minute instead of starting all of them at the first second of the minute. The argument must be between 0 and 255 (inclusive).</P
+><P
+><EM
+>See also</EM
+>: option <A
+HREF="fcrontab.5.html#FCRONTAB.5.RANDOM"
+><CODE
+CLASS="VARNAME"
+>random</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.LAVG"
+></A
+><B
+>lavg</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>real</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>) 
+<EM
+><SPAN
+CLASS="TYPE"
+>real</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>)
+<EM
+><SPAN
+CLASS="TYPE"
+>real</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>)</P
+><P
+>Set the values of the 1, 5 and 15-minute (in this
+order) system load average values below which the job should run. The values
+have a maximum of 1 decimal (i.e. "2.3"): if there are more than 1 decimal, 
+the value will be round off. Set a value to 0 to ignore the corresponding
+load average (or all of the values to run the job regardless of the load
+average).</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGX"
+><CODE
+CLASS="VARNAME"
+>lavg1</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGX"
+><CODE
+CLASS="VARNAME"
+>lavg5</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGX"
+><CODE
+CLASS="VARNAME"
+>lavg15</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.UNTIL"
+><CODE
+CLASS="VARNAME"
+>until</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGONCE"
+><CODE
+CLASS="VARNAME"
+>lavgonce</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGOR"
+><CODE
+CLASS="VARNAME"
+>lavgor</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGAND"
+><CODE
+CLASS="VARNAME"
+>lavgand</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.STRICT"
+><CODE
+CLASS="VARNAME"
+>strict</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.NOTICENOTRUN"
+><CODE
+CLASS="VARNAME"
+>noticenotrun</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.LAVGX"
+></A
+><B
+>lavg1</B
+>, <B
+>lavg5</B
+>, <B
+>lavg15</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>real</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>)</P
+><P
+>Set the threshold of, respectively, the 1, 5 or 15
+minutes system load average value. Set one of them to 0 to ignore the
+corresponding load average.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.LAVGAND"
+></A
+><B
+>lavgand</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>true</CODE
+>)</P
+><P
+>Perform a logic AND between the 1, 5 and 15
+minutes system load average values.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGOR"
+><CODE
+CLASS="VARNAME"
+>lavgor</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.LAVGONCE"
+></A
+><B
+>lavgonce</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>1</CODE
+>)</P
+><P
+>Can a job be queued several times in lavg queue
+simultaneously?</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.LAVGOR"
+></A
+><B
+>lavgor</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Perform a logic OR between the 1, 5 and 15 minutes
+system load average values.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGAND"
+><CODE
+CLASS="VARNAME"
+>lavgand</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.MAIL"
+></A
+><B
+>mail</B
+>, <B
+>m</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>true</CODE
+>)</P
+><P
+>Mail output (if any) or not.</P
+><P
+>Setting this option to false will also set <A
+HREF="fcrontab.5.html#FCRONTAB.5.FORCEMAIL"
+><CODE
+CLASS="VARNAME"
+>forcemail</CODE
+></A
+> to false.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAILTO"
+><CODE
+CLASS="VARNAME"
+>mailto</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.FORCEMAIL"
+><CODE
+CLASS="VARNAME"
+>forcemail</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.ERRORONLYMAIL"
+><CODE
+CLASS="VARNAME"
+>erroronlymail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOLOG"
+><CODE
+CLASS="VARNAME"
+>nolog</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.MAILTO"
+></A
+><B
+>mailto</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>email-address</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>name 
+of file's owner</CODE
+>)</P
+><P
+>Mail output (if needed) to
+"<TT
+CLASS="REPLACEABLE"
+><I
+>email-address</I
+></TT
+>". It can be either a single user-name
+or a fully qualified email address. A <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAILTO"
+><CODE
+CLASS="VARNAME"
+>mailto</CODE
+></A
+> declared and empty (string
+"") is equivalent to "<SPAN
+CLASS="TOKEN"
+>mail(false)</SPAN
+>".</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.FORCEMAIL"
+><CODE
+CLASS="VARNAME"
+>forcemail</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.ERRORONLYMAIL"
+><CODE
+CLASS="VARNAME"
+>erroronlymail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOLOG"
+><CODE
+CLASS="VARNAME"
+>nolog</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.NICE"
+></A
+><B
+>nice</B
+>, <B
+>n</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>nice-value</SPAN
+></EM
+></P
+><P
+>Change job priority. A
+<EM
+><SPAN
+CLASS="TYPE"
+>nice-value</SPAN
+></EM
+> is an integer from -20 (highest
+priority) to 19 (lowest) (only root is allowed to use a negative value with this
+option).</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.NOLOG"
+></A
+><B
+>nolog</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>If set to true, log only errors for the
+corresponding job(s). May be useful for jobs running very often, and/or to
+reduce disk access on a laptop.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAIL"
+><CODE
+CLASS="VARNAME"
+>mail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.MAILTO"
+><CODE
+CLASS="VARNAME"
+>mailto</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.ERRORONLYMAIL"
+><CODE
+CLASS="VARNAME"
+>erroronlymail</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.FORCEMAIL"
+><CODE
+CLASS="VARNAME"
+>forcemail</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.NOTICENOTRUN"
+></A
+><B
+>noticenotrun</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Should <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> mail user to report the
+non-execution of a %-job or an &#38;-job? (because of system down state for both or
+a too high system load average for the latter)</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.STRICT"
+><CODE
+CLASS="VARNAME"
+>strict</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.RANDOM"
+></A
+><B
+>random</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>In a <A
+HREF="fcrontab.5.html#FCRONTAB.5.PERIODENT"
+>line run
+periodically</A
+>, this option answers the question: should this job be run
+as soon as possible in its time interval of execution (safer), or should fcron set a
+random time of execution in that time interval? Note that if this option is set, the
+job may not run if fcron is not running during the <EM
+>whole</EM
+>
+execution interval. Besides, you must know that the random scheme may be quite
+easy to guess for skilled people: thus, you shouldn't rely on this option
+to make important things secure. However, it shouldn't be a problem
+for most uses.</P
+><P
+><EM
+>See also</EM
+>: option <A
+HREF="fcrontab.5.html#FCRONTAB.5.JITTER"
+><CODE
+CLASS="VARNAME"
+>jitter</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.REBOOTRESET"
+></A
+><B
+>rebootreset</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>When set to true, fcron will act as if the task was
+a new one every time the OS reboots. This is very similar to the option <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+>
+but based on the OS reboots instead of fcron restarts.
+You may also want to use option <A
+HREF="fcrontab.5.html#FCRONTAB.5.FIRST"
+><CODE
+CLASS="VARNAME"
+>first</CODE
+></A
+> if you use fcron that way.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.FIRST"
+><CODE
+CLASS="VARNAME"
+>first</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNONCE"
+><CODE
+CLASS="VARNAME"
+>runonce</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNATREBOOT"
+><CODE
+CLASS="VARNAME"
+>runatreboot</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.RESET"
+></A
+><B
+>reset</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+></P
+><P
+>Reset all the options to default.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.RUNAS"
+></A
+><B
+>runas</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>user-name</SPAN
+></EM
+></P
+><P
+>Run with "<TT
+CLASS="REPLACEABLE"
+><I
+>user-name</I
+></TT
+>"
+permissions and environment (only root is allowed to use this option).</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.RUNATREBOOT"
+></A
+><B
+>runatreboot</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>If set to true, the task will be run at system startup (i.e. immediately after the <A
+HREF="fcron.8.html#FCRON.8.FIRSTSLEEP"
+><CODE
+CLASS="VARNAME"
+>--sleeptime</CODE
+></A
+> delay -- by default, 20 seconds -- when the <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> daemon starts the first time after the OS has booted). This is in addition to the regular schedule which won't be modified by this option.</P
+><P
+>For instance, if a program should be started automatically and run from 7am to 6pm, you could use the following dfcrontab definitions:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>&#38;runatreboot 0 6 * * 1-5 start_my_program.sh
+&#38; 0 7 * * 1-5 stop_my_program.sh</PRE
+></TD
+></TR
+></TABLE
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNONCE"
+><CODE
+CLASS="VARNAME"
+>runonce</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.REBOOTRESET"
+><CODE
+CLASS="VARNAME"
+>rebootreset</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.RUNFREQ"
+></A
+><B
+>runfreq</B
+>, <B
+>r</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>integer</SPAN
+></EM
+></P
+><P
+>Run every "<TT
+CLASS="REPLACEABLE"
+><I
+>runfreq</I
+></TT
+>"
+matches of time and date. (this option is ignored for <A
+HREF="fcrontab.5.html#UPTENT"
+>lines based on elapsed system up time</A
+>).</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.RUNONCE"
+></A
+><B
+>runonce</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>Do not re-schedule the task after it has run once, until the next OS reboot (if <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+> is not set) or until the next <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> daemon restart (if <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+> is set).</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.REBOOTRESET"
+><CODE
+CLASS="VARNAME"
+>rebootreset</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.RUNATREBOOT"
+><CODE
+CLASS="VARNAME"
+>runatreboot</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.SERIAL"
+></A
+><B
+>serial</B
+>, <B
+>s</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> runs at most 1 serial
+jobs (ie. for which the option serial is set to true), and the same number of lavg serial jobs (ie. for which both option serial and lavg (or lavg1 or lavg5 or lavg15) are set to true) simultaneously. This value may be modified by <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>'s option <CODE
+CLASS="OPTION"
+>-m</CODE
+>. This option is especially useful when used with big jobs in order to limit the system overload.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIALONCE"
+><CODE
+CLASS="VARNAME"
+>serialonce</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.SERIALONCE"
+></A
+><B
+>serialonce</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>)</P
+><P
+>Can a job be queued several times in serial queue
+simultaneously?</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.EXESEV"
+><CODE
+CLASS="VARNAME"
+>exesev</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVGONCE"
+><CODE
+CLASS="VARNAME"
+>lavgonce</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.STDOUT"
+></A
+><B
+>stdout</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>If fcron is running in the foreground, then also
+let jobs print to stderr/stdout instead of mailing or discarding it.</P
+><P
+><EM
+>See also</EM
+>: fcron's option <A
+HREF="fcron.8.html#FCRON.8.ONCE"
+><CODE
+CLASS="VARNAME"
+>--once</CODE
+></A
+>
+in <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8)</A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.STRICT"
+></A
+><B
+>strict</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>true</CODE
+>)</P
+><P
+>When a lavg %-job is at the end of a time interval of
+execution, should it be removed from the lavg queue (strict(true), so the job is
+not run) or be let there until the system load average allows its execution
+(strict(false))?</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.NOTICENOTRUN"
+><CODE
+CLASS="VARNAME"
+>noticenotrun</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.TIMEZONE"
+></A
+><B
+>timezone</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>timezone-name</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>time zone of the system</CODE
+>)</P
+><P
+>Run the job in the given time zone. timezone-name is a string which is valid for the environment variable TZ: see the documentation of your system for more details. For instance, "Europe/Paris" is valid on a Linux system. This option handles daylight saving time changes correctly. The TZ environment variable is set to the value of timezone when a job defining this option is run.</P
+><P
+>Please note that if you give an erroneous timezone-name argument, it will be SILENTLY ignored, and the job will run in the time zone of the system.</P
+><P
+>WARNING: do *not* use option timezone and option tzdiff simultaneously! There is no need to do so, and timezone is cleverer than tzdiff.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.TZDIFF"
+><CODE
+CLASS="VARNAME"
+>tzdiff</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.TZDIFF"
+></A
+><B
+>tzdiff</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>integer</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>)</P
+><P
+>WARNING: this option is deprecated: use option timezone instead!</P
+><P
+>Time zone difference (in hours, between -24 and
+24) between the system time, and the local real time. This option allows a user
+to define its &#38; and %-lines in the local time. Note that this value is set for a
+whole fcrontab file, and only the last definition is taken into account. tzdiff is quite stupid: it doesn't handle daylight saving changes, while option timezone does, so you should use the latter.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.TIMEZONE"
+><CODE
+CLASS="VARNAME"
+>timezone</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.UNTIL"
+></A
+><B
+>until</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>time-value</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>0</CODE
+>)</P
+><P
+>Set the timeout of the waiting of the wanted
+system load average values. If the timeout is exceeded, the job runs no matter
+the load average. Set until to 0 to remove the timeout.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>.</P
+></DD
+><DT
+><A
+NAME="FCRONTAB.5.VOLATILE"
+></A
+><B
+>volatile</B
+></DT
+><DD
+><P
+><EM
+><SPAN
+CLASS="TYPE"
+>boolean</SPAN
+></EM
+>(<CODE
+CLASS="CONSTANT"
+>false</CODE
+>)</P
+><P
+>When set to true, the job is based on a "volatile"
+system up time, i.e. restart counting each time <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> is started, which is
+useful when <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> is started by a script running only, for instance, during a
+dialup connection: the "volatile" system up time then refers to the dialup
+connection time. You may also want to use option <A
+HREF="fcrontab.5.html#FCRONTAB.5.FIRST"
+><CODE
+CLASS="VARNAME"
+>first</CODE
+></A
+> if you use fcron
+that way.</P
+><P
+><EM
+>See also</EM
+>: options <A
+HREF="fcrontab.5.html#FCRONTAB.5.FIRST"
+><CODE
+CLASS="VARNAME"
+>first</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.STDOUT"
+><CODE
+CLASS="VARNAME"
+>stdout</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.REBOOTRESET"
+><CODE
+CLASS="VARNAME"
+>rebootreset</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#UPTENT"
+>lines based on elapsed system up time</A
+>, fcron's command line argument
+<A
+HREF="fcron.8.html#FCRON.8.ONCE"
+><CODE
+CLASS="VARNAME"
+>--once</CODE
+></A
+> in <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8)</A
+>.</P
+></DD
+></DL
+></DIV
+><P
+>A <SPAN
+CLASS="TYPE"
+>boolean</SPAN
+> argument can be non-existent, in which
+case parentheses are not used and it means <CODE
+CLASS="CONSTANT"
+>true</CODE
+>; the string
+"true", "yes" or 1 to mean <CODE
+CLASS="CONSTANT"
+>true</CODE
+>; and the string "false",
+"no" or 0 to mean <CODE
+CLASS="CONSTANT"
+>false</CODE
+>. See above for explanations about
+time value (section <A
+HREF="fcrontab.5.html#UPTENT"
+>"entries based on elapsed system up
+time"</A
+>).</P
+><P
+>Note that <CODE
+CLASS="VARNAME"
+>dayand</CODE
+> and
+<CODE
+CLASS="VARNAME"
+>dayor</CODE
+> are in fact the same option: a false value to
+<CODE
+CLASS="VARNAME"
+>dayand</CODE
+> is equivalent to a true to <CODE
+CLASS="VARNAME"
+>dayor</CODE
+>,
+and reciprocally a false value to <CODE
+CLASS="VARNAME"
+>dayor</CODE
+> is equivalent a true
+value to <CODE
+CLASS="VARNAME"
+>dayand</CODE
+>. It is the same for
+<CODE
+CLASS="VARNAME"
+>lavgand</CODE
+> and <CODE
+CLASS="VARNAME"
+>lavgor</CODE
+>.</P
+><P
+>Note a special case to be handled: A job should be entered
+into the serial queue, *but* the previous entry for this job has not been
+completed yet, because of high system load or some external event. Option
+<CODE
+CLASS="VARNAME"
+>serialonce</CODE
+> answers the question: should the new entry of the
+job be ignored? This way one can distinguish between jobs required to run a
+certain number of times, preferably at specified times, and tasks to be
+performed irrespective of their number (-&#62; serialonce(true)), which make the
+system respond faster.</P
+><P
+>The same considerations apply for the load average queue, and
+can be expressed with option <CODE
+CLASS="VARNAME"
+>lavgonce</CODE
+>.</P
+><P
+>Moreover, if the serial or the lavg queue contains
+respectively more than 30 and 30 jobs, any new job is
+refused and not run to avoid an overwhelming of system resources. In this case,
+an error message is logged through syslog.</P
+><P
+>Finally, if jobs remain in the lavg or serial queues when
+fcron stops, they will be put once in the corresponding queue on startup (their
+order may not be conserved).</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2755"
+></A
+><P
+><B
+>Example 2-3. An example of an option declaration:</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>!reset,serial(true),dayor,bootrun(0),mailto(root),lavg(.5,2,1.5)</PRE
+></TD
+></TR
+></TABLE
+></DIV
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2758"
+></A
+><H2
+>Examples</H2
+><P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2761"
+></A
+><P
+><B
+>Example 2-4. An example of a user fcrontab</B
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># use /bin/bash to run commands, ignoring what /etc/passwd says 
+SHELL=/bin/bash
+
+# mail output to thib, no matter whose fcrontab this is 
+!mailto(thib) 
+
+# define a variable which is equivalent to " Hello thib and paul! " 
+# here the newline characters are escaped by a backslash (\) 
+# and quotes are used to force to keep leading and trailing blanks 
+TEXT= " Hello\
+ thib and\
+ paul! " 
+
+# we want to use serial but not bootrun: 
+!serial(true),b(0) 
+
+# run after five minutes of execution the first time, 
+# then run every hour 
+@first(5) 1h   echo "Run every hour" 
+
+# run every day 
+@ 1d echo "fcron daily" 
+
+# run once between in the morning and once in the afternoon 
+#  if systems is running at any moment of these time intervals
+%hours * 8-12,14-18 * * * echo "Hey boss, I'm working today!" 
+
+# run once a week during our lunch 
+%weekly * 12-13 echo "I left my system on at least once \
+ at lunch time this week." 
+
+# run every Sunday and Saturday at 9:05
+5 9 * * sat,sun echo "Good morning Thibault!" 
+
+# run every even days of march at 18:00, except on 16th 
+0 18 2-30/2~16 Mar * echo "It's time to go back home!" 
+
+# the line above is equivalent to 
+&#38; 0 18 2-30/2~16 Mar * echo "It's time to go back home!" 
+
+# reset options to default and set runfreq for lines below 
+!reset,runfreq(7) 
+
+# run once every 7 matches (thanks to the declaration above), 
+# so if system is running every day at 10:00, this will be 
+# run once a week 
+&#38; 0 10 * * * echo "if you got this message last time 7 days ago,\
+ this computer has been running every day at 10:00 last week.\
+ If you got the message 8 days ago, then the system has been down \
+ one day at 10:00 since you got it, etc" 
+
+# wait every hour for a 5 minutes load average under 0.9 
+@lavg5(0.9) 1h echo "The system load average is low" 
+
+# wait a maximum of 5 hours every day for a fall of the load average
+@lavgand,lavg(1,2.0,3.0),until(5h) 1d echo "Load average is going down" 
+
+# wait for the best moment to run a heavy job 
+@lavgor,lavg(0.8,1.2,1.5),nice(10) 1w echo "This is a heavy job" 
+
+# run once every night between either 21:00 and 23:00 or 
+#   between 3:00 and 6:00 
+%nightly,lavg(1.5,2,2) * 21-23,3-6 echo "It's time to retrieve \
+ the latest release of Mozilla!"</PRE
+></TD
+></TR
+></TABLE
+></DIV
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2764"
+></A
+><H2
+>Files</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+></B
+></DT
+><DD
+><P
+>Configuration file for <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and
+<SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>: contains paths (spool dir, pid file) and default programs to use
+(editor, shell, etc). See <A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5)</A
+> for
+more details.</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.allow</TT
+></B
+></DT
+><DD
+><P
+>Users allowed to use <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (one
+name per line, special name "all" acts for everyone)</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.deny</TT
+></B
+></DT
+><DD
+><P
+>Users who are not allowed to use <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> and
+<SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (same format as allow file)</P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.d/fcron</TT
+> (or
+<TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.conf</TT
+>)</B
+></DT
+><DD
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>PAM</SPAN
+> configuration file for
+<SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>. Take a look at pam(8) for more details.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2799"
+></A
+><H2
+>See also</H2
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrondyn.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8).</A
+></TD
+></TR
+><TR
+><TD
+>If you're learning how to use fcron from scratch, I suggest
+ that you read the HTML version of the documentation (if your are not reading it
+ right now! :) ): the content is the same, but it is easier to navigate thanks
+to the hyperlinks.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2818"
+></A
+><H2
+>Author</H2
+><P
+>Thibault Godouet <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fcrontab.1.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fcrondyn.1.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>fcrontab</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="manpages.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>fcrondyn</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,14 @@
+Template: fcron/anacronwarn
+Type: note
+Description-pt_BR: Aviso: interações com anacron!
+ Se você removeu o pacote anacron mas deixou seus arquivos de
+ configuração no sistema (ou seja, não usou "purge"), o pacote fcron
+ irá causar efeitos colaterais inofensivos, tais como anacron dizendo
+ que foi ativado durante a inicialização do sistema.
+ .
+ NÃO REGISTRE DEFEITOS (bugs) CONTRA O PACOTE ANACRON SE VOCÊ INSTALOU
+ O PACOTE FCRON. Eles serão sumariamente deletados ou por mim, ou pelo
+ responsável pelo pacote anacron.
+ .
+ Mais informações sobre o problema podem ser encontradas em
+ /usr/share/doc/fcron/README.Debian

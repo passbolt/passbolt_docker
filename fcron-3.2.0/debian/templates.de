@@ -1,0 +1,14 @@
+Template: fcron/anacronwarn
+Type: note
+Description-de: Warnung: Wechselwirkungen mit anacron !
+ Wenn Sie das anachron Packet im 'removed' aber nicht im 'purged' Status
+ haben (z.B. es befinden sich noch irgendwo im System anacron Konfigurations
+ Dateien ), kann es sein, dass das fcron Paket einige harmlose Seiteneffekte
+ aufweist, z.B. Meldungen das anacron beim booten gestartet wurde.
+ .
+ MELDEN SIE KEINE ANACRON BUGS, WENN SIE ES MIT FCRON ZUSAMMEN INSTALLIERT
+ HABEN. Diese werden entweder fcron zugeschrieben um von mir geschlossen zu
+ werden oder vom direkt anacron Maintainer geschlossen.
+ .
+ Weiter Informationen finden Sie in
+ /usr/share/doc/fcron/README.Debian

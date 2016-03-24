@@ -1,0 +1,450 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<refentry id="fcrondyn.1">
+  <refmeta>
+    <refentrytitle>fcrondyn</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo>Fcron &version; <![%devrelease; [
+(<emphasis>development</emphasis> release)]]></refmiscinfo>
+    <refmiscinfo>&date;</refmiscinfo>
+  </refmeta>
+  <refnamediv>
+    <refname>fcrondyn</refname>
+    <refpurpose>Dialoguer dynamiquement avec un démon fcron en cours d'exécution.</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv id="fcrondyn.1.synopsis">
+    <cmdsynopsis>
+      <command>fcrondyn</command>
+      <arg>-c <replaceable>fichier</replaceable></arg>
+      <arg>-i</arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>fcrondyn</command>
+      <arg>-c <replaceable>fichier</replaceable></arg>
+      <arg choice="plain">-x <replaceable>commande</replaceable></arg>
+    </cmdsynopsis>
+    <cmdsynopsis>
+      <command>fcrondyn</command>
+      <arg>-h</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>&Fcrondyn; est un outil utilisateur conçu pour interagir avec un
+      démon fcron en cours d'exécution. Il peut, par exemple, afficher les
+      tâches utilisateur chargées par &fcron;, lancer l'une d'elles, modifier
+      la «&nbsp;gentillesse&nbsp;» (Ndt&nbsp;: nice) d'une tâche en cours
+      d'exécution, envoyer un signal à une tâche, etc.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Options</title>
+    <variablelist>
+      <varlistentry>
+	<term><option>-i</option></term>
+	<listitem>
+	  <para>Lancer &fcrondyn; en mode interactif. &fcrondyn; est également
+            lancée en mode interactif lorsqu'aucune option n'est fournie.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><option>-x </option><replaceable>commande</replaceable></term>
+	<listitem>
+	  <para>Lancer la <replaceable>commande</replaceable> et revenir
+            immédiatemment. <link linkend="fcrondyn.1.cmd.descp">Voir plus
+            loin</link> pour la syntaxe et la liste des commandes.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><option>-c</option> <replaceable>fichier</replaceable></term>
+	<listitem>
+	  <para>Forcer &fcrondyn; à utiliser le fichier de configuration
+          <replaceable>fichier</replaceable> à la place du fichier de
+          configuration par défaut
+          <filename>&etc;/&fcron.conf.location;</filename>. Pour interagir
+          avec un processus &fcron; existant, &fcrondyn; doit utiliser le
+          même fichier de configuration que le processus. De cette manière,
+          plusieurs processus &fcron; peuvent être exécutés simultanément
+          sur un même système.
+        </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><option>-d</option></term>
+	<listitem>
+          <para>Démarrer en mode débogage. Dans ce mode, beaucoup de messages
+            d'informations seront produits en sortie afin de vérifier que
+            tout se passe bien.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><option>-h</option></term>
+	<listitem>
+          <para>Afficher une brève description des options.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><option>-V</option></term>
+	<listitem>
+          <para>Afficher un message d'information à propos de &fcrondyn;
+            qui inclut sa version et la licence sous laquelle il est
+            distribué.
+          </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id="fcrondyn.1.cmd.descp">
+    <title>Description de la commande</title>
+    <para>La syntaxe de la commande &fcrondyn; est la suivante&nbsp;:</para>
+    <blockquote>
+      <para><command>commande</command> <replaceable>arg1</replaceable>
+        <replaceable>arg2</replaceable> [...]
+      </para>
+    </blockquote>
+    <para>Un argument de la commande &fcrondyn; est d'un des types
+      suivants&nbsp;:
+    </para>
+    <variablelist>
+      <title>Types d'argument des commandes &fcrondyn;</title>
+      <varlistentry>
+	<term><emphasis><type>utilisateur</type></emphasis></term>
+	<listitem>
+	  <para>Un nom valide d'utilisateur.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><emphasis><type>jobid</type></emphasis></term>
+	<listitem>
+	  <para>Un identifiant de tâche fourni par une des commandes
+            <command>ls*</command> de &fcrondyn; (c.-à-d. un entier).</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><emphasis><type>sig</type></emphasis></term>
+	<listitem>
+          <para>Un numéro de signal, ou son nom. Par exemple,
+            «&nbsp;term&nbsp;» ou «&nbsp;15 &nbsp;».
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><emphasis><type>gentillesse</type></emphasis></term>
+	<listitem>
+	  <para>Une valeur de priorité de tâche. Une
+            <emphasis><type>gentillesse</type></emphasis> est un entier compris
+            entre -20 (plus forte priorité) et 19 (plus faible priorité).
+            Seul le super-utilisateur peut utiliser une valeur négative pour
+            cette option.
+          </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+    <para>Enfin et surtout, les commandes suivantes sont reconnues (les
+      arguments optionnels sont entre [])&nbsp;:</para>
+    <variablelist>
+      <title>Commandes &fcrondyn; valides</title>
+      <varlistentry>
+	<term><command>help</command></term>
+	<term><command>h</command></term>
+	<listitem>
+	  <para>Afficher un message d'aide sur les commandes fcrondyn.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>quit</command></term>
+	<term><command>q</command></term>
+	<listitem>
+	  <para>En mode interactif, quitter fcrondyn.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>ls</command>
+[<emphasis><type>utilisateur</type></emphasis>]</term>
+	<listitem>
+	  <para>Afficher toutes les tâches de l'utilisateur. Lorsque
+            <command>ls</command> est lancée par le super-utilisateur, tous
+            les utilisateurs sont affichés à moins qu'un utilisateur n'ait été
+            fourni en argument. <link
+            linkend="fcrondyn.1.ls.fields">Voir plus loin</link> pour plus
+            d'explications à propos des champs utilisés par les commandes
+            <command>ls*</command>.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>ls_lavgq</command>
+[<emphasis><type>utilisateur</type></emphasis>]</term>
+	<listitem>
+	  <para>Identique à <command>ls</command>, mais afficher seulement
+            les tâches qui sont dans la file d'attente«&nbsp;charge
+            système&nbsp;» (Ndt&nbsp;: load-average queue) (c.-à-d. celles qui
+            attendent une charge système plus faible pour pouvoir être
+            lancées).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>ls_serialq</command>
+[<emphasis><type>utilisateur</type></emphasis>]</term>
+	<listitem>
+          <para>Identique à <command>ls</command>, mais afficher seulement
+            les tâches qui sont dans la file d'attente sérialisée (Ndt&nbsp;:
+            serial queue) (c.-à-d. celles qui attendent que d'autres tâches
+            soient achevées).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>ls_exeq</command>
+[<emphasis><type>utilisateur</type></emphasis>]</term>
+	<listitem>
+          <para>Identique à <command>ls</command>, mais afficher seulement
+            les tâches en cours d'exécution.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>detail</command>
+          <emphasis><type>jobid</type></emphasis></term>
+	<listitem>
+	  <para>Afficher les détails d'une tâche.
+            <emphasis><type>jobid</type></emphasis> est la valeur fournie par
+            <command>ls</command>.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>runnow</command>
+          <emphasis><type>jobid</type></emphasis></term>
+	<listitem>
+	  <para>Plutôt que d'attendre la date et heure de la prochaine
+            exécution planifiée, lancer la tâche maintenant. La date et heure
+            de la prochaine exécution sont modifiées comme si la tâche avait
+            été lancée par l'ordonnanceur.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>run</command>
+<emphasis><type>jobid</type></emphasis></term>
+	<listitem>
+	  <para>Lancer la tâche maintenant. Ses date et heure de prochaine
+            exécution ne sont pas modifiées.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>kill</command>
+          <emphasis><type>sig</type></emphasis>
+          <emphasis><type>jobid</type></emphasis></term>
+	<listitem>
+	  <para>Envoyer un signal à une tâche en cours d'exécution.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><command>renice</command>
+<emphasis><type>gentillesse</type></emphasis>
+<emphasis><type>jobid</type></emphasis></term>
+	<listitem>
+          <para>Modifier la priorité d'une tâche en cours d'exécution.</para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+    <variablelist id="fcrondyn.1.ls.fields">
+      <title>Champs utilisés par les commandes <command>detail</command>
+        et <command>ls*</command></title>
+      <varlistentry>
+	<term>ID</term>
+	<listitem>
+	  <para>Numéro d'identification unique de la tâche.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>USER</term>
+	<listitem>
+	  <para>Utilisateur auquel appartient la tâche.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>PID</term>
+	<listitem>
+          <para>Le pid de la tâche en cours d'exécution.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>INDEX</term>
+	<listitem>
+	  <para>Index de la tâche dans la file d'attente séquentielle (c.-à-d.
+            qu'elle sera lancée lorsque toutes les tâches dont l'index a une
+            valeur plus petite auront été lancées).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>R&amp;Q</term>
+	<listitem>
+	  <para>Indique le nombre d'instances de la tâche en cours ou en
+            attente d'exécution dans la file d'attente «&nbsp;série&nbsp;»
+            (Ndt&nbsp;:serial queue) ou dans la file d'attente «&nbsp;charge
+            système&nbsp;» (Ndt&nbsp;:lavg queue).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>OPTIONS</term>
+	<listitem>
+          <para>Indique les principales options positionnées de la tâche.
+            L pour les tâches ne s'exécutant qu'en dessous d'une charge système
+            donnée (Ndt&nbsp;: L pour Load average), LO si une seule instance
+            de la tâche peut se trouver dans dans la file d'attente
+            «&nbsp;charge système&nbsp;» (Ndt&nbsp;: LO pour Lavg Once), S pour
+            les tâches s'exécutant séquentiellement (Ndt&nbsp;:S pour Serial),
+            SO pour les tâches qui ne seront exécutées séquentiellement que
+            pour leur prochaine exécution (Ndt&nbsp;: SO pour Serial Once), et
+            ES pour les tâches dont plusieurs instances peuvent s'exécuter
+            simultanément (Ndt&nbsp;: ES pour «&nbsp;allow the Execution of
+            Several instances&nbsp;»).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>LAVG</term>
+	<listitem>
+          <para>Trois valeurs correspondant à la charge système moyennée sur
+            1, 5 et 15 minutes (dans cet ordre) en dessous de laquelle la
+            tâche sera exécutée, sinon elle sera placée en attente d'une
+            charge système adéquate (voir l'option &optlavg;).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>UNTIL</term>
+	<listitem>
+	  <para>Champ correspondant à l'option &optuntil;.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>STRICT</term>
+	<listitem>
+          <para>Champ correspondant à l'option &optstrict;. Y pour yes,
+            N pour non.</para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>SCHEDULE</term>
+	<listitem>
+          <para>Indique la date et l'heure prévues de la prochaine exécution
+           de la tâche. Veuillez noter que l'heure indiquée est celle du
+           système sur lequel tourne &fcron;, et non celle du fuseau horaire
+           que l'utilisateur peut éventuellement définir avec l'option
+           &opttimezone; de &fcrontab;).
+         </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>CMD</term>
+	<listitem>
+	  <para>La commande à exécuter.</para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>Valeurs renvoyÉes</title>
+    <para>&Fcrondyn; renvoie &exitok; lorsqu'il quitte normalement, et
+      &exiterr; en cas d'erreur.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>ConformitÉ</title>
+    <para>Devrait être conforme aux spécifications POSIX.</para>
+  </refsect1>
+
+  <refsect1 id="fcrondyn.1.files">
+    <title>Fichiers</title>
+    <variablelist>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.conf.location;</filename></term>
+	<listitem>
+          <para>Fichier de configuration de &fcron;, &fcrontab et &fcrondyn;&nbsp;:
+            contient les chemins (répertoire spool, fichier pid) et les
+            programmes par défaut à utiliser (éditeur, shell, etc.). Voir
+            <link linkend="fcron.conf.5">&fcron.conf(5)</link> pour plus de
+            détails.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.allow;</filename></term>
+	<listitem>
+          <para>Utilisateurs autorisés à utiliser &fcrontab; et &fcrondyn;
+            (un seul nom par ligne, le nom spécial «&nbsp;all&nbsp;»
+            signifiant tout le monde).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.deny;</filename></term>
+	<listitem>
+          <para>Utilisateurs qui ne sont pas autorisés à utiliser &fcrontab;
+            et &fcrondyn; (même format que le fichier précédent).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/pam.d/fcron</filename> (ou
+          <filename>&etc;/pam.conf</filename>)
+        </term>
+	<listitem>
+          <para>Fichier de configuration <productname>PAM</productname> pour
+            &fcron;. Voir &pam;(8) pour plus de détails.
+          </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  &manpage-foot;
+
+  <refsect1>
+    <title>Traduction</title>
+    <para>Ce document est une traduction réalisée par Alain Portal
+      &lt;aportal AT univ-montp2 DOT fr&gt; le 6 février 2006
+    </para>
+    <para>L'équipe de traduction a fait le maximum pour réaliser une adaptation
+      française de qualité. La version anglaise la plus à jour de ce document
+      est toujours consultable via la commande&nbsp;: «&nbsp;<emphasis>LANG=en
+      man 1 fcrondyn</emphasis>&nbsp;».
+      N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas,
+      toute erreur dans cette page de manuel.
+    </para>
+  </refsect1>
+
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "")
+End:
+-->
+

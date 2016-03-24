@@ -1,0 +1,24 @@
+#!/bin/sh
+# Start fcron at boot time under FreeBSD
+
+SBIN=@@DESTSBIN@
+REBOOT_LOCK=@@REBOOT_LOCK@
+
+case "$1" in
+  start)
+    $SBIN/fcron -b && echo -n " fcron"
+    ;;
+  stop)
+    killall -TERM fcron
+    if test \( "$RUNLEVEL" = "0" -o "$RUNLEVEL" = "6" \) \
+        -a -f "$REBOOT_LOCK" ; then
+      # Make sure the lock file is deleted on reboot/shutdown
+      # in case the OS doesn't do it itself
+      rm -f "$REBOOT_LOCK"
+    fi
+    ;;
+  *)
+    echo "Usage: fcron start|stop"
+    exit 1
+    ;;
+esac

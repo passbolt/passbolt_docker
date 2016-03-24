@@ -1,0 +1,8 @@
+* PAMify fcron (ongoing)
+* Get rid of anacron hack.
+* Security audit entire package.
+* Add the notion of system-wide fcrontab, a la 
+  /etc/crontab and get rid of /var/spool/fcron/
+  root.orig in the package.
+* Deal well with uid 0 != root (name not root)
+* add logcheck.ignore files

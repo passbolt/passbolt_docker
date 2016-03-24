@@ -1,0 +1,495 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Documentation de fcron</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="NEXT"
+TITLE="Fcron: how and why?"
+HREF="how-and-why.html"></HEAD
+><BODY
+CLASS="BOOK"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="BOOK"
+><A
+NAME="FCRON-DOC"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="BOOKINFO"
+>Documentation de fcron</A
+></H1
+><H3
+CLASS="AUTHOR"
+><A
+NAME="AEN7"
+></A
+>Thibault Godouet</H3
+><P
+CLASS="COPYRIGHT"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 Thibault Godouet</P
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><P
+></P
+><A
+NAME="AEN20"
+></A
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> est distribué sous licence GPL license (merci de lire
+la licence dans l'<A
+HREF="gpl.html"
+>Appendix A</A
+>).</P
+><P
+>Site web du projet: <A
+HREF="http://fcron.free.fr"
+TARGET="_top"
+>http://fcron.free.fr</A
+></P
+><P
+>Auteur: Thibault GODOUET <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+><DIV
+CLASS="ABSTRACT"
+><P
+></P
+><A
+NAME="AEN28"
+></A
+><P
+>Vous pouvez obtenir la dernière version HTML de ce document à :
+<A
+HREF="http://fcron.free.fr/files/fcron-doc-fr-html.tar.gz"
+TARGET="_top"
+>http://fcron.free.fr/files/fcron-doc-html.tar.gz</A
+> . Les sources SGML DocBook sont incluses dans les paquets sources de fcron.</P
+><P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>Ce document est la traduction française de la documentation anglaise. Pour l'instant, seules les pages de manuel sont traduites. Il est aussi possible que les traductions soient moins à jour que la documentation anglaise : en cas de doute, reportez-vous à la documentation anglaise qui fait référence.</P
+></TD
+></TR
+></TABLE
+></DIV
+></P
+><P
+></P
+></DIV
+></DIV
+><SPAN
+CLASS="RELEASEINFO"
+>Fcron 3.2.0 <BR></SPAN
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="how-and-why.html"
+>Fcron: how and why?</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="readme.html"
+>About fcron</A
+></DT
+><DD
+><DL
+><DT
+>1.1.1. <A
+HREF="readme.html#AEN40"
+>What is fcron?</A
+></DT
+><DT
+>1.1.2. <A
+HREF="readme.html#AEN85"
+>License</A
+></DT
+><DT
+>1.1.3. <A
+HREF="readme.html#AEN90"
+>Requirements</A
+></DT
+><DT
+>1.1.4. <A
+HREF="readme.html#AEN151"
+>Compilation and installation</A
+></DT
+><DT
+>1.1.5. <A
+HREF="readme.html#AEN155"
+>Configuration</A
+></DT
+><DT
+>1.1.6. <A
+HREF="readme.html#AEN164"
+>Bug reports, corrections, propositions...</A
+></DT
+></DL
+></DD
+><DT
+>1.2. <A
+HREF="install.html"
+>How to install fcron</A
+></DT
+><DT
+>1.3. <A
+HREF="changes.html"
+>Changes</A
+></DT
+><DT
+>1.4. <A
+HREF="relnotes.html"
+>Release notes: <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> 3.2.0</A
+></DT
+><DT
+>1.5. <A
+HREF="todo.html"
+>Todo</A
+></DT
+><DD
+><DL
+><DT
+>1.5.1. <A
+HREF="todo.html#AEN765"
+>High priority</A
+></DT
+><DT
+>1.5.2. <A
+HREF="todo.html#AEN774"
+>Low priority</A
+></DT
+><DT
+>1.5.3. <A
+HREF="todo.html#AEN796"
+>Ideas</A
+></DT
+></DL
+></DD
+><DT
+>1.6. <A
+HREF="thanks.html"
+>Thanks</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="using-fcron.html"
+>Using fcron ...</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="manpages.html"
+>Manual pages of fcron</A
+></DT
+><DD
+><DL
+><DT
+><A
+HREF="fcron.8.html"
+>fcron</A
+>&nbsp;--&nbsp;démon pour exécuter des tâches planifiées</DT
+><DT
+><A
+HREF="fcron.conf.5.html"
+>fcron.conf</A
+>&nbsp;--&nbsp;Fichier de configuration pour fcron et fcrontab</DT
+><DT
+><A
+HREF="fcrontab.1.html"
+>fcrontab</A
+>&nbsp;--&nbsp;Manipuler les fichiers fcrontab utilisateur</DT
+><DT
+><A
+HREF="fcrontab.5.html"
+>fcrontab</A
+>&nbsp;--&nbsp;Tables de configuration de fcron</DT
+><DT
+><A
+HREF="fcrondyn.1.html"
+>fcrondyn</A
+>&nbsp;--&nbsp;Dialoguer dynamiquement avec un démon fcron en cours d'exécution.</DT
+></DL
+></DD
+><DT
+>2.2. <A
+HREF="faq.html"
+>Frequently Asked Questions</A
+></DT
+></DL
+></DD
+><DT
+>A. <A
+HREF="gpl.html"
+>GNU GENERAL PUBLIC LICENSE</A
+></DT
+><DD
+><DL
+><DT
+>0. <A
+HREF="gpl.html#GPL-PREAMBLE"
+>PREAMBLE</A
+></DT
+><DT
+>1. <A
+HREF="gpl.html#GPL-TERMS"
+>TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND
+MODIFICATION</A
+></DT
+><DT
+><A
+HREF="gpl.html#GPL-HOWTO"
+>How to use this License for your documents</A
+></DT
+></DL
+></DD
+><DT
+>B. <A
+HREF="fdl.html"
+>GNU Free Documentation License</A
+></DT
+><DD
+><DL
+><DT
+>0. <A
+HREF="fdl.html#FDL-PREAMBLE"
+>PREAMBLE</A
+></DT
+><DT
+>1. <A
+HREF="fdl.html#FDL-APPLICABILITY"
+>APPLICABILITY AND DEFINITIONS</A
+></DT
+><DT
+>2. <A
+HREF="fdl.html#FDL-VERBATIM"
+>VERBATIM COPYING</A
+></DT
+><DT
+>3. <A
+HREF="fdl.html#FDL-COPYING"
+>COPYING IN QUANTITY</A
+></DT
+><DT
+>4. <A
+HREF="fdl.html#FDL-MODIFICATIONS"
+>MODIFICATIONS</A
+></DT
+><DT
+>5. <A
+HREF="fdl.html#FDL-COMBINING"
+>COMBINING DOCUMENTS</A
+></DT
+><DT
+>6. <A
+HREF="fdl.html#FDL-COLLECTIONS"
+>COLLECTIONS OF DOCUMENTS</A
+></DT
+><DT
+>7. <A
+HREF="fdl.html#FDL-AGGREGATION"
+>AGGREGATION WITH INDEPENDENT WORKS</A
+></DT
+><DT
+>8. <A
+HREF="fdl.html#FDL-TRANSLATION"
+>TRANSLATION</A
+></DT
+><DT
+>9. <A
+HREF="fdl.html#FDL-TERMINATION"
+>TERMINATION</A
+></DT
+><DT
+>10. <A
+HREF="fdl.html#FDL-FUTURE"
+>FUTURE REVISIONS OF THIS LICENSE</A
+></DT
+><DT
+><A
+HREF="fdl.html#FDL-HOWTO"
+>How to use this License for your documents</A
+></DT
+></DL
+></DD
+></DL
+></DIV
+><DIV
+CLASS="LOT"
+><DL
+CLASS="LOT"
+><DT
+><B
+>List of Tables</B
+></DT
+><DT
+>2-1. <A
+HREF="fcrontab.5.html#AEN1639"
+>Multiplicateurs de temps valides</A
+></DT
+><DT
+>2-2. <A
+HREF="fcrontab.5.html#AEN1705"
+>Champs date et heure</A
+></DT
+><DT
+>2-3. <A
+HREF="fcrontab.5.html#AEN1800"
+>Champs de temps nÉcessaires À chaque mot-clef</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="LOT"
+><DL
+CLASS="LOT"
+><DT
+><B
+>List of Examples</B
+></DT
+><DT
+>2-1. <A
+HREF="fcrontab.5.html#AEN1690"
+>Quelques exemples de lignes basÉes sur le temps ÉcoulÉ depuis
+le dÉmarrage du systÈme</A
+></DT
+><DT
+>2-2. <A
+HREF="fcrontab.5.html#AEN1773"
+>Quelques exemples d'entrÉes basÉes sur une date et une heure</A
+></DT
+><DT
+>2-3. <A
+HREF="fcrontab.5.html#AEN2370"
+>Exemple de dÉclaration d'option :</A
+></DT
+><DT
+>2-4. <A
+HREF="fcrontab.5.html#AEN2376"
+>Exemple d'un fichier fcrontab utilisateur</A
+></DT
+><DT
+>2-5. <A
+HREF="faq.html#AEN2852"
+>Using fcron in a script: running a job once
+every day, week, etc, at dialup connection</A
+></DT
+><DT
+>2-6. <A
+HREF="faq.html#AEN2860"
+>Using fcron in a script: running a job until the
+end of the connection</A
+></DT
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="how-and-why.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Fcron: how and why?</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

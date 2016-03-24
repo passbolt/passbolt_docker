@@ -1,0 +1,712 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>fcron.conf</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Documentation de fcron"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Manual pages of fcron"
+HREF="manpages.html"><LINK
+REL="PREVIOUS"
+TITLE="fcron"
+HREF="fcron.8.html"><LINK
+REL="NEXT"
+TITLE="fcrontab"
+HREF="fcrontab.1.html"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Documentation de fcron</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="fcron.8.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="fcrontab.1.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FCRON.CONF.5"
+></A
+>fcron.conf</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1186"
+></A
+><H2
+>Name</H2
+>fcron.conf&nbsp;--&nbsp;Fichier de configuration pour fcron et fcrontab</DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1189"
+></A
+><H2
+>Description</H2
+><BLOCKQUOTE
+CLASS="ABSTRACT"
+><DIV
+CLASS="ABSTRACT"
+><P
+></P
+><A
+NAME="AEN1191"
+></A
+><P
+>Cette page décrit la syntaxe utilisée dans le fichier de
+        configuration de <A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+></A
+>(1),
+        <A
+HREF="fcrondyn.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+></A
+>(1) et
+        <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+></A
+>(8).
+      </P
+><P
+></P
+></DIV
+></BLOCKQUOTE
+><P
+>Les lignes blanches, les lignes débutant par le symbole dièse
+      « # ») (qui sont considérées comme étant des commentaires),
+      les espaces ou les tabulations placées en début de ligne sont ignorées.
+      Chaque ligne d'un fichier de configuration <SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+> est de la forme
+      <A
+NAME="AEN1201"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+>nom = valeur</P
+></BLOCKQUOTE
+> où les espaces autour
+      du signe d'égalité « = » sont ignorés et optionnels.
+      Les espaces en fin de ligne sont également ignorées.
+    </P
+><P
+>Les noms suivants sont reconnus (leur valeur par défaut est
+      entre parenthèses) :
+    </P
+><P
+>      <P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Variables valides dans un fichier fcron.conf</B
+></P
+><DL
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>fcrontabs</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>répertoire</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/usr/local/var/spool/fcron</TT
+>)</B
+></DT
+><DD
+><P
+>Répertoire spool de <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>pidfile</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>chemin-fichier</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/usr/local/var/run/fcron.pid</TT
+>)</B
+></DT
+><DD
+><P
+>Emplacement du fichier pid de <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> (nécessaire au bon
+              fonctionnement de <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>).
+            </P
+></DD
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>fifofile</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>chemin-fichier</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/usr/local/var/run/fcron.fifo</TT
+>)</B
+></DT
+><DD
+><P
+>Emplacement du fichier fifo de <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> (nécessaire à
+              <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> pour communiquer avec fcron).
+            </P
+></DD
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>fcronallow</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>chemin-fichier</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.allow</TT
+>)</B
+></DT
+><DD
+><P
+>Emplacement du fichier fcron.allow.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>fcrondeny</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>chemin-fichier</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.deny</TT
+>)</B
+></DT
+><DD
+><P
+>Emplacement du fichier fcron.deny.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>shell</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>chemin-fichier</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/bin/sh</TT
+>)</B
+></DT
+><DD
+><P
+>Emplacement du shell par défaut appelé par <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> pour le
+              lancement d'une tâche.
+            </P
+></DD
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>sendmail</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>chemin-fichier</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/usr/sbin/sendmail</TT
+>)</B
+></DT
+><DD
+><P
+>Emplacement du programme d'envoi des courriels appelé par
+              <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> pour envoyer les sorties produites par la tâche.
+            </P
+></DD
+><DT
+><B
+><CODE
+CLASS="VARNAME"
+>editor</CODE
+>=<TT
+CLASS="REPLACEABLE"
+><I
+>chemin-fichier</I
+></TT
+>
+            (<TT
+CLASS="FILENAME"
+>/usr/bin/vi</TT
+>)</B
+></DT
+><DD
+><P
+>Emplacement de l'éditeur de texte par défaut lors de
+              l'invocation de la commande « fcrontab -e ».
+            </P
+></DD
+></DL
+></DIV
+>Tous les chemins fichiers sont complets et absolus
+      (c-à-d débutant par un « / »).
+    </P
+><P
+>Pour exécuter simultanément plusieurs instances de <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> sur la
+      même machine, vous devez utiliser un fichier de configuration différent
+      pour chaque instance. Chaque instance doit avoir un
+      <CODE
+CLASS="VARNAME"
+>fcrontabs</CODE
+>, <CODE
+CLASS="VARNAME"
+>pidfile</CODE
+> et
+      <CODE
+CLASS="VARNAME"
+>fifofile</CODE
+> différent. Ensuite, utiliser l'option
+      <CODE
+CLASS="PARAMETER"
+>-c</CODE
+> de la ligne de commande de
+      <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+></A
+>(8) pour indiquer à quel fichier de
+      configuration (ou à quelle instance) se référer.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1278"
+></A
+><H2
+>Fichiers</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+></B
+></DT
+><DD
+><P
+>Fichier de configuration de <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> et <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> :
+            contient les chemins (répertoire spool, fichier pid) et les
+            programmes par défaut à utiliser (éditeur, shell, etc.). Voir
+            <A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+></A
+>(5) pour plus
+            de détails.
+	  </P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.allow</TT
+></B
+></DT
+><DD
+><P
+>Utilisateurs autorisés à utiliser <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> et <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>
+            (un seul nom par ligne, le nom spécial « all » signifiant
+            tout le monde).
+          </P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.deny</TT
+></B
+></DT
+><DD
+><P
+>Utilisateurs qui ne sont pas autorisés à utiliser
+            <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> et <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (même format que le fichier précédent).
+          </P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.d/fcron</TT
+> (ou
+          <TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.conf</TT
+>)</B
+></DT
+><DD
+><P
+>Fichier de configuration <SPAN
+CLASS="PRODUCTNAME"
+>PAM</SPAN
+> pour
+            <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>. Voir <SPAN
+CLASS="APPLICATION"
+>pam</SPAN
+>(8) pour plus de détails.
+          </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1314"
+></A
+><H2
+>Voir aussi</H2
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrondyn.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8).</A
+></TD
+></TR
+><TR
+><TD
+>Si vous êtes en train d'apprendre à utiliser fcron, je vous
+suggère plutôt de lire la version HTML de la documentation (si ce n'est pas
+déjà ce que vous faites en ce moment ! :) ) : le contenu est le même, mais
+il est plus aisé de naviguer grâce aux hyperliens.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1333"
+></A
+><H2
+>Auteur</H2
+><P
+>Thibault Godouet <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1337"
+></A
+><H2
+>Traduction</H2
+><P
+>Ce document est une traduction réalisée par Alain Portal
+      &#60;aportal AT univ-montp2 DOT fr&#62; le 6 février 2006.
+    </P
+><P
+>L'équipe de traduction a fait le maximum pour réaliser une adaptation
+      française de qualité. La version anglaise la plus à jour de ce document
+      est toujours consultable via la commande : « <EM
+>LANG=en
+      man 5 fcron.conf</EM
+> ».
+      N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas,
+      toute erreur dans cette page de manuel.
+    </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fcron.8.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="fcrontab.1.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>fcron</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="manpages.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>fcrontab</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

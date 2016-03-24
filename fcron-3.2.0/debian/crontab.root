@@ -1,0 +1,4 @@
+!bootrun(true),nice(15),serial(true)
+%daily   * 3-6   run-parts --report /etc/cron.daily
+%weekly  * 3-6   run-parts --report /etc/cron.weekly
+%monthly * 3-6 * run-parts --report /etc/cron.monthly

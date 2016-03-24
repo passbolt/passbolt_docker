@@ -1,0 +1,1195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>fcrondyn</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Documentation de fcron"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Manual pages of fcron"
+HREF="manpages.html"><LINK
+REL="PREVIOUS"
+TITLE="fcrontab"
+HREF="fcrontab.5.html"><LINK
+REL="NEXT"
+TITLE="Frequently Asked Questions"
+HREF="faq.html"></HEAD
+><BODY
+CLASS="REFENTRY"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Documentation de fcron</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="fcrontab.5.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="faq.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><H1
+><A
+NAME="FCRONDYN.1"
+></A
+>fcrondyn</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN2449"
+></A
+><H2
+>Name</H2
+>fcrondyn&nbsp;--&nbsp;Dialoguer dynamiquement avec un démon fcron en cours d'exécution.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="FCRONDYN.1.SYNOPSIS"
+></A
+><H2
+>Synopsis</H2
+><P
+><B
+CLASS="COMMAND"
+>fcrondyn</B
+>  [-c <TT
+CLASS="REPLACEABLE"
+><I
+>fichier</I
+></TT
+>] [-i]</P
+><P
+><B
+CLASS="COMMAND"
+>fcrondyn</B
+>  [-c <TT
+CLASS="REPLACEABLE"
+><I
+>fichier</I
+></TT
+>]  -x <TT
+CLASS="REPLACEABLE"
+><I
+>commande</I
+></TT
+> </P
+><P
+><B
+CLASS="COMMAND"
+>fcrondyn</B
+>  [-h]</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2467"
+></A
+><H2
+>Description</H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcrondyn</SPAN
+> est un outil utilisateur conçu pour interagir avec un
+      démon fcron en cours d'exécution. Il peut, par exemple, afficher les
+      tâches utilisateur chargées par <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, lancer l'une d'elles, modifier
+      la « gentillesse » (Ndt : nice) d'une tâche en cours
+      d'exécution, envoyer un signal à une tâche, etc.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2472"
+></A
+><H2
+>Options</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-i</CODE
+></B
+></DT
+><DD
+><P
+>Lancer <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> en mode interactif. <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> est également
+            lancée en mode interactif lorsqu'aucune option n'est fournie.
+          </P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-x </CODE
+><TT
+CLASS="REPLACEABLE"
+><I
+>commande</I
+></TT
+></B
+></DT
+><DD
+><P
+>Lancer la <TT
+CLASS="REPLACEABLE"
+><I
+>commande</I
+></TT
+> et revenir
+            immédiatemment. <A
+HREF="fcrondyn.1.html#FCRONDYN.1.CMD.DESCP"
+>Voir plus
+            loin</A
+> pour la syntaxe et la liste des commandes.
+          </P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-c</CODE
+> <TT
+CLASS="REPLACEABLE"
+><I
+>fichier</I
+></TT
+></B
+></DT
+><DD
+><P
+>Forcer <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> à utiliser le fichier de configuration
+          <TT
+CLASS="REPLACEABLE"
+><I
+>fichier</I
+></TT
+> à la place du fichier de
+          configuration par défaut
+          <TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+>. Pour interagir
+          avec un processus <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> existant, <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> doit utiliser le
+          même fichier de configuration que le processus. De cette manière,
+          plusieurs processus <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> peuvent être exécutés simultanément
+          sur un même système.
+        </P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-d</CODE
+></B
+></DT
+><DD
+><P
+>Démarrer en mode débogage. Dans ce mode, beaucoup de messages
+            d'informations seront produits en sortie afin de vérifier que
+            tout se passe bien.
+          </P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-h</CODE
+></B
+></DT
+><DD
+><P
+>Afficher une brève description des options.</P
+></DD
+><DT
+><B
+><CODE
+CLASS="OPTION"
+>-V</CODE
+></B
+></DT
+><DD
+><P
+>Afficher un message d'information à propos de <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>
+            qui inclut sa version et la licence sous laquelle il est
+            distribué.
+          </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="FCRONDYN.1.CMD.DESCP"
+></A
+><H2
+>Description de la commande</H2
+><P
+>La syntaxe de la commande <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> est la suivante :</P
+><A
+NAME="AEN2522"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+><B
+CLASS="COMMAND"
+>commande</B
+> <TT
+CLASS="REPLACEABLE"
+><I
+>arg1</I
+></TT
+>
+        <TT
+CLASS="REPLACEABLE"
+><I
+>arg2</I
+></TT
+> [...]
+      </P
+></BLOCKQUOTE
+><P
+>Un argument de la commande <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> est d'un des types
+      suivants :
+    </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Types d'argument des commandes <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+></B
+></P
+><DL
+><DT
+><B
+><EM
+><SPAN
+CLASS="TYPE"
+>utilisateur</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Un nom valide d'utilisateur.</P
+></DD
+><DT
+><B
+><EM
+><SPAN
+CLASS="TYPE"
+>jobid</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Un identifiant de tâche fourni par une des commandes
+            <B
+CLASS="COMMAND"
+>ls*</B
+> de <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (c.-à-d. un entier).</P
+></DD
+><DT
+><B
+><EM
+><SPAN
+CLASS="TYPE"
+>sig</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Un numéro de signal, ou son nom. Par exemple,
+            « term » ou « 15  ».
+          </P
+></DD
+><DT
+><B
+><EM
+><SPAN
+CLASS="TYPE"
+>gentillesse</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Une valeur de priorité de tâche. Une
+            <EM
+><SPAN
+CLASS="TYPE"
+>gentillesse</SPAN
+></EM
+> est un entier compris
+            entre -20 (plus forte priorité) et 19 (plus faible priorité).
+            Seul le super-utilisateur peut utiliser une valeur négative pour
+            cette option.
+          </P
+></DD
+></DL
+></DIV
+><P
+>Enfin et surtout, les commandes suivantes sont reconnues (les
+      arguments optionnels sont entre []) :</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Commandes <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> valides</B
+></P
+><DL
+><DT
+><B
+><B
+CLASS="COMMAND"
+>help</B
+></B
+>, <B
+><B
+CLASS="COMMAND"
+>h</B
+></B
+></DT
+><DD
+><P
+>Afficher un message d'aide sur les commandes fcrondyn.</P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>quit</B
+></B
+>, <B
+><B
+CLASS="COMMAND"
+>q</B
+></B
+></DT
+><DD
+><P
+>En mode interactif, quitter fcrondyn.</P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>ls</B
+>
+[<EM
+><SPAN
+CLASS="TYPE"
+>utilisateur</SPAN
+></EM
+>]</B
+></DT
+><DD
+><P
+>Afficher toutes les tâches de l'utilisateur. Lorsque
+            <B
+CLASS="COMMAND"
+>ls</B
+> est lancée par le super-utilisateur, tous
+            les utilisateurs sont affichés à moins qu'un utilisateur n'ait été
+            fourni en argument. <A
+HREF="fcrondyn.1.html#FCRONDYN.1.LS.FIELDS"
+>Voir plus loin</A
+> pour plus
+            d'explications à propos des champs utilisés par les commandes
+            <B
+CLASS="COMMAND"
+>ls*</B
+>.
+          </P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>ls_lavgq</B
+>
+[<EM
+><SPAN
+CLASS="TYPE"
+>utilisateur</SPAN
+></EM
+>]</B
+></DT
+><DD
+><P
+>Identique à <B
+CLASS="COMMAND"
+>ls</B
+>, mais afficher seulement
+            les tâches qui sont dans la file d'attente« charge
+            système » (Ndt : load-average queue) (c.-à-d. celles qui
+            attendent une charge système plus faible pour pouvoir être
+            lancées).
+          </P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>ls_serialq</B
+>
+[<EM
+><SPAN
+CLASS="TYPE"
+>utilisateur</SPAN
+></EM
+>]</B
+></DT
+><DD
+><P
+>Identique à <B
+CLASS="COMMAND"
+>ls</B
+>, mais afficher seulement
+            les tâches qui sont dans la file d'attente sérialisée (Ndt :
+            serial queue) (c.-à-d. celles qui attendent que d'autres tâches
+            soient achevées).
+          </P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>ls_exeq</B
+>
+[<EM
+><SPAN
+CLASS="TYPE"
+>utilisateur</SPAN
+></EM
+>]</B
+></DT
+><DD
+><P
+>Identique à <B
+CLASS="COMMAND"
+>ls</B
+>, mais afficher seulement
+            les tâches en cours d'exécution.
+          </P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>detail</B
+>
+          <EM
+><SPAN
+CLASS="TYPE"
+>jobid</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Afficher les détails d'une tâche.
+            <EM
+><SPAN
+CLASS="TYPE"
+>jobid</SPAN
+></EM
+> est la valeur fournie par
+            <B
+CLASS="COMMAND"
+>ls</B
+>.
+          </P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>runnow</B
+>
+          <EM
+><SPAN
+CLASS="TYPE"
+>jobid</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Plutôt que d'attendre la date et heure de la prochaine
+            exécution planifiée, lancer la tâche maintenant. La date et heure
+            de la prochaine exécution sont modifiées comme si la tâche avait
+            été lancée par l'ordonnanceur.
+          </P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>run</B
+>
+<EM
+><SPAN
+CLASS="TYPE"
+>jobid</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Lancer la tâche maintenant. Ses date et heure de prochaine
+            exécution ne sont pas modifiées.
+          </P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>kill</B
+>
+          <EM
+><SPAN
+CLASS="TYPE"
+>sig</SPAN
+></EM
+>
+          <EM
+><SPAN
+CLASS="TYPE"
+>jobid</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Envoyer un signal à une tâche en cours d'exécution.</P
+></DD
+><DT
+><B
+><B
+CLASS="COMMAND"
+>renice</B
+>
+<EM
+><SPAN
+CLASS="TYPE"
+>gentillesse</SPAN
+></EM
+>
+<EM
+><SPAN
+CLASS="TYPE"
+>jobid</SPAN
+></EM
+></B
+></DT
+><DD
+><P
+>Modifier la priorité d'une tâche en cours d'exécution.</P
+></DD
+></DL
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Champs utilisés par les commandes <B
+CLASS="COMMAND"
+>detail</B
+>
+        et <B
+CLASS="COMMAND"
+>ls*</B
+></B
+></P
+><DL
+><DT
+><B
+>ID</B
+></DT
+><DD
+><P
+>Numéro d'identification unique de la tâche.</P
+></DD
+><DT
+><B
+>USER</B
+></DT
+><DD
+><P
+>Utilisateur auquel appartient la tâche.</P
+></DD
+><DT
+><B
+>PID</B
+></DT
+><DD
+><P
+>Le pid de la tâche en cours d'exécution.</P
+></DD
+><DT
+><B
+>INDEX</B
+></DT
+><DD
+><P
+>Index de la tâche dans la file d'attente séquentielle (c.-à-d.
+            qu'elle sera lancée lorsque toutes les tâches dont l'index a une
+            valeur plus petite auront été lancées).
+          </P
+></DD
+><DT
+><B
+>R&#38;Q</B
+></DT
+><DD
+><P
+>Indique le nombre d'instances de la tâche en cours ou en
+            attente d'exécution dans la file d'attente « série »
+            (Ndt :serial queue) ou dans la file d'attente « charge
+            système » (Ndt :lavg queue).
+          </P
+></DD
+><DT
+><B
+>OPTIONS</B
+></DT
+><DD
+><P
+>Indique les principales options positionnées de la tâche.
+            L pour les tâches ne s'exécutant qu'en dessous d'une charge système
+            donnée (Ndt : L pour Load average), LO si une seule instance
+            de la tâche peut se trouver dans dans la file d'attente
+            « charge système » (Ndt : LO pour Lavg Once), S pour
+            les tâches s'exécutant séquentiellement (Ndt :S pour Serial),
+            SO pour les tâches qui ne seront exécutées séquentiellement que
+            pour leur prochaine exécution (Ndt : SO pour Serial Once), et
+            ES pour les tâches dont plusieurs instances peuvent s'exécuter
+            simultanément (Ndt : ES pour « allow the Execution of
+            Several instances »).
+          </P
+></DD
+><DT
+><B
+>LAVG</B
+></DT
+><DD
+><P
+>Trois valeurs correspondant à la charge système moyennée sur
+            1, 5 et 15 minutes (dans cet ordre) en dessous de laquelle la
+            tâche sera exécutée, sinon elle sera placée en attente d'une
+            charge système adéquate (voir l'option <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>).
+          </P
+></DD
+><DT
+><B
+>UNTIL</B
+></DT
+><DD
+><P
+>Champ correspondant à l'option <A
+HREF="fcrontab.5.html#FCRONTAB.5.UNTIL"
+><CODE
+CLASS="VARNAME"
+>until</CODE
+></A
+>.</P
+></DD
+><DT
+><B
+>STRICT</B
+></DT
+><DD
+><P
+>Champ correspondant à l'option <A
+HREF="fcrontab.5.html#FCRONTAB.5.STRICT"
+><CODE
+CLASS="VARNAME"
+>strict</CODE
+></A
+>. Y pour yes,
+            N pour non.</P
+></DD
+><DT
+><B
+>SCHEDULE</B
+></DT
+><DD
+><P
+>Indique la date et l'heure prévues de la prochaine exécution
+           de la tâche. Veuillez noter que l'heure indiquée est celle du
+           système sur lequel tourne <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, et non celle du fuseau horaire
+           que l'utilisateur peut éventuellement définir avec l'option
+           <A
+HREF="fcrontab.5.html#FCRONTAB.5.TIMEZONE"
+><CODE
+CLASS="VARNAME"
+>timezone</CODE
+></A
+> de <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>).
+         </P
+></DD
+><DT
+><B
+>CMD</B
+></DT
+><DD
+><P
+>La commande à exécuter.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2712"
+></A
+><H2
+>Valeurs renvoyÉes</H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcrondyn</SPAN
+> renvoie 0 lorsqu'il quitte normalement, et
+      1 en cas d'erreur.
+    </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2716"
+></A
+><H2
+>ConformitÉ</H2
+><P
+>Devrait être conforme aux spécifications POSIX.</P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="FCRONDYN.1.FILES"
+></A
+><H2
+>Fichiers</H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.conf</TT
+></B
+></DT
+><DD
+><P
+>Fichier de configuration de <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> et <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> :
+            contient les chemins (répertoire spool, fichier pid) et les
+            programmes par défaut à utiliser (éditeur, shell, etc.). Voir
+            <A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5)</A
+> pour plus de
+            détails.
+          </P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.allow</TT
+></B
+></DT
+><DD
+><P
+>Utilisateurs autorisés à utiliser <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+> et <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>
+            (un seul nom par ligne, le nom spécial « all »
+            signifiant tout le monde).
+          </P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/fcron.deny</TT
+></B
+></DT
+><DD
+><P
+>Utilisateurs qui ne sont pas autorisés à utiliser <SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>
+            et <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+> (même format que le fichier précédent).
+          </P
+></DD
+><DT
+><B
+><TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.d/fcron</TT
+> (ou
+          <TT
+CLASS="FILENAME"
+>/usr/local/etc/pam.conf</TT
+>)</B
+></DT
+><DD
+><P
+>Fichier de configuration <SPAN
+CLASS="PRODUCTNAME"
+>PAM</SPAN
+> pour
+            <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>. Voir <SPAN
+CLASS="APPLICATION"
+>pam</SPAN
+>(8) pour plus de détails.
+          </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2755"
+></A
+><H2
+>Voir aussi</H2
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrondyn.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>(1),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.conf.5.html"
+><SPAN
+CLASS="SYSTEMITEM"
+>fcron.conf</SPAN
+>(5),</A
+></TD
+></TR
+><TR
+><TD
+><A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8).</A
+></TD
+></TR
+><TR
+><TD
+>Si vous êtes en train d'apprendre à utiliser fcron, je vous
+suggère plutôt de lire la version HTML de la documentation (si ce n'est pas
+déjà ce que vous faites en ce moment ! :) ) : le contenu est le même, mais
+il est plus aisé de naviguer grâce aux hyperliens.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2774"
+></A
+><H2
+>Auteur</H2
+><P
+>Thibault Godouet <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+></P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN2778"
+></A
+><H2
+>Traduction</H2
+><P
+>Ce document est une traduction réalisée par Alain Portal
+      &#60;aportal AT univ-montp2 DOT fr&#62; le 6 février 2006
+    </P
+><P
+>L'équipe de traduction a fait le maximum pour réaliser une adaptation
+      française de qualité. La version anglaise la plus à jour de ce document
+      est toujours consultable via la commande : « <EM
+>LANG=en
+      man 1 fcrondyn</EM
+> ».
+      N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas,
+      toute erreur dans cette page de manuel.
+    </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fcrontab.5.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="faq.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>fcrontab</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="manpages.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Frequently Asked Questions</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

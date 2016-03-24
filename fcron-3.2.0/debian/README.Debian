@@ -1,0 +1,21 @@
+fcron for Debian
+-----------------------------------------------------------------
+
+While in principle this would be possible, the Debian package of fcron does
+not try to supersede cron. Note, however, that it has to play dirty with
+anacron so as to hijack control of /etc/cron.{daily,weekly,monthly} from
+cron even if anacron is not installed in the system.
+
+This is done symlinking /usr/sbin/anacron to /bin/true, and unfortunately
+causes the fcron package to conflict with the anacron package. If you just 
+removed (as opposed to purging) the anacron package to install fcron, 
+anacron's initscript might still try to activate anacron. This is harmless, 
+do NOT file bugs against anacron because of it!
+
+I'm working with upstream to make fcron more secure (although it looks 
+fairly secure as is). If you don't want to worry about any possible 
+security holes, remove the suid permission from fcrontab (using either 
+suidregister or dpkg-statoverride), and do not install fcrontabs for 
+anyone other than root.
+
+ -- Henrique M. Holschuh <hmh@debian.org>, Mon, 11 Dec 2000 20:14:13 -0200

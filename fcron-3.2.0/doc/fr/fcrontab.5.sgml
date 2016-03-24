@@ -1,0 +1,1115 @@
+<!--
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<refentry id="fcrontab.5">
+  <refmeta>
+    <refentrytitle>fcrontab</refentrytitle>
+    <manvolnum>5</manvolnum>
+    <refmiscinfo>Fcron &version; <![%devrelease; [
+(<emphasis>development</emphasis> release)]]></refmiscinfo>
+<refmiscinfo>&date;</refmiscinfo>
+  </refmeta>
+  <refnamediv>
+    <refname>fcrontab</refname>
+    <refpurpose>Tables de configuration de fcron</refpurpose>
+  </refnamediv>
+
+  <refsect1>
+    <title>Description</title>
+    <para>Un fichier &fcrontabf; est un fichier qui contient toutes les tables
+      utilisées par le démon &fcron;(8). Cela permet à un utilisateur de dire
+      au démon&nbsp;: «&nbsp;Exécute cette tâche à tel moment&nbsp;». Chaque
+      utilisateur a sa propre table &fcrontabf;, et les commandes contenues
+      dans une table seront exécutées sous l'identifiant du propriétaire de la
+      table. Seul le super-utilisateur peut lancer une tâche avec les droits
+      d'un autre utilisateur en utilisant l'option &optrunas; (voir plus loin).
+    </para>
+    <para>Les lignes blanches, les lignes débutant par le symbole dièse
+      «&nbsp;#&nbsp;» (qui sont considérées comme étant des commentaires),
+      les espaces ou les tabulations placées en début de ligne sont ignorées.
+      Chaque ligne d'un fichier &fcrontabf; peut être soit&nbsp;:
+    </para>
+    <itemizedlist>
+      <listitem>
+	<para>une configuration d'environnement,</para>
+      </listitem>
+      <listitem>
+        <para>une configuration d'option,</para>
+      </listitem>
+      <listitem>
+	<para>des entrées basées sur la durée totale de fonctionnement du
+	  système depuis la dernière exécution de la tâche,</para>
+      </listitem>
+      <listitem>
+        <para>des entrées basées sur un temps absolu (comme les entrées
+          normales de crontab), ou</para>
+      </listitem>
+      <listitem>
+        <para>des entrées lancées périodiquement.</para>
+      </listitem>
+    </itemizedlist>
+    <para>Toute ligne logique (une entrée ou une affectation) peut être scindée
+      en plusieurs lignes effectives (des lignes finissant par un caractère
+      fin de ligne) en plaçant une barre oblique inverse «&nbsp;\&nbsp;» avant
+      le caractère fin de ligne «&nbsp;\n&nbsp;».
+    </para>
+
+    <refsect2>
+      <title>La configuration de l'environnement</title>
+      <para>La configuration de l'environnement est de la forme</para>
+      <blockquote>
+	<para>nom = valeur</para>
+      </blockquote>
+      <para> où les espaces autour du signe d'égalité «&nbsp;=&nbsp;» sont
+        ignorées et optionnelles. Les espaces en fin de ligne sont également
+        ignorées, mais vous pouvez placer la valeur entre guillemets (simple
+        ou double, mais appareillés) pour préserver les caractères blancs dans
+        la valeur.
+      </para>
+      <para>Lorsque &fcron; exécute une commande, il positionne toujours les
+        variables d'environnement
+        <envar>USER</envar>, <envar>HOME</envar>, et <envar>SHELL</envar>
+        comme elles sont définies dans <filename>/etc/passwd</filename> pour
+        le propriétaire de la table &fcrontabf; dont la commande est issue.
+        Les variables d'environnement <envar>HOME</envar> et
+        <envar>SHELL</envar> peuvent être écrasées par la configuration
+        contenue dans le fichier &fcrontabf;, mais <envar>USER</envar> ne
+        peut pas l'être. Toute autre affectation d'environnement définie dans
+        le &fcrontabf; de l'utilisateur est effectuée et la commande exécutée.
+      </para>
+      <para>De plus, la variable spéciale <varname>MAILTO</varname> vous permet
+        d'indiquer à &fcron; à qui envoyer par courriel la sortie de la
+        commande. Veuillez noter que <varname>MAILTO</varname> est en fait
+        équivalente à la déclaration globale de l'option &optmailto; (voir
+        plus loin). Elle n'est utilisée que pour assurer une
+        rétrocompatibilité, aussi, vous devriez plutôt utiliser directement
+        l'option &optmailto;.
+      </para>
+    </refsect2>
+
+    <refsect2 id="uptent">
+      <title>EntrÉes basÉes sur le temps ÉcoulÉ depuis le démarrage du systÈme
+      </title>
+      <para>Les entrées des commandes qui doivent être exécutées une fois
+        toutes les m minutes de l'exécution de &fcron; (qui sont normalement
+        les mêmes m minutes de l'exécution du système) sont de la forme
+      </para>
+      <programlisting>@options fréquence commande</programlisting>
+      <para>où fréquence est une valeur de temps de la forme
+        valeur*multiplicateur+valeur*multiplicateur+...+valeur-en-minutes
+	comme «\&nbsp;12h02\&nbsp;» ou «\&nbsp;3w2d5h1\&nbsp;». La première
+	signifie «\&nbsp;12 heures et 2 minutes d'exécution de fcron\&nbsp;»
+	tant dis que la seconde signifie «\&nbsp;3 semaines, 2 jours, 5 heures
+	et 1 minute d'exécution de fcron\&nbsp;». Les
+        multiplicateurs valides sont&nbsp;:
+      </para>
+      <table>
+        <title>Multiplicateurs de temps valides</title>
+	<tgroup cols="2">
+	  <thead>
+	    <row>
+              <entry>signification&nbsp;: </entry>
+              <entry>multiplicateurs&nbsp;:      </entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+              <entry>mois (4 semaines)&nbsp;: </entry>
+	      <entry>m      </entry>
+	    </row>
+	    <row>
+              <entry>semaines (7 jours)&nbsp;: </entry>
+	      <entry>w      </entry>
+	    </row>
+	    <row>
+              <entry>jours (24 heures)&nbsp;: </entry>
+	      <entry>d      </entry>
+	    </row>
+	    <row>
+              <entry>heures (60 minutes)&nbsp;: </entry>
+	      <entry>h  </entry>
+	    </row>
+	    <row>
+              <entry>secondes&nbsp;: </entry>
+	      <entry>s  </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+
+      <para>À la place de <replaceable>options</replaceable>, l'utilisateur
+        peut mettre une valeur de temps qui sera interprétée comme
+        <token>@first(<replaceable>temps</replaceable>)</token>. Si l'option
+        &optfirst; n'est pas positionnée, la valeur de
+        «&nbsp;<varname>fréquence</varname>&nbsp;» est utilisée.
+      </para>
+      <para>Ce type d'entrée ne garantie pas une date et heure d'exécution (vu
+        que la tâche est retardée à chaque démarrage du système par le temps
+        écoulé depuis l'arrêt du système), mais peut être pratique pour des
+        tâches dépendant du nombre de choses faites par les utilisateurs (par
+        exemple, il vaudrait mieux vérifier le système de fichiers après un
+        certain nombre d'utilisation par les utilisateurs plutôt que tous les
+        x jours, vu que le système peut être lancé de 1 jour à x jours pendant
+        cet intervalle de x jours).
+      </para>
+      <para>Le temps restant avant la prochaine exécution est sauvegardé
+        toutes les &save; secondes (afin de limiter les dommages provoqués
+        par un plantage) et lorsque &fcron; quitte après avoir reçu un signal
+        <constant>SIGTERM</constant>, c.-à-d. lorsque l'on arrête le système.
+        Ainsi, ce type d'entrée est particulièrement utile pour des systèmes
+        qui ne tournent pas de manière régulière. La syntaxe étant très simple,
+        il est également pratique pour des tâches qui n'ont pas besoin d'être
+        exécutées à une date et une heure spécifique.
+      </para>
+      <para>&voiraussi; les options &optfirst;, &optmail;, &optnolog;,
+        &optserial;, &optlavg;, &optnice;, &optrunas; (voir plus loin).
+      </para>
+      <para><example>
+	<title>Quelques exemples de lignes basÉes sur le temps ÉcoulÉ depuis
+le dÉmarrage du systÈme</title>
+	<programlisting>
+# Récupérer vos courriels toutes les 30 minutes
+@ 30 getmails -all 
+
+# Effectuer quelques tests de sécurité toutes les 48 heures de fonctionnement
+# du système, envoyer un courriel au super-utilisateur même s'il n'a pas de sortie
+@mailto(root),forcemail 2d /etc/security/msec/cron-sh/security.sh
+</programlisting>
+	</example></para>
+    </refsect2>
+
+    <refsect2 id="fcrontab.5.tadent">
+      <title>EntrÉes basÉes sur une date et une heure</title>
+      <para>Le deuxième type d'entrée d'un fichier &fcrontabf; commence par un
+        caractère «&nbsp;&&nbsp;» optionnel qui peut être immédiatement suivi
+        par un nombre optionnel définissant la fréquence d'exécution (ceci est
+        équivalent à l'option &optrunfreq;) ou par une déclaration
+        d'options&nbsp;; il possède cinq champs de date et d'heure, ainsi
+        qu'une commande shell&nbsp;:
+      </para>
+      <programlisting>
+&amp;options min hrs jour-du-mois mois jour-de-la-semaine commande
+</programlisting>
+      <para>Veuillez noter que la commande shell peut être précédée par un nom
+        d'utilisateur, ce qui est équivalent à <token>runas
+        (<replaceable>user</replaceable>)</token>&nbsp;: vu que cela n'existe
+      que pour une retrocompatibilité, vous devriez plutôt utiliser l'option
+      &optrunas; (voir plus loin). La fréquence est interprétée de la façon
+      suivante&nbsp;: «&nbsp;lancer cette commande après x correspondances des
+      champs date et heure&nbsp;». Les champs date et heure sont&nbsp;:
+    </para>
+      <table>
+	<title>Champs date et heure</title>
+	<tgroup cols="2">
+	  <thead>
+	    <row>
+              <entry>champ&nbsp;: </entry>
+              <entry>valeurs permises&nbsp;:      </entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+              <entry>minute&nbsp;: </entry>
+	      <entry>0-59      </entry>
+	    </row>
+	    <row>
+              <entry>heure&nbsp;: </entry>
+	      <entry>0-23      </entry>
+	    </row>
+            <row>
+              <entry>jour du mois&nbsp;: </entry>
+	      <entry>1-31      </entry>
+            </row>
+            <row>
+              <entry>mois&nbsp;: </entry>
+	     <entry>1-12 (ou leurs noms, voir plus loin)      </entry>
+            </row>
+            <row>
+              <entry>jour de la semaine&nbsp;: </entry>
+	      <entry>0-7 (0 et 7 signifient tous deux le dimanche, ou leurs noms)</entry>
+            </row>
+	  </tbody>
+	</tgroup>
+      </table>
+      <para>Un champ est toujours renseigné soit par une astérique
+        «&nbsp;*&nbsp;», qui signifie un intervalle comme
+        «&nbsp;<token>premier-dernier</token>, soit un nombre seul, soit une
+        liste.
+      </para>
+      <para>Les listes sont des nombres ou des intervalles séparés par des
+        virgules «&nbsp;,&nbsp;». Par exemple&nbsp;: «&nbsp;2,5,15,23&nbsp;».
+      </para>
+      <para>Les intervalles de nombres sont de la forme
+        «&nbsp;<token><replaceable>début</replaceable>-<replaceable>fin</replaceable></token>&nbsp;»,
+        où «&nbsp;<replaceable>début</replaceable>&nbsp;» et
+        «&nbsp;<replaceable>fin</replaceable>&nbsp;» sont inclus. Par exemple,
+        «&nbsp;3-5&nbsp;» signifie les valeurs 3, 4 et 5. Vous pouvez également
+        ajouter un «&nbsp;/<replaceable>nombre</replaceable>&nbsp;» optionnel
+        à l'intervalle, où le <replaceable>nombre</replaceable> signifie le
+        pas dans l'intervalle. Par exemple, «&nbsp;0-23/2&nbsp;» peut être
+        utilisé dans le champ heure pour spécifier l'exécution d'une commande
+        toutes les heures paires. Enfin, un ou plusieurs
+        «&nbsp;~<replaceable>nombre</replaceable>&nbsp;» peuvent être ajoutés
+        afin de désactiver certaines valeurs dans l'intervalle. Par exemple,
+        «&nbsp;5-8~6~7&nbsp;» est équivalent à «&nbsp;5,8&nbsp;». La forme
+        finale d'un champ est&nbsp;:
+      </para>
+      <blockquote>
+	<para>a[-b[/c][~d][~e][...]][,f[-g[/h][~i][~j][...]]][,...]</para>
+      </blockquote>
+      <para>où les lettres sont des nombres entiers.</para>
+      <para>Vous pouvez également utiliser unE astérisque «&nbsp;*&nbsp;» dans
+        un champ. Il agira comme «&nbsp;<token>premier-dernier</token>&nbsp;».
+        Par exemple, un «&nbsp;*&nbsp;» dans le champ minute signifie toutes
+        les minutes de la minute 0 à la minute 59.
+      </para>
+      <para>Des intervalles peuvent être inclus dans une liste comme un simple
+        nombre. Par exemple&nbsp;: «&nbsp;2,5-10/2~6,15,20-25,30&nbsp;».
+      </para>
+      <para>Les noms (Ndt&nbsp;: en anglais) peuvent être utilisés pour les
+        champs «&nbsp;mois&nbsp;» et «&nbsp;jour de la semaine&nbsp;». Pour ce
+        faire, utilisez les trois premières lettres du jour ou du mois
+        concerné (la casse n'a pas d'importance). Veuillez noter que les noms
+        sont utilisés exactement comme les nombres&nbsp;: vous pouvez les
+        utiliser dans une liste ou un intervalle.
+      </para>
+      <para>Si un jour de mois et un jour de semaine sont donnés, la commande
+        sera exécutée seulement si <emphasis>les deux</emphasis> correspondent
+        au jour et à l'heure actuels à moins que l'option &optdayor; n'ait été
+        positionnée. Par exemple, avec la ligne
+        <programlisting>5 10 31 * 7 echo ''</programlisting> echo sera exécutée
+        seulement les jours qui sont un dimanche ET le 31ème jour du mois,
+        à 10:05.
+      </para>
+      <para>&voiraussi; options &optdayor;, &optbootrun;, &optrunfreq;,
+        &optmail;, &optnolog;, &optserial;, &optlavg;, &optnice;, &optrunas;
+        (voir plus loin).
+      </para>
+      <para><example>
+	<title>Quelques exemples d'entrÉes basÉes sur une date et une heure
+        </title>
+	<programlisting>
+# lancer macommande tous les jours à 12:05, 12:35, 13:05, 13:35,
+# 14:05 *et* 14:35
+&amp; 05,35 12-14 * * * macommande -u moi -o fichier
+
+# récupérer les courriels toutes les heures aux minutes 20, 21, 22, et 24.
+20-24~23 * * * * getmail 
+
+# sauvegarder mon travail de la journée toutes les nuits à 03:45 avec une
+# faible priorité, sauf le dimanche, envoyer la sortie par courriel à jim et
+# lancer cette tâche au démarrage si la machine était éteinte à 03:45
+&amp;nice(10),mailto(jim),bootrun 45 03 * * *~0 "save --mon travail"
+</programlisting>
+      </example></para>
+    </refsect2>
+
+    <refsect2 id="fcrontab.5.periodent">
+      <title>EntrÉes lancÉes pÉriodiquement</title>
+      <para>Le troisième type d'entrée &fcrontabf; commence par le caractère
+        «&nbsp;%&nbsp;», suivi par un mot-clef pris parmi une des trois
+        différentes listes, puis par des options.
+      </para>
+      <refsect3>
+	<title>Mots-clefs *ly</title>
+        <para>Ces mots-clefs sont&nbsp;:</para>
+	<para><simplelist type="inline">
+	  <member><parameter>hourly </parameter></member>
+	  <member><parameter>daily </parameter></member>
+	  <member><parameter>monthly </parameter></member>
+	  <member><parameter>weekly </parameter></member>
+	</simplelist></para>
+	<para>Ces mots-clefs indiquent à &fcron; de lancer la commande une fois
+          entre le début et la fin de l'intervalle de temps correspondant.
+          Un intervalle de temps est, par exemple, le temps compris entre lundi
+          16:20 et mercredi 01:43. Par exemple, le mot-clef
+          <parameter>weekly</parameter> indique à &fcron; de lancer une
+          commande une fois par semaine entre le lundi et le dimanche.
+        </para>
+	<para>Avec ces deux sortes de mots-clefs, l'utilisateur doit renseigner
+          les champs heure nécessaires (comme ils sont définis dans
+          «&nbsp;<link linkend="fcrontab.5.tadent">Entrées basées sur une date
+          et une heure</link>&nbsp;» (voir plus haut)) pour préciser quand la
+          commande devrait être lancée dans chaque intervalle de temps&nbsp;:
+        </para>
+	<para>
+	  <table>
+	    <title>Champs de temps nÉcessaires À chaque mot-clef</title>
+	    <tgroup cols="2">
+	      <thead>
+                <row>
+                  <entry>Mots-clefs&nbsp;: </entry>
+                  <entry>doit être suivi par les champs&nbsp;: </entry>
+		</row>
+	      </thead>
+	      <tbody>
+		<row>
+		  <entry><parameter> hourly</parameter>,
+                    <parameter>midhourly</parameter>&nbsp;: </entry>
+		  <entry> minutes.</entry>
+		</row>
+		<row>
+		  <entry><parameter> daily</parameter>,
+<parameter>middaily</parameter>, <parameter>nightly</parameter>,
+<parameter>weekly</parameter>, <parameter>midweekly</parameter>&nbsp;: </entry>
+		  <entry> minutes et heures.</entry>
+		</row>
+		<row>
+		  <entry><parameter> monthly</parameter>,
+<parameter>midmonthly</parameter> : </entry>
+		  <entry> minutes, heures et jours.</entry>
+		</row>
+	      </tbody>
+	    </tgroup>
+	  </table>
+        </para>
+      </refsect3>
+
+      <refsect3>
+	<title>Mots-clefs mid*ly</title>
+        <para>Ils sont similaires aux mots-clefs «&nbsp;*ly&nbsp;»&nbsp;:</para>
+	<para>
+          <simplelist type="inline">
+	    <member><parameter>midhourly </parameter></member>
+	    <member><parameter>middaily </parameter></member>
+	    <member><parameter>nightly </parameter></member>
+	    <member><parameter>midmonthly </parameter></member>
+	    <member><parameter>midweekly </parameter></member>
+	  </simplelist>
+        </para>
+        <para>Ils fonctionnent exactement comme les mots-clefs
+          «&nbsp;*ly&nbsp;», excepté que les intervalles de temps sont définis
+          du milieu au milieu de l'intervalle «&nbsp;*ly&nbsp;»
+          correspondant&nbsp;: <parameter>midweekly</parameter> lancera une
+          commande une fois entre le jeudi et le mercredi. Veuillez noter que
+          <parameter>nightly</parameter> est équivalent à
+          <parameter>middaily</parameter>.
+        </para>
+        <para>Par exemple&nbsp;:
+	  <informalexample>
+	    <programlisting>
+%nightly,mail(no) * 21-23,3-5 echo "une entrée nigthly"
+</programlisting>
+	  </informalexample>
+        </para>
+	<para>lancera la commande une fois par nuit soit entre 21:00 et 23:59,
+          soit entre 3:00 et 5:59 (elle sera exécutée aussitôt que
+          possible&nbsp;; pour modifier ce comportement, utilisez l'option
+          &optrandom;) et ne pas envoyer de courriel (étant donné que l'option
+          &optmail; a été définie à «&nbsp;no&nbsp;»).
+        </para>
+	<para>&voiraussi; options &optlavg;, &optnoticenotrun;, &optstrict;,
+          &optmail;, &optnolog;, &optserial;, &optnice;, &optrunas;,
+          &optrandom; (voir plus loin).
+        </para>
+      </refsect3>
+
+      <refsect3>
+	<title>Mots-clefs *s</title>
+	<para>Ce sont&nbsp:</para>
+	<para><simplelist type="inline">
+	  <member><parameter>mins </parameter></member>
+	  <member><parameter>hours </parameter></member>
+	  <member><parameter>days </parameter></member>
+	  <member><parameter>mons </parameter></member>
+	  <member><parameter>dow </parameter></member>
+	</simplelist></para>
+	<para>Ces mots-clefs agissent différemment, comme suit&nbsp;:
+        </para>
+	<para>lancer cette commande unE fois durant CHAQUE intervalle de temps
+          spécifié, ignorant les champs suivants le mot-clef dans la définition
+          de l'intervalle de temps (un <parameter>hours</parameter> empêche le
+	  champ <parameter>mins</parameter> d'être considéré comme un intervalle de temps, mais il
+          sera utilisé pour déterminer quand la ligne devra être lancée au
+          cours de l'intervalle&nbsp;: voir la note plus loin)
+          (<parameter>dow</parameter> signifie «&nbsp;day of week&nbsp;»).
+        </para>
+	<para>Un tel mot-clef est suivi par 5 champs de date et d'heure (les
+          mêmes champs utilisés pour une <link linkend="fcrontab.5.tadent">ligne
+          basée sur un temps absolu</link> (voir plus haut). De plus, avec
+          cette sorte de mots-clefs, il doit y avoir sur les lignes des dates
+          et heures qui ne correspondent pas (c.-à-d. que ce qui suit n'est
+          pas permis&nbsp;:
+          <programlisting>%hours * 0-23 * * * echo "Ligne INCORRECTE !"</programlisting>
+          mais ceci l'est&nbsp;:
+          <programlisting>%hours * 0-22 * * * echo "Ok."</programlisting>
+        </para>
+	<note>
+	  <para>un nombre seul dans un champ est considéré comme un intervalle
+            de temps&nbsp;:
+            <programlisting>%mins 15 2-4 * * * echo</programlisting> lancera
+            echo tous les jours à 2:15, 3:15 ET 4:15.
+          </para>
+	  <para>Mais tous les champs suivants les mots-clefs sont ignorés dans
+            la définition d'un intervalle de temps&nbsp;:
+            <programlisting>%hours 15 2-4 * * * echo</programlisting> lancera
+            echo seulement UNE FOIS soit à 2:15, soit à 3:15 OU BIEN à 4:15.
+          </para>
+	</note>
+	<para>&voiraussi; option &optrandom; (voir plus loin).</para>
+      </refsect3>
+    </refsect2>
+
+    <refsect2>
+      <title>Options</title>
+      <para>Les options peuvent être positionnées soit pour chaque ligne située
+        après la déclaration, soit pour une ligne de manière individuelle. Dans
+        le premier cas, la configuration est faite sur une ligne complète après
+        un point d'exclamation «&nbsp;!&nbsp;», dans le second cas, elle est
+        faite après l'un des symboles suivants «&nbsp;&&nbsp;», «&nbsp;%&nbsp;»
+        ou «&nbsp;@&nbsp;», suivant le type de planification. Veuillez noter
+        qu'une déclaration d'option dans une planification écrase la
+        déclaration globale de la même option.
+      </para>
+      <para>Les options sont séparées par des virgules «&nbsp;,&nbsp;» et leurs
+        arguments, s'il y en a, sont placés entre parenthèses «&nbsp;(&nbsp;»
+        et «&nbsp;)&nbsp;». Les espaces ne sont pas permises. Une déclaration
+        d'option est de la forme
+      </para>
+      <blockquote>
+	<para><replaceable>option</replaceable>[(<replaceable>arg1</replaceable>[,<replaceable>arg2</replaceable>][...])][,<replaceable>option</replaceable>[(<replaceable>arg1</replaceable>[...])]][...]</para>
+      </blockquote>
+      <para>où <replaceable>option</replaceable> est soit le nom complet de
+        l'option, soit son abréviation. Les options sont (avec leur valeur
+        par défaut entre parenthèses)&nbsp;:
+      </para>
+      <variablelist>
+	<title>Options valides dans un fichier &fcrontabf;</title>
+
+	<varlistentry id="fcrontab.5.bootrun">
+	  <term>bootrun</term>
+	  <term>b</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+            <para>Lancer une ligne «&nbsp;&&nbsp;» au démarrage de &fcron; si
+              celle-ci avait dû être lancée pendant l'arrêt du système.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.dayand">
+	  <term>dayand</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>true</constant>)</para>
+	    <para>Effectuer un ET logique entre le jour de la semaine et le
+              jour du mois.
+            </para>
+	    <para>&voiraussi; option &optdayor;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.dayor">
+	  <term>dayor</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+            <para>Effectuer un OU logique entre le jour de la semaine et le
+              jour du mois.
+            </para>
+            <para>&voiraussi; option &optdayand;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.erroronlymail">
+	  <term>erroronlymail</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+	    <para>Envoyer la sortie par courriel uniquement si la tâche a retourné une valeur de sortie autre que zéro.</para>
+	    <para>&voiraussi; options &optmail;, &optmailto;, &optnolog;, &optforcemail;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.exesev">
+	  <term>exesev</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+	    <para>Une tâche peut-elle être exécutée plusieurs fois
+              simultanément&nbsp;?
+            </para>
+            <para>&voiraussi; options &optserialonce;, &optlavgonce;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.first">
+	  <term>first</term>
+	  <term>f</term>
+	  <listitem>
+	    <para><emphasis><type>time-value</type></emphasis></para>
+	    <para>Temps avant la première exécution d'une tâche basée sur le
+              temps de fonctionnement du système (lignes «&nbsp;@&nbsp;»).
+              Utile dans les cas suivants&nbsp;: vous avez plusieurs tâches à
+              exécuter, disons, toutes les heures. En positionnant différentes
+              valeurs «&nbsp;first&nbsp;» pour chaque tâche, vous évitez
+              que celles-ci soient lancées simultanément chaque fois.
+	      Vous pouvez également la mettre à 0, ce qui est pratique
+	      lorsqu'elle est utilisée avec l'option &optvolatile;.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.forcemail">
+	  <term>forcemail</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+	    <para>Envoyer la sortie par courriel même si celle-ci est vide.</para>
+	    <para>&voiraussi; options &optmail;, &optmailto;, &opterroronlymail;, &optnolog;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.lavg">
+	  <term>lavg</term>
+	  <listitem>
+	    <para><emphasis><type>réel</type></emphasis>(<constant>0</constant>) 
+<emphasis><type>réel</type></emphasis>(<constant>0</constant>)
+<emphasis><type>réel</type></emphasis>(<constant>0</constant>)</para>
+	    <para>Définir les valeurs de la charge moyenne du système sur 1,
+              5 et 15 minutes (dans cet ordre) en dessous desquelles la tâche
+              pourra être lancée. Ces valeurs ne peuvent avoir qu'une seule
+              décimale (c.-à-d. «&nbsp;2.3&nbsp;»). S'il y en a plus, la valeur
+	      sera arrondie. Mettre une valeur à 0 pour ignorer la charge
+	      moyenne correspondante. Si vous mettez toutes les valeurs à 0,
+	      la tâche sera lançée sans tenir compte de la charge système.
+            </para>
+	    <para>&voiraussi; options &optlavg1;, &optlavg5;, &optlavg15;,
+              &optuntil;, &optlavgonce;, &optlavgor;, &optlavgand;,
+              &optstrict;, &optnoticenotrun;.
+            </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry id="fcrontab.5.lavgX">
+	  <term>lavg1</term>
+	  <term>lavg5</term>
+	  <term>lavg15</term>
+	  <listitem>
+	    <para><emphasis><type>réel</type></emphasis>(<constant>0</constant>)</para>
+	    <para>Définir le seuil des valeurs de charge moyenne du système
+              sur 1, 5 ou 15 minutes. Définir l'une d'elles à 0 pour ignorer
+              la charge moyenne correspondante.
+            </para>
+	    <para>&voiraussi; options &optlavg;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.lavgand">
+	  <term>lavgand</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>true</constant>)</para>
+	    <para>Effectuer un ET logique entre les valeurs de charge moyenne
+              du système à 1, 5 et 15 minutes.
+            </para>
+	    <para>&voiraussi; options &optlavg;, &optlavgor;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.lavgonce">
+	  <term>lavgonce</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>&lavgoncedef;</constant>)</para>
+	    <para>Une tâche peut-elle être mise plusieurs fois simultanément
+              dans la file d'attente charge moyenne du système (Ndt&nbsp;:
+              lavg queue)&nbsp;?
+            </para>
+	    <para>&voiraussi; options &optlavg;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.lavgor">
+	  <term>lavgor</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+            <para>Effectuer un OU logique entre les valeurs de charge moyenne
+              du système à 1, 5 et 15 minutes.
+            </para>
+	    <para>&voiraussi; options &optlavg;, &optlavgand;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.mail">
+	  <term>mail</term>
+	  <term>m</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>true</constant>)</para>
+	    <para>Envoyer la sortie (s'il y en a) par courriel, ou non.
+            </para>
+	    <para>&voiraussi; options &optmailto;, &optforcemail;, &optnolog;.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.mailto">
+	  <term>mailto</term>
+	  <listitem>
+	    <para><emphasis><type>email-address</type></emphasis>(<constant>nom
+                du propriétaire du fichier</constant>)</para>
+	    <para>Envoyer la sortie (si nécessaire) par courriel à
+              «&nbsp;<replaceable>email-address</replaceable>&nbsp;». Cela
+              peut être soit un nom d'utilisateur, soit une adresse courriel
+              complète. Une &optmailto; déclarée mais vide (chaîne "") est
+              équivalente à «&nbsp;<token>mail(false)</token>&nbsp;».
+            </para>
+	    <para>&voiraussi; options &optmail;, &optforcemail;, &optnolog;.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.nice">
+	  <term>nice</term>
+	  <term>n</term>
+	  <listitem>
+	    <para><emphasis><type>nice-value</type></emphasis></para>
+	    <para>Modifier la priorité de la tâche. Une
+              <emphasis><type>nice-value</type></emphasis> est un entier
+              compris entre -20 (plus forte priorité) et 19 (plus faible
+              priorité). Seul le super-utilisateur est autorisé à utiliser
+              une valeur négative pour cette option.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.nolog">
+	  <term>nolog</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+	    <para>Si elle est positionnée à «&nbsp;true&nbsp;», journaliser
+              seulement les erreurs des tâches correspondantes. Peut être
+              utile pour des tâches lancées très fréquemment, et/ou pour
+              réduire les accès disque sur un ordinateur portable.
+            </para>
+	    <para>&voiraussi; options &optmail;, &optmailto;, &optforcemail;.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.noticenotrun">
+	  <term>noticenotrun</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+	    <para>&fcron; devrait-il prévenir l'utilisateur par courriel de la
+              non exécution d'une tâche «&nbsp;%&nbsp;» ou d'une tâche
+              «&nbsp;&&nbsp;»&nbsp;? (à cause de l'arrêt du système dans les
+	      deux cas ou d'une charge moyenne trop élevée dans le second cas).
+            </para>
+	    <para>&voiraussi; options &optlavg;, &optstrict;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.random">
+	  <term>random</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+            <para>Dans une <link linkend="fcrontab.5.periodent">ligne lancée
+              périodiquement</link>, cette option répond à la question&nbsp;:
+              «&nbsp;Cette tâche devrait-elle être lancée aussitôt que possible
+              dans son intervalle de temps d'exécution (plus sûr), ou bien
+              &fcron; doit-il définir une date et heure aléatoire d'exécution
+              dans ce même intervalle de temps&nbsp;?&nbsp;». Veuillez noter
+              que si cette option est positionnée, la tâche peut ne pas être
+              lancée si &fcron; n'est pas en cours d'exécution durant
+              <emphasis>tout</emphasis> l'intervalle d'exécution. En outre,
+              sachez qu'il peut être relativement facile pour une personne
+              compétente de deviner l'heure de la prochaine exécution d'une
+              tâche utilisant l'option random&nbsp;: il est donc préférable
+              de ne pas baser la sécurité de quelque chose de sensible sur
+              l'aléa de cette option. Cependant, cela ne devrait pas poser de
+              problème pour la plupart de ses utilisations.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.reset">
+	  <term>reset</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis></para>
+	    <para>Positionner toutes les options à leur valeur par défaut.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.runas">
+	  <term>runas</term>
+	  <listitem>
+	    <para><emphasis><type>utilisateur</type></emphasis></para>
+	    <para>Lancer avec les permissions et l'environnement de
+              «&nbsp;<replaceable>utilisateur</replaceable>&nbsp;» (seul le
+              super-utilisateur est autorisé à utiliser cette option).
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.runfreq">
+	  <term>runfreq</term>
+	  <term>r</term>
+	  <listitem>
+	    <para><emphasis><type>entier</type></emphasis></para>
+            <para>Lancer toutes les «&nbsp;<replaceable>runfreq</replaceable>&nbsp;»
+              correspondances de date et d'heure. (Cette option est ignorée
+              dans le cas d'<link linkend="uptent">entrées basées sur le temps
+              écoulé depuis le démarrage du système</link>).
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.serial">
+	  <term>serial</term>
+	  <term>s</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+            <para>&Fcron; fait tourner au plus &serialmaxrunning; tâche(s)
+              séquentielle(s) en même temps (c.-à-d. pour lesquelles l'option
+              serial est définie), et autant de tâches qui sont à la fois
+              séquentielles et dont l'exécution dépend aussi de la charge
+              système (autrement dit pour lesquelles les options serial et
+              lavg sont définies). Cette valeur peut être modifiée grâce à
+              l'option <option>-m</option> de &fcron;. Cette option trouve
+              toute son utilité dans le cas de tâches lourdes afin
+              d'éviter une surcharge du système.
+            </para>
+	    <para>&voiraussi; options &optserialonce;, &optlavg;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.serialonce">
+	  <term>serialonce</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>&serialoncedef;</constant>)</para>
+	    <para>Une tâche peut-elle être mise plusieurs fois simultanément
+              dans la file d'attente séquentielle&nbsp;? (Ndt&nbsp;: serial
+              queue)
+            </para>
+	    <para>&voiraussi; options &optexesev;, &optlavgonce;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.stdout">
+	  <term>stdout</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+	    <para>Si &fcron; s'exécute en arrière plan, permettre la sortie
+              des tâches sur stderr/stdout plutôt que par courriel ou que
+              l'ignorer.
+            </para>
+	    <para>&voiraussi; option <option>--once</option> de <link
+              linkend="fcron.8">&fcron;(8)</link>.
+            </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.strict">
+	  <term>strict</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>true</constant>)</para>
+            <para>Lorsqu'une tâche «&nbsp;%&nbsp;» de la file d'attente charge
+              moyenne du système (Ndt&nbsp;: lavg queue) est à la fin de
+              l'intervalle de temps d'exécution, doit-elle être retirée de la
+              file d'attente (strict(true), ainsi la tâche ne sera pas
+              exécutée), ou bien doit-elle y rester jusqu'à ce que la charge
+              moyenne du système permette son exécution (strict(false))&nbsp;?
+            </para>
+	    <para>&voiraussi; options &optlavg;, &optnoticenotrun;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.timezone">
+	  <term>timezone</term>
+	  <listitem>
+	    <para><emphasis><type>timezone-name</type></emphasis>(<constant>fuseau
+              horaire du système</constant>)
+            </para>
+	    <para>Lancer la tâche dans le fuseau horaire fourni. timezone-name
+              est une chaîne qui doit être valide du point de vue de la
+              variable d'environnement TZ&nbsp;: consultez la documentation de
+              votre système pour plus de détails. Par exemple,
+              «&nbsp;Europe/Paris&nbsp;» est valide sur un système Linux.
+              Cette option gère correctement le changement d'heure.
+            </para>
+	    <para>Veuillez noter que si vous fournissez un argument
+              timezone-name erroné, celui-ci sera  SILENCIEUSEMENT ignoré,
+              et la tâche sera exécutée dans le fuseau horaire du système.
+            </para>
+            <para>ATTENTION&nbsp;: N'utilisez PAS simultanément les options
+              timezone et tzdiff&nbsp;! Cela n'a pas de raison d'être, et
+              timezone est plus maligne que tzdiff.</para>
+	    <para>&voiraussi; option &opttzdiff;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.tzdiff">
+	  <term>tzdiff</term>
+	  <listitem>
+	    <para><emphasis><type>entier</type></emphasis>(<constant>0</constant>)</para>
+            <para>ATTENTION&nbsp;: cette option est obsolète&nbsp;: utilisez
+              plutôt l'option timezone&nbsp;!
+            </para>
+	    <para>Différence de fuseau horaire (en heures, valeur comprise
+              entre -24 et 24) entre l'heure du système et l'heure locale
+              réelle. Cette option permet à l'utilisateur de définir ses lignes
+              «&nbsp;&&nbsp;» et «&nbsp;%&nbsp;» en temps local. Veuillez
+              noter que cette valeur est définie pour l'ensemble du fichier
+              &fcrontab;, et que seule la dernière déclaration est prise en
+              compte. tzdiff est quelque peu stupide&nbsp;: elle ne gère pas
+              le changement d'heure alors que l'option timezone le fait,
+              aussi, vous devriez utiliser cette dernière.
+            </para>
+            <para>&voiraussi; option &opttimezone;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.until">
+	  <term>until</term>
+	  <listitem>
+	    <para><emphasis><type>time-value</type></emphasis>(<constant>0</constant>)</para>
+	    <para>Définir le délai d'attente maximal pour les valeurs de
+	      charge système. Si le délai est dépassé, la tâche sera lancée
+              indépendemment de la charge système. Définir until à 0 pour
+              désactiver le délai d'attente.
+            </para>
+            <para>&voiraussi; option &optlavg;.</para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry id="fcrontab.5.volatile">
+	  <term>volatile</term>
+	  <listitem>
+	    <para><emphasis><type>booléen</type></emphasis>(<constant>false</constant>)</para>
+            <para>Quand cette option est activée, la tâche est basée sur un
+              temps «&nbsp;volatile&nbsp;», qu'on pourrait aussi qualifier de
+              «&nbsp;non persistant&nbsp;». Plus précisément, &fcron; ne
+              «&nbsp;retient&nbsp;» pas le temps écoulé depuis la dernière
+              exécution des tâches «&nbsp;volatiles&nbsp;» entre deux
+              démarrages de &fcron;, et agit comme si les lignes avaient été
+              fraîchement ajoutées à chaque démarrage de &fcron;. Ainsi,
+              l'option &optfirst; s'appliquera par exemple pour les lignes
+              «&nbsp;volatiles&nbsp;» à chaque démarrage de fcron. Cette option
+              est en particulier utile lorsque &fcron; est lancé à partir d'un
+              script qui tourne, par exemple, seulement pendant une connexion
+              à Internet non permanente&nbsp;: l'exécution des tâches
+              «&nbsp;volatiles&nbsp;» est alors basée sur le temps depuis le
+              début de la connexion et le lancement de &fcron; plutôt que sur
+              le temps absolu. Enfin, veuillez noter que cette option s'associe
+              bien à l'option &optfirst;.
+            </para>
+	    <para>&voiraussi; options &optfirst;, &optstdout;, <link
+              linkend="uptent">Entrées basées sur le temps écoulé depuis le
+              démarrage du système</link>, l'option <option>--once</option> de
+              &fcron; dans <link linkend="fcron.8">&fcron;(8)</link>.
+            </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+      <para>Un argument de type <type>booléen</type> peut ne pas être indiqué,
+        auquel cas les parenthèses ne seront pas utilisées et il sera
+        interprété comme étant <constant>true</constant>&nbsp;; les chaînes
+        «&nbsp;true&nbsp;», «&nbsp;yes&nbsp;» ou «&nbsp;1&nbsp;» signifient
+        <constant>true</constant>&nbsp;; et les chaînes «&nbsp;false&nbsp;»,
+        «&nbsp;no&nbsp;» ou «&nbsp;0&nbsp;» signifient
+        <constant>false</constant>. Voir plus haut les explications sur les
+        valeurs de temps (section <link linkend="uptent">«&nbsp;Entrées basées
+        sur le temps écoulé depuis le démarrage du système&nbsp;»</link>).
+      </para>
+      <para>Veuillez noter que <varname>dayand</varname> et
+        <varname>dayor</varname> sont, en fait, la même option&nbsp;: une valeur
+        «&nbsp;false&nbsp;» pour <varname>dayand</varname> est équivalente à
+        une valeur «&nbsp;true&nbsp;» pour <varname>dayor</varname> et
+        réciproquement,  une valeur «&nbsp;false&nbsp;» pour
+        <varname>dayor</varname> est équivalente à une valeur
+        «&nbsp;true&nbsp;» pour <varname>dayand</varname>. C'est également
+        le cas pour les options <varname>lavgand</varname> et
+        <varname>lavgor</varname>.
+      </para>
+      <para>Veuillez noter un cas particulier à gérer&nbsp;: une tâche aurait
+        due être placée dans la file d'attente séquentielle, *mais* la
+        précédente entrée de cette tâche n'est pas encore achevée à cause
+        d'une forte charge système ou d'un quelconque événement extérieur.
+        L'option <varname>serialonce</varname> répond à cette question&nbsp;:
+        «&nbsp;La nouvelle entrée de cette tâche doit-elle être
+        ignorée&nbsp;?&nbsp;». De cette façon, on peut distinguer d'une part
+        les tâches sans contrainte forte sur l'heure d'exécution qui doivent
+        être exécutées un nombre de fois bien défini (serial(yes),
+        serialonce(false)), et d'autre part les tâches toujours sans contrainte
+        forte sur l'heure d'exécution mais dont le nombre d'exécutions n'est
+        pas important ou qu'il est inutile de lancer deux fois d'affilée
+        (serial(true), serialonce(true)), qu'on ne rentrera donc pas une
+        deuxième fois dans la file séquentielle de façon à éviter de charger
+        le système inutilement. Par exemple, «&nbsp;Payer ses employés&nbsp;»
+        est une tâche qui doit être exécutée exactement une fois par mois
+        (serialonce(false)), alors que «&nbsp;faire le ménage&nbsp;» doit être
+        exécutée de préférence une fois par semaine, mais il est inutile de le
+        faire deux fois d'affilée si par hasard on avait pris du retard
+        (serialonce(true)).
+      </para>
+      <para>Les mêmes considérations s'appliquent pour la file d'attente charge
+        système et peuvent être exprimées par l'option
+        <varname>lavgonce</varname>.
+      </para>
+      <para>De plus, si les files d'attente séquentielle et charge système
+        contiennent respectivement plus de &serialqueuemax; et &lavgqueuemax;
+        tâches, toute nouvelle tâche sera rejetée (et donc non exécutée) pour
+        éviter une saturation de ressources système. Dans ce cas, un message
+        d'erreur sera journalisé à travers syslog.
+      </para>
+      <para>Enfin, s'il reste des tâches dans les files d'attente séquentielle
+        et charge système au moment de l'arrêt de &fcron;, celles-ci seront
+        déposées une fois dans leur file correspondante au redémarrage
+        (l'ordre peut ne pas être conservé).</para>
+      <para>
+        <example>
+          <title>Exemple de dÉclaration d'option&nbsp;:</title>
+          <programlisting>!reset,serial(true),dayor,bootrun(0),mailto(root),lavg(.5,2,1.5)</programlisting>
+        </example>
+      </para>
+    </refsect2>
+
+  </refsect1>
+
+  <refsect1>
+    <title>Exemples</title>
+    <para><example>
+      <title>Exemple d'un fichier fcrontab utilisateur</title>
+      <programlisting>
+# utiliser /bin/bash pour lancer les commandes, quoique puisse indiquer /etc/passwd
+SHELL=/bin/bash
+
+# envoyer la sortie par courriel à l'utilisateur thib,
+# quelque soit le propriétaire de ce fcrontab.
+!mailto(thib) 
+
+# définir une variable équivalente à " Salut thib et paul ! "
+# les caractères «&nbsp;nouvelle ligne&nbsp;» sont échappés avec
+# une barre oblique inverse «&nbsp;\&nbsp;» et les guillemets servent
+# à conserver les espaces de début et de fin de chaîne
+TEXT= " Salut\
+ thib et\
+ paul ! "
+
+# on veut utiliser la file d'attente séquentielle mais pas l'option bootrun
+!serial(true),b(0)
+
+# lancer la première fois après 5 minutes de fonctionnement du système,
+# puis toutes les heures par la suite
+@first(5) 1h   echo "Lancer toutes les heures" 
+
+# lancer tous les jours
+@ 1d echo "fcron quotidien"
+
+# lancer une fois dans la matinée et une fois dans l'après-midi si le système
+# est en fonctionnement à n'importe quel moment pendant ces intervalles de temps
+%hours * 8-12,14-18 * * * echo "Hé patron, je bosse aujourd'hui !" 
+
+# lancer une fois par semaine à l'heure du déjeuner
+%weekly * 12-13 echo "J'ai laissé allumé mon système au moins une fois\
+ à l'heure du déjeuner cette semaine."
+
+# lancer tous les samedi et dimanche à 9:05
+5 9 * * sat,sun echo "Bonjour Thibault !" 
+
+# lancer tous les jours pairs du mois de mars à 18:00, sauf le 16
+0 18 2-30/2~16 Mar * echo "Il est temps de se rentrer à la maison !" 
+
+# la ligne précédente est équivalente à
+& 0 18 2-30/2~16 Mar * echo "Il est temps de se rentrer à la maison !"
+
+# mettre toutes les options à leur valeur par défaut et définir runfreq
+# pour les lignes qui vont suivre
+!reset,runfreq(7)
+
+# lancer une fois toutes les 7 correspondances (grâce à la déclaration précédente),
+# ainsi, si le système est en fonctionnement tous les jours à 10 heures,
+# la commande sera lancée une fois par semaine
+& 0 10 * * * echo "Si vous avez vu ce message pour la dernière fois il y a 7 jours,\
+ c'est que cette machine a fonctionné tous les jours à 10 heures durant la dernière semaine.\
+ Si vous avez eu ce message il y a 8 jours, c'est que cette machine n'a pas fonctionné\
+ un jour à 10:00 heures depuis le dernier message, etc."
+
+# attendre toutes les heures que la charge système moyenne sur 5 minutes
+# soit inférieure à 0.9
+@lavg5(0.9) 1h echo "La charge moyenne système est faible"
+
+# attendre au maximum 5 heures chaque jour une baisse de la charge système
+@lavgand,lavg(1,2.0,3.0),until(5h) 1d echo "La charge système vient de diminuer"
+
+# attendre le meilleur moment pour lancer une tâche lourde
+@lavgor,lavg(0.8,1.2,1.5),nice(10) 1w echo "C'est une très lourde tâche" 
+
+# lancer une fois toutes les nuits soit entre 21:00 et 23:00,
+# soit entre 3:00 et 6:00 
+%nightly,lavg(1.5,2,2) * 21-23,3-6 echo "Il est temps de récupérer\
+ la dernière version de Mozilla !"
+</programlisting>
+    </example></para>
+  </refsect1>
+
+  <refsect1>
+    <title>Fichiers</title>
+    <variablelist>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.conf.location;</filename></term>
+	<listitem>
+          <para>Fichier de configuration de &fcron;, &fcrontab et &fcrondyn;&nbsp;:
+            contient les chemins (répertoire spool, fichier pid) et les
+            programmes par défaut à utiliser (éditeur, shell, etc.). Voir
+            <link linkend="fcron.conf.5">&fcron.conf(5)</link> pour plus de
+            détails.
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.allow;</filename></term>
+	<listitem>
+          <para>Utilisateurs autorisés à utiliser &fcrontab; et &fcrondyn;
+            (un seul nom par ligne, le nom spécial «&nbsp;all&nbsp;»
+            signifiant tout le monde).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/&fcron.deny;</filename></term>
+	<listitem>
+          <para>Utilisateurs qui ne sont pas autorisés à utiliser &fcrontab;
+            et &fcrondyn; (même format que le fichier précédent).
+          </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename>&etc;/pam.d/fcron</filename> (ou
+<filename>&etc;/pam.conf</filename>)</term>
+	<listitem>
+          <para>Fichier de configuration <productname>PAM</productname> pour
+            &fcron;. Voir &pam;(8) pour plus de détails.
+          </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  &manpage-foot;
+
+  <refsect1>
+    <title>Traduction</title>
+    <para>Ce document est une traduction réalisée par Alain Portal
+      &lt;aportal AT univ-montp2 DOT fr&gt; le 6 février 2006.
+    </para>
+    <para>L'équipe de traduction a fait le maximum pour réaliser une adaptation
+      française de qualité. La version anglaise la plus à jour de ce document
+      est toujours consultable via la commande&nbsp;: «&nbsp;<emphasis>LANG=en
+      man 5 fcrontab</emphasis>&nbsp;».
+      N'hésitez pas à signaler à l'auteur ou au traducteur, selon le cas,
+      toute erreur dans cette page de manuel.
+    </para>
+  </refsect1>
+
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "")
+End:
+-->

@@ -1,0 +1,21 @@
+Source: fcron
+Section: admin
+Priority: extra
+Maintainer: Russell Coker <russell@coker.com.au>
+Build-Depends: debhelper (>= 4.1.16), libpam0g-dev, libselinux1-dev (>= 1.2-1.1)
+Standards-Version: 3.5.9
+
+Package: fcron
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, debconf, system-log-daemon, mail-transport-agent, adduser (>=3.25), dpkg (>>1.8.3)
+Conflicts: anacron, suidmanager (<< 0.50)
+Description: cron-like scheduler with extended capabilities
+ Fcron is a scheduler. It implements most of Vixie Cron's functionalities. 
+ But contrary to Vixie Cron, fcron does not need your system to be up 7 days 
+ a week, 24 hours a day: it also works well with systems which are running 
+ neither all the time nor regularly.
+ .
+ Fcron also includes a useful system of options, such as: run jobs one by
+ one, run jobs at fcron's startup if they should have been run during system
+ down time, a better management of the mailing of outputs, set a nice value
+ for a job...

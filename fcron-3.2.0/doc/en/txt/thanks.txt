@@ -1,0 +1,54 @@
+   #Fcron documentation Fcron: how and why? Todo Using fcron ...
+
+   Copyright © 2000-2014 Thibault Godouet Fcron 3.2.0          Web page :
+                                                      http://fcron.free.fr
+   _______________________________________________________________________
+
+             Fcron documentation
+   Prev Chapter 1. Fcron: how and why? Next
+   _______________________________________________________________________
+
+1.6. Thanks
+
+   Uwe Ohse <uwe@ohse.de>
+          Corrected a bug concerning the signals, has reported security
+          issues.
+
+   Max Heijndijk <cchq@wanadoo.nl>
+          Has made the rpm packages.
+
+   Gabor Z. Papp <gzp@papp.hu>
+          Helped to correct some bugs in installation process and reported
+          various bugs.
+
+   Clemens Fischer <rabat@web.de>
+          Proofread docs, reported bugs, and made some propositions.
+
+   Henrique de Moraes Holschuh <hmh@debian.org>
+          Has worked on fcron's integration in Linux Debian system,
+          reported bugs and corrected some of them, made some
+          propositions.
+
+   Thomas Whateley <thomas@whateley.net>
+          Has done a big part of Solaris port, implemented the fcron.conf
+          file, and Vixie crontab format support.
+
+   Guy Geens <ggeens@iname.com>
+          Fixed a nasty bug in goto_non_matching() which caused an endless
+          loop (midmonthly jobs executed after the 15th of the month).
+
+   Patrick Ohly <Patrick.Ohly@gmx.de>
+          Added fcron's option -y, -o and -l, and fcrontab's stdout and
+          volatile, in order to run fcron from time to time in foreground,
+          for instance in a ppp-up script.
+
+   Russell Coker <russell@coker.com.au>
+          Helped me to secure fcron, make code clearer, and he wrote the
+          patch for SE Linux support.
+
+   Alain Portal
+          Initial French translation of the manual pages.
+   _______________________________________________________________________
+
+   Prev Home            Next
+   Todo  Up  Using fcron ...

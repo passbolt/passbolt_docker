@@ -1,0 +1,12 @@
+#
+# The PAM configuration file for fcron daemon
+#
+
+account		required	pam_unix.so
+# Warning : fcron has no way to prompt user for a password !
+auth		required	pam_permit.so
+#auth		required	pam_unix.so nullok
+#auth		required	pam_env.so
+session		required	pam_permit.so
+#session		required	pam_unix.so
+session         required        pam_loginuid.so

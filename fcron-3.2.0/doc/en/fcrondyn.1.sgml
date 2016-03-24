@@ -1,0 +1,375 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<refentry id="fcrondyn.1">
+    <refmeta>
+	<refentrytitle>fcrondyn</refentrytitle>
+	<manvolnum>1</manvolnum>
+	<refmiscinfo>Fcron &version; <![%devrelease; [
+(<emphasis>development</emphasis> release)]]></refmiscinfo>
+	<refmiscinfo>&date;</refmiscinfo>
+    </refmeta>
+    <refnamediv>
+	<refname>fcrondyn</refname>
+	<refpurpose>dialog dyn-amically with a running fcron daemon</refpurpose>
+    </refnamediv>
+
+    <refsynopsisdiv id="fcrondyn.1.synopsis">
+	<cmdsynopsis>
+	    <command>fcrondyn</command>
+	    <arg>-c <replaceable>file</replaceable></arg>
+	    <arg>-i</arg>
+	</cmdsynopsis>
+	<cmdsynopsis>
+	    <command>fcrondyn</command>
+	    <arg>-c <replaceable>file</replaceable></arg>
+	    <arg choice="plain">-x <replaceable>command</replaceable></arg>
+	</cmdsynopsis>
+	<cmdsynopsis>
+	    <command>fcrondyn</command>
+	    <arg>-h</arg>
+	</cmdsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+	<title>Description</title>
+	<para>&Fcrondyn; is a user tool intended to interact with a running
+fcron daemon. It can, for instance, list user's jobs loaded by fcron, run one of
+them, renice a running job, send a signal to a running job, etc.</para>
+    </refsect1>
+
+    <refsect1>
+	<title>Options</title>
+	<variablelist>
+	    <varlistentry>
+		<term><option>-i</option></term>
+		<listitem>
+		    <para>Run &fcrondyn; in interactive mode. &fcrondyn; is also
+		    run in interactive mode when no option is given.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-x</option>
+<replaceable>command</replaceable></term>
+		<listitem>
+		    <para>Run <replaceable>command</replaceable> and returns
+immediately. <link linkend="fcrondyn.1.cmd.descp">See below</link> for syntax
+and a list of commands.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-c</option> <replaceable>file</replaceable></term>
+		<listitem>
+		    <para>Make &fcrondyn; use config file
+<replaceable>file</replaceable> instead of default config file
+<filename>&etc;/&fcron.conf.location;</filename>. To interact with a running
+&fcron; process, &fcrondyn; must use the same config file as the process. That
+way, several &fcron; processes can run simultaneously on an only system.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-d</option></term>
+		<listitem>
+		    <para>Run in debug mode. In this mode, many informational
+messages will be output in order to check if anything went wrong.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-h</option></term>
+		<listitem>
+		    <para>Display a brief description of the options.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-V</option></term>
+		<listitem>
+		    <para>Display an informational message about &fcrondyn;,
+including its version and the license under which it is distributed.</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+    </refsect1>
+
+    <refsect1 id="fcrondyn.1.cmd.descp">
+	<title>Command description</title>
+	<para>&Fcrondyn;'s command syntax is the following: </para>
+	<blockquote>
+	    <para><command>command</command> <replaceable>arg1</replaceable>
+<replaceable>arg2</replaceable> [...]</para>
+	</blockquote>
+	<para>An argument of a &fcrondyn; command is of one of the following
+type:</para>
+	<variablelist>
+	    <title>Argument types of &fcrondyn;'s commands</title>
+	    <varlistentry>
+		<term><emphasis><type>user</type></emphasis></term>
+		<listitem>
+		    <para>A valid user name.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><emphasis><type>jobid</type></emphasis></term>
+		<listitem>
+		    <para>A job id given by one of &fcrondyn;'s
+<command>ls*</command> commands (i.e. an integer).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><emphasis><type>sig</type></emphasis></term>
+		<listitem>
+		    <para>A signal number, or its name (case does not matter).
+For instance, "term" or "15".</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><emphasis><type>niceval</type></emphasis></term>
+		<listitem>
+		    <para>A job priority value. A
+<emphasis><type>niceval</type></emphasis> is an integer from -20 (highest
+priority) to 19 (lowest) (only root is allowed to use a negative value with this
+option).</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+	<para>Last, but not least, the following commands are recognized
+(optional arguments are between []):</para>
+	<variablelist>
+	    <title>Valid &fcrondyn;'s commands</title>
+	    <varlistentry>
+		<term><command>help</command></term>
+		<term><command>h</command></term>
+		<listitem>
+		    <para>Print an help message about fcrondyn's
+commands.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>quit</command></term>
+		<term><command>q</command></term>
+		<listitem>
+		    <para>In interactive mode, quit fcrondyn.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>ls</command>
+[<emphasis><type>user</type></emphasis>]</term>
+		<listitem>
+		    <para>List all jobs of user. When <command>ls</command> is
+run by root, all users are listed unless a user name is given as argument. <link
+linkend="fcrondyn.1.ls.fields">See below</link> for some explanations about the
+fields used by <command>ls*</command> commands.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>ls_lavgq</command>
+[<emphasis><type>user</type></emphasis>]</term>
+		<listitem>
+		    <para>Same as <command>ls</command>, but list only the jobs
+which are in the load-average queue (i.e. which are waiting for a lower load
+average to be run).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>ls_serialq</command>
+[<emphasis><type>user</type></emphasis>]</term>
+		<listitem>
+		    <para>Same as <command>ls</command>, but list only the jobs
+		    which are in the serial queue (i.e. which are waiting for
+		    other jobs to be finished).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>ls_exeq</command>
+[<emphasis><type>user</type></emphasis>]</term>
+		<listitem>
+		    <para>Same as <command>ls</command>, but list only the jobs
+		    which are running.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>detail</command>
+<emphasis><type>jobid</type></emphasis></term>
+		<listitem>
+		    <para>Print details about a
+job. <emphasis><type>jobid</type></emphasis> is the one given by
+<command>ls</command>.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>runnow</command>
+<emphasis><type>jobid</type></emphasis></term>
+		<listitem>
+		    <para>Instead of waiting for the next scheduled execution
+		    time, run the job now. The next execution time is changed as
+		    if the job had run on schedule.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>run</command>
+<emphasis><type>jobid</type></emphasis></term>
+		<listitem>
+		    <para>Run the job now. Its next execution time is not changed.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>kill</command>
+<emphasis><type>sig</type></emphasis>
+<emphasis><type>jobid</type></emphasis></term>
+		<listitem>
+		    <para>Send a signal to a running job.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><command>renice</command>
+<emphasis><type>niceval</type></emphasis>
+<emphasis><type>jobid</type></emphasis></term>
+		<listitem>
+		    <para>Change the priority of a running job.</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+	<variablelist id="fcrondyn.1.ls.fields">
+	    <title>Fields used by <command>detail</command> and
+	    <command>ls*</command> commands</title>
+	    <varlistentry>
+		<term>ID</term>
+		<listitem>
+		    <para>Job's unique identification number.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>USER</term>
+		<listitem>
+		    <para>User who owns this job.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>PID</term>
+		<listitem>
+		    <para>The pid of the running job.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>INDEX</term>
+		<listitem>
+		    <para>Index of the job in the serial queue (i.e. it will be run when all the jobs of an inferior index have been run)</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>R&amp;Q</term>
+		<listitem>
+		    <para>The job has this number instances of the given task which are either running or queued in the serial or lavg queue.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>OPTIONS</term>
+		<listitem>
+		    <para>List of main options which are set for the task.
+		     L for the jobs which run only under a given system Load average (option &optlavg;, &optlavg1;, &optlavg5; and &optlavg15;), LO (Load average Once) if only at most one instance of the task can be in the load average queue at a given time (option &optlavgonce;), S for serialized jobs (option &optserial;), SO for the jobs which will be serialized only for the next execution (Serial Once), and ES if several instances of the same job can run simultaneously (option &optexesev;).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>LAVG</term>
+		<listitem>
+		    <para>3 values, corresponding to the 1, 5, and 15-minute (in
+		    this order) system load average values below which the job
+		    will be run, otherwise it will be queued until the system
+		    load average is appropriate (see &optlavg; option).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>UNTIL</term>
+		<listitem>
+		    <para>Field corresponding to the &optuntil; option.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>STRICT</term>
+		<listitem>
+		    <para>Field corresponding to the &optstrict; option. Y for
+		    yes, N for no.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>SCHEDULE</term>
+		<listitem>
+		    <para>Next run is scheduled at this time and date. Please note that fcrondyn prints the next execution time and date in the time zone of the system where fcron is running, and not the time zone which can be defined for using option &opttimezone;.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term>CMD</term>
+		<listitem>
+		    <para>The command that will be executed.</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+    </refsect1>
+
+
+    <refsect1>
+	<title>Return values</title>
+	<para>&Fcrondyn; returns &exitok; on normal exit and &exiterr; on
+error.</para>
+    </refsect1>
+
+    <refsect1>
+	<title>Conforming to</title>
+	<para>Should be POSIX compliant.</para>
+    </refsect1>
+
+    <refsect1 id="fcrondyn.1.files">
+	<title>Files</title>
+	<variablelist>
+	    <varlistentry>
+		<term><filename>&etc;/&fcron.conf.location;</filename></term>
+		<listitem>
+		    <para>Configuration file for &fcron;, &fcrontab; and
+&fcrondyn;: contains paths (spool dir, pid file) and default programs to use
+(editor, shell, etc). See <link linkend="fcron.conf.5">&fcron.conf;(5)</link>
+for more details.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><filename>&etc;/&fcron.allow;</filename></term>
+		<listitem>
+		    <para>Users allowed to use &fcrontab; and &fcrondyn; (one
+name per line, special name "all" acts for everyone)</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><filename>&etc;/&fcron.deny;</filename></term>
+		<listitem>
+		    <para>Users who are not allowed to use &fcrontab; and
+&fcrondyn; (same format as allow file)</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><filename>&etc;/pam.d/fcron</filename> (or
+<filename>&etc;/pam.conf</filename>)</term>
+		<listitem>
+		    <para><productname>PAM</productname> configuration file for
+&fcron;. Take a look at pam(8) for more details.</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+    </refsect1>
+
+    &manpage-foot;
+
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "")
+End:
+-->
+

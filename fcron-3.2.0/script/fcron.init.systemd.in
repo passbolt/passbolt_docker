@@ -1,0 +1,17 @@
+#systemd service configuration file for fcron
+
+[Unit]
+Description=fcron periodical command scheduler
+After=remote-fs.target syslog.target time-sync.target
+Before=shutdown.target
+
+[Service]
+Type=forking
+PIDFile=@@PIDFILE@
+ExecStart=@@DESTSBIN@/fcron
+ExecReload=/bin/kill -USR1 $MAINPID
+Restart=always
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

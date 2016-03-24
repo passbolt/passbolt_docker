@@ -1,0 +1,419 @@
+#!/bin/sh
+# Install fcron under SysV system.
+#
+
+
+# takes 6 arguments : the name of the BSD-like install program (with "-o" and the correct username)
+#                    the DESTSBIN directory
+#                    the value of DEBUG
+#                    the value of FCRONTABS
+#                    the automatic answer
+#                    the src dir
+
+PATH="/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin"
+if test -d /usr/ucb; then
+    PATH=/usr/ucb:$PATH
+fi
+
+startdir=$PWD
+if test $# -ne 6; then
+    echo "Too few/many arguments"
+    exit 1
+fi
+
+# The program we use to install a file. This may be the script install.sh.
+if echo "$1" | grep 'install.sh$'; then
+    INSPROG=$SRCDIR/$1
+else
+    INSPROG=$1
+fi
+DESTBIN=$2
+DEBUG=$3
+#DEBUG=1
+FCRONTABS=$4
+ANSWER=$5
+SRCDIR=$6
+
+if test $DEBUG -eq 1; then
+    STARTCMD="fcron -b -d"
+else
+    STARTCMD="fcron -b"
+fi    
+
+if test `uname -s` = "FreeBSD"; then
+  IS_FREEBSD=1
+else
+  IS_FREEBSD=0
+fi
+
+# Check now if there is an old ( < 1.1.x ) version of fcrontab on the system.
+# We do that here because if user say "no" too early, the PREVIOUS_VERSION would
+# not be removed.
+if test -r "PREVIOUS_VERSION"; then
+  MAJOR=`cat PREVIOUS_VERSION | awk '{print $2}' | awk -F '.' '{print $1}'`
+  MINOR=`cat PREVIOUS_VERSION | awk '{print $2}' | awk -F '.' '{print $2}'`
+  #echo "MINOR $MINOR MAJOR $MAJOR"
+  if test "x$MAJOR" = "x" -a "x$MINOR" = "x"; then 
+    # we don't have the version: there was no previous fcron installed
+    NEED_UPDATE=0
+  elif test \( "$MAJOR" -lt 1 \) -o \( \( "$MINOR" -lt 1 \) -a "$MAJOR" -eq 1 \); then
+    NEED_UPDATE=1
+  else
+    NEED_UPDATE=0
+  fi
+  rm -f PREVIOUS_VERSION
+else
+  NEED_UPDATE=1
+fi
+#echo "NEED_UPDATE : $NEED_UPDATE"
+
+echo
+echo "Fcron should be started by your init scripts."
+echo "The installation process is going to try to install fcron in them."
+echo
+echo "Note that if you answer no to a proposition made at this point by"
+echo "the installation script, it will try to propose another way to do it."
+echo "(if there are several possibilities, a list will be printed before each"
+echo "action)"
+echo
+echo "If you answer no to all the propositions of the script, or if the script"
+echo "fails, a message will be printed telling you what you should do manually."
+echo
+
+echo
+echo "The script proposes the following location to do it :"
+if test $IS_FREEBSD -eq 1; then
+  echo "  /usr/local/etc/rc.d/fcron.sh"
+fi
+if test -d /etc/init.d/; then
+  echo "  /etc/init.d/fcron"
+elif test -d /etc/rc.d/init.d/; then
+  echo "  /etc/rc.d/init.d/fcron"
+fi
+if test -f /etc/rc.d/rc.local; then
+  echo "  /etc/rc.d/rc.local"
+fi
+if test -f /etc/rc.local; then
+  echo "  /etc/rc.local"
+fi
+echo
+
+INSTALL="nothing"
+SYSV=0
+STOPPED=0
+INSTALLED=0
+
+if test $IS_FREEBSD -eq 1; then 
+  if test -x /usr/local/etc/rc.d/fcron.sh; then
+    echo "Fcron is already in /usr/local/etc/rc.d/."
+    INSTALLED=1
+  else
+    if test $ANSWER -eq 2; then
+      while test \( ! -z "$INSTALL" \) -a \( "$INSTALL" != "y" \) -a \( "$INSTALL" != "n" \);
+      do
+        echo "Would you like to add fcron.sh script in the directory /usr/local/etc/rc.d/ ?"
+        echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+        read INSTALL NOTHING
+      done
+    # automatic answer given by configure script (option --with-answer-all)
+    elif test $ANSWER -eq 1; then
+      INSTALL="y"
+    else
+      INSTALL="n"
+    fi
+    if test \( -z "$INSTALL" \) -o \( "$INSTALL" = "y" \); then
+      cp -f script/fcron.sh /usr/local/etc/rc.d/
+      if test $DEBUG -eq 1; then
+        cat /usr/local/etc/rc.d/fcron.sh | sed 's: -b: -b -d:' > /usr/local/etc/rc.d/fcron.sh2
+        mv -f /usr/local/etc/rc.d/fcron.sh2 /usr/local/etc/rc.d/fcron.sh
+      fi
+      chmod +x /usr/local/etc/rc.d/fcron.sh
+      INSTALLED=1
+    else
+      INSTALLED=0
+    fi
+  fi
+fi
+
+
+INSTALL="nothing"
+ROOTDIR=""
+if test -d /etc/init.d/; then
+    ROOTDIR="/etc"
+elif test -d /etc/rc.d/init.d/; then
+    ROOTDIR="/etc/rc.d"
+fi
+if test \( ! "$INSTALLED" -eq 1 \) -a \( "$ROOTDIR" != "" \); then
+  if test $ANSWER -eq 2; then
+    while test \( ! -z "$INSTALL" \) -a \( "$INSTALL" != "y" \) -a \( "$INSTALL" != "n" \);
+    do
+      echo "Would you like to add fcron in the directory $ROOTDIR/init.d/ and in runlevel 2, 3, 4 and 5"
+      echo "(directories $ROOTDIR/rc{2,3,4,5}.d/) ?"
+      echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+      read INSTALL NOTHING
+    done
+  # automatic answer given by configure script (option --with-answer-all)
+  elif test $ANSWER -eq 1; then
+    INSTALL="y"
+  else
+    INSTALL="n"
+  fi
+  if test \( -z "$INSTALL" \) -o \( "$INSTALL" = "y" \); then
+    $INSPROG -c -m 755 script/sysVinit-launcher $ROOTDIR/init.d/fcron
+    if test $DEBUG -eq 1; then
+      cat $ROOTDIR/init.d/fcron | sed 's: -b: -b -d:' >$ROOTDIR/init.d/fcron2
+      mv -f $ROOTDIR/init.d/fcron2 $ROOTDIR/init.d/fcron
+      chmod +x $ROOTDIR/init.d/fcron
+    fi
+    chmod +x $ROOTDIR/init.d/fcron
+
+    for j in 2 3 4 5
+    do
+    cd $ROOTDIR/rc$j.d/ ; ln -f -s ../init.d/fcron S40fcron
+    done
+
+    for j in 0 6
+    do
+    cd $ROOTDIR/rc$j.d/ ; ln -f -s ../init.d/fcron K60fcron
+    done
+    cd $startdir
+
+    INSTALLED=1
+    SYSV=1
+  else
+    INSTALLED=0      
+  fi
+
+fi
+
+INSTALL="nothing"
+if test \( ! "$INSTALLED" -eq 1 \) -a \( -f /etc/rc.d/rc.local \); then
+  # Slackware
+  if ! cat /etc/rc.d/rc.local | grep "$STARTCMD"; then
+    if cat /etc/rc.d/rc.local | grep fcron; then	
+      echo "Fcron seems to be in /etc/rc.d/rc.local, but not with the appropriate options :"
+      echo "you should probably correct this file in order to run fcron with $STARTCMD."
+      INSTALLED=1
+    else
+      if test $ANSWER -eq 2; then
+        while test \( ! -z "$INSTALL" \) -a \( "$INSTALL" != "y" \) -a \( "$INSTALL" != "n" \);
+        do
+          echo "Would you like to add $STARTCMD in the file /etc/rc.d/rc.local ?"
+          echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+          read INSTALL NOTHING
+        done
+      # automatic answer given by configure script (option --with-answer-all)
+      elif test $ANSWER -eq 1; then
+        INSTALL="y"
+      else
+        INSTALL="n"
+      fi
+      if test \( -z "$INSTALL" \) -o \( "$INSTALL" = "y" \); then
+        echo $STARTCMD >> /etc/rc.d/rc.local
+        INSTALLED=1
+      else
+        INSTALLED=0
+      fi
+    fi
+  else
+    echo "Fcron is already in /etc/rc.d/rc.local."
+    INSTALLED=1
+  fi
+fi 
+
+
+INSTALL="nothing"
+
+if test \( ! "$INSTALLED" -eq 1 \) -a \( -f /etc/rc.local \) ; then
+  if ! cat /etc/rc.local | grep "$STARTCMD"; then
+    if cat /etc/rc.local | grep fcron; then	
+      echo "Fcron seems to be in /etc/rc.local, but not with the appropriate options :"
+      echo "you should probably correct this file in order to run fcron with $STARTCMD."
+      INSTALLED=1
+    else
+      if test $ANSWER -eq 2; then
+        while test \( ! -z "$INSTALL" \) -a \( "$INSTALL" != "y" \) -a \( "$INSTALL" != "n" \);
+        do
+          echo "Would you like to add $STARTCMD in the file /etc/rc.local ?"
+          echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+          read INSTALL NOTHING
+        done
+      # automatic answer given by configure script (option --with-answer-all)
+      elif test $ANSWER -eq 1; then
+        INSTALL="y"
+      else
+        INSTALL="n"
+      fi
+      if test \( -z "$INSTALL" \) -o \( "$INSTALL" = "y" \); then
+        echo $STARTCMD >> /etc/rc.local
+        INSTALLED=1
+      else
+        INSTALLED=0
+      fi
+    fi
+  else
+    echo "Fcron is already in /etc/rc.local."
+    INSTALLED=1
+  fi
+fi
+
+
+if test "$INSTALLED" -eq 0; then
+echo
+echo "Installation process failed to install fcron in your init scripts :"
+echo "please do it manually."
+fi
+
+
+if PID=`pidof fcron`; then
+  KILL="kill -TERM $PID"
+  KILLSTR="kill -TERM \`pidof fcron\`"
+else
+  KILL="killall -TERM fcron"
+  KILLSTR=$KILL
+  COMMENT="WARNING : this command may not have the desired effect on non-Linux systems.\n"
+  PID="test -z on PID is not need in this case"
+fi
+
+# NEED_UPDATE is set at the beginning of this script
+if test $NEED_UPDATE -eq 0; then
+  # we stop fcron like this (not using "fcron restart") because
+  # an old version of fcron may not stop correctly otherwise.
+  echo 
+  echo "You should now stop the old version of fcron and start the new one."
+  RESTART="nothing"
+  COMMENT=""
+  if test -z "$PID"; then
+    echo "Fcron is not running."
+    KILL=""
+    COMMENT=""
+  fi
+  if test "$SYSV" -eq 1; then
+    CMD="$ROOTDIR/init.d/fcron start"
+  else
+    CMD=$STARTCMD
+  fi
+  if test $ANSWER -eq 2; then
+    while test \( ! -z "$RESTART" \) -a \( "$RESTART" != "y" \) -a \( "$RESTART" != "n" \);
+    do
+      if test ! -z "$KILL"; then
+        echo "Would you like to do it with a '"$KILLSTR"' ?"
+        echo -n $COMMENT
+        echo "followed by a '"$CMD"' ?"
+      else
+        echo "Would you like to start it by '"$CMD"' ?"
+      fi
+        echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+        read RESTART NOTHING
+    done
+  # automatic answer given by configure script (option --with-answer-all)
+  elif test $ANSWER -eq 1; then
+    RESTART="y"
+  else
+    RESTART="n"
+  fi
+  if test \( -z "$RESTART" \) -o \( "$RESTART" = "y" \); then
+    $KILL
+    sleep 2   # wait for fcron to stop
+    $CMD
+  fi
+
+else # test $NEED_UPDATE -eq 0
+
+  echo 
+  echo "You should now stop the old version fcron."
+  STOP="nothing"
+  COMMENT=""
+  if test -z "$PID"; then
+    echo "Fcron is not running."
+    echo "You may start it after having updated the fcrontabs."
+    STOPPED=1
+  else
+    if test $ANSWER -eq 2; then
+      while test \( ! -z "$STOP" \) -a \( "$STOP" != "y" \) -a \( "$STOP" != "n" \);
+      do
+        echo "Would you like to do it with a '"$KILLSTR"'"
+        echo -n $COMMENT
+        echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+        read STOP NOTHING
+      done
+      # automatic answer given by configure script (option --with-answer-all)
+    elif test $ANSWER -eq 1; then
+      STOP="y"
+    else
+      STOP="n"
+    fi
+    if test \( -z "$STOP" \) -o \( "$STOP" = "y" \); then
+      $KILL
+      STOPPED=1
+    fi
+  fi
+
+  echo
+  if test "$STOPPED" = "1"; then
+    echo "You should now update the fcrontabs format using convert-fcrontab program."
+  else
+    echo "After having restarted fcron, you should update the fcrontabs format"
+    echo "using the convert-fcrontab program ($SRCDIR/convert-fcrontab)"
+    echo "(run \"convert-fcrontab -h\" to get help) and then start the new version"
+    echo "of fcron."
+    exit 0
+  fi
+  echo "As a matter of fact, you must know that fcrontabs installed by an old"
+  echo "version (<1.1.x) of fcrontab won't work anymore with this version if you don't"
+  echo "update their format."
+
+  UPDATE="nothing"
+  # reinstall the fcrontabs
+  if test $ANSWER -eq 2; then
+    while test \( ! -z "$UPDATE" \) -a \( "$UPDATE" != "y" \) -a \( "$UPDATE" != "n" \);
+    do
+      echo "Would you like to do it now ?"
+      echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+      read UPDATE NOTHING
+    done
+  elif test $ANSWER -eq 1; then
+    UPDATE="y"
+  else
+    UPDATE="n"
+  fi
+  if test \( -z "$UPDATE" \) -o \( "$UPDATE" = "y" \); then
+    for FILE in $FCRONTABS/* ; do \
+      if test "$FILE" != "$FCRONTABS/*"; then
+        BASENAME=`basename $FILE` ; \
+        FCRONTAB=`echo "$BASENAME" | \
+        sed "s|.*orig|| ; s|fcrontab.sig|| ; s|rm.*||"` ; \
+        ( test ! -z "$FCRONTAB" && $SRCDIR/convert-fcrontab $FCRONTAB ) \
+            || echo -n ""; \
+      fi
+    done
+  fi
+
+  # start the new version of fcron
+  echo 
+  echo "You should now start the new version of fcron."
+  START="nothing"
+  COMMENT=""
+  if test "$SYSV" -eq 1; then
+    CMD="$ROOTDIR/init.d/fcron start"
+  else
+    CMD=$STARTCMD
+  fi
+  if test $ANSWER -eq 2; then
+    while test \( ! -z "$START" \) -a \( "$START" != "y" \) -a \( "$START" != "n" \);
+    do
+      echo "Would you like to do it with a '"$CMD"'"
+      echo -n "Please answer with 'y' or 'n' (default: 'y'): "
+      read START NOTHING
+    done
+    # automatic answer given by configure script (option --with-answer-all)
+  elif test $ANSWER -eq 1; then
+    START="y"
+  else
+    START="n"
+  fi
+  if test \( -z "$START" \) -o \( "$START" = "y" \); then
+    $CMD
+  fi
+
+fi

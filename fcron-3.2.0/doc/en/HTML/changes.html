@@ -1,0 +1,1926 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Changes</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Fcron documentation"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Fcron: how and why?"
+HREF="how-and-why.html"><LINK
+REL="PREVIOUS"
+TITLE="How to install fcron"
+HREF="install.html"><LINK
+REL="NEXT"
+TITLE="Release notes: fcron 3.2.0"
+HREF="relnotes.html"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Fcron documentation</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="install.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Fcron: how and why?</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="relnotes.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="CHANGES"
+>1.3. Changes</A
+></H1
+><P
+></P
+><P
+><B
+>From version 3.1.3 to 3.2.0</B
+></P
+><UL
+><LI
+><P
+>Print date as %Y-%m-%d (the ISO 8601 date format), to avoid being ambiguous in international context.  Also always use the ':' as hour:minute separator (there was a couple of 'h' instead).</P
+></LI
+><LI
+><P
+>Don't fully disable a @-line when something goes wrong (e.g. fcron didn't shut down cleanly).  The idea was to prevent infinite loops, but this was overkill.  Instead set its next execution to now+frequency.`</P
+></LI
+><LI
+><P
+>Cosmetic changes in the log lines (quote the job shell commands) and fcrondyn (use the pipe char "|" as a column separator).</P
+></LI
+><LI
+><P
+>Fixed file descriptor leak when executing jobs in case of NSS failures (thanks Pavel Stano).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.1.2 to 3.1.3</B
+></P
+><UL
+><LI
+><P
+>Fixed compilation on Solaris 10, and fixed fcrondyn authentication without a password on that platform.</P
+></LI
+><LI
+><P
+>Fixed bug where LONG_MAX could potentially be used in functions like localtime(), which is too big for localtime().  This was unlikely to happen unless there was another problem in the first place.</P
+></LI
+><LI
+><P
+>fcrondyn -x no longer adds null characters at the end of the output.  This would cause problems if the output was piped to something as grep.  Thanks Dimitri Semitsoglou-Tsiapos for pointing this out.</P
+></LI
+><LI
+><P
+>Fixed minor bug in fcronsighup resulting in log errors about closing the signal file</P
+></LI
+><LI
+><P
+>fcrondyn no longer crashes when receiving an EOF when using readline (thanks Wade Carpenter for the patch)</P
+></LI
+><LI
+><P
+>fcrontab no longer crash if mailto is empty (thanks Olaf for reporting the issue)</P
+></LI
+><LI
+><P
+>Fixed SELinux issue with Linux user being used instead of the SELinux user (thanks Sven Vermeulen for the patch)</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.1.1 to 3.1.2</B
+></P
+><UL
+><LI
+><P
+>bug fix: fixed fcron crash bug when using fcrondyn</P
+></LI
+><LI
+><P
+>bug fix: the configure option --without-sendmail was not working correctly.</P
+></LI
+><LI
+><P
+>bug fix: inline runas wouldn't work with Vixie-cron style shortcut lines.</P
+></LI
+><LI
+><P
+>bug fix: fixed bug in the code to log to a file.</P
+></LI
+><LI
+><P
+>systemd: fixed the installation on systems using systemd, and also don't kill jobs when killing fcron.</P
+></LI
+><LI
+><P
+>Made file closures more robust to prevent bugs difficult to troubleshoot to creep in.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.1.0 to 3.1.1</B
+></P
+><UL
+><LI
+><P
+>Added readline support for fcrondyn</P
+></LI
+><LI
+><P
+>tweaked 'make indent' options and applied</P
+></LI
+><LI
+><P
+>Fcron can now log to a file (without syslog) - thanks Matthew Signorini.</P
+></LI
+><LI
+><P
+>fixed fcrontab edition of *ly lines (hourly, daily, etc)</P
+></LI
+><LI
+><P
+>fixed fcron crashes when noticenotrun was triggered</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.6 to 3.1.0</B
+></P
+><UL
+><LI
+><P
+>Vixie cron compatibility: added options @reboot, @daily, @hourly, etc. Also added more generic options runatreboot, rebootreset and runonce.</P
+></LI
+><LI
+><P
+>Pass fcrondyn client credentials through the socket when possible so as the user doesn't need to type his password when using fcrondyn.</P
+></LI
+><LI
+><P
+>added audit (libaudit) support</P
+></LI
+><LI
+><P
+>Better validation of string arguments of fcrontab options. In particular for timezones, previously a space could be added at the beginning or the end of the timezone with no warning, and this led fcron to use an unexpected timezone, which could cause confusion.</P
+></LI
+><LI
+><P
+>Allow tasks to run every seconds</P
+></LI
+><LI
+><P
+>don't inherit fcron's environment when running a job but build the environment from scratch (cleaner, and this is what Vixie cron does)</P
+></LI
+><LI
+><P
+>fcron now sets the email headers X-Cron-Env and Auto-Submitted (as described in RFC 3834).</P
+></LI
+><LI
+><P
+>email encoding: fcron now sets the email headers Content-Type and Content-Transfer-Encoding. They can be controlled by setting the CONTENT_TYPE and CONTENT_TRANSFER_ENCODING variables in fcrontabs.</P
+></LI
+><LI
+><P
+>Added systemd service definition (thank you Reiner)</P
+></LI
+><LI
+><P
+>Allow Makefile parallelism (e.g. make -j 4)</P
+></LI
+><LI
+><P
+>bug fix: fcrontab: don't alert about invalid character when correcting fcrontab twice</P
+></LI
+><LI
+><P
+>bug fix: fixed free_safe() function (replaced by macro).</P
+></LI
+><LI
+><P
+>bug fix: configure script: usage of sendmail couldn't be disabled</P
+></LI
+><LI
+><P
+>bug fix: fixed a potential (unlikely) 1 byte overflow in strncat() in socket.c</P
+></LI
+><LI
+><P
+>Quite a lot of code clean-up and refactoring -- e.g. implemented generic unordred list for lavgq / exeq.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.5 to 3.0.6</B
+></P
+><UL
+><LI
+><P
+>Fixed bug preventing normal user from running fcrontab -l if fcron's uid!=gid</P
+></LI
+><LI
+><P
+>Fixed fcrontab's PAM initialization when working on the systab user.</P
+></LI
+><LI
+><P
+>Added check_system_crontabs.sh which is to replace the less portable check_system_crontabs.bash.</P
+></LI
+><LI
+><P
+>Added option -c to check_system_crontabs.sh to specify a fcron.conf file to use</P
+></LI
+><LI
+><P
+>Fixed Makefile bug preventing installation when building from a different folder than the sources (wrong fcron.conf path)</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.4 to 3.0.5</B
+></P
+><UL
+><LI
+><P
+>Security issue: fixed security issue that allowed malicious user to read any file readable by group 'fcron' (in particular fcron's config files and the fcrontabs of non-root users). On systems without seteuid() (i.e. quite exotic systems) then the bug is harder to exploit but any file could be read.</P
+></LI
+><LI
+><P
+>Improved general security of fcrontab and fcrondyn by dropping more privileges.</P
+></LI
+><LI
+><P
+>Work on portability (aix, hpux, irix, tru64 unix, solaris). Thanks Peter O'Gorman for his patch!</P
+></LI
+><LI
+><P
+>Patched startup script to make it more compliant to the LSB.</P
+></LI
+><LI
+><P
+>Increased maximum number of fcrontab entries from 256 to 1024.</P
+></LI
+><LI
+><P
+>bug fix: if fcron could not fork() to run a job, then the job would still appear to be running until fcron is restarted (thanks Alexander Y. Fomichev for noticing this bug).</P
+></LI
+><LI
+><P
+>bug fix: fcrontab used to accept MAXENTRIES+1 fcrontab entries</P
+></LI
+><LI
+><P
+>chdir to /tmp before executing the editor (as some editor needs to be able to read information on the current folder).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.3 to 3.0.4</B
+></P
+><UL
+><LI
+><P
+>Initialize the random number generator with some values specific to the machine so as two fcron started exactly at the same time on two different machines run their random jobs at different time. This is useful for clusters for instance.</P
+></LI
+><LI
+><P
+>Added option erroronlymail so as the output of a job is emailed only when the job exited with a non-zero status.</P
+></LI
+><LI
+><P
+>Bug fix: in certain conditions, jobs could be executed outside their interval of execution when using option random on %-lines.</P
+></LI
+><LI
+><P
+>Fixed bug which prevented the pid of the job to be written to the (grand-)parent process. This was not a major issue but would prevent fcrondyn from working well with the concerned jobs. This bug was caused by a close() function applied twice on a file descriptor, which would trigger the bug in some rare occasions (only one affected linux system reported).</P
+></LI
+><LI
+><P
+>Fixed bug which would stop fcron from running any job any more on the affected system and until fcron was restarted if the bug above occured.</P
+></LI
+><LI
+><P
+>Cleaned-up the closures of file descriptors (check for errors, etc).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.3-rc1 to 3.0.3</B
+></P
+><UL
+><LI
+><P
+>The configure script now check that the make command is GNU make (which is required to build fcron).</P
+><P
+>Bug fix: better handling of getpwnam() errors (we cannot rely on errno to spot an error). This was causing problems for AIX for instance.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.2 to 3.0.3-rc1</B
+></P
+><UL
+><LI
+><P
+>New configure scripts, with more standard default values for paths, etc. This aims at simplifying the packaging of fcron. Thanks go to Patrice Dumas for his patch!</P
+></LI
+><LI
+><P
+>New make targets: perms and strip. This aims at simplifying the packaging of fcron. Thanks go to Patrice Dumas for his patch!</P
+></LI
+><LI
+><P
+>Set environment variable LOGNAME when running a job (as Vixie Cron does: thanks Martin McGreal for pointing that out).</P
+></LI
+><LI
+><P
+>Portability work for AIX 5.2 and Solaris 8 and 10 (thanks Martin McGreal).</P
+></LI
+><LI
+><P
+>Chmod()ed fcron's fifo file to 777. It was 666 previously, but the exec bit is needed for AIX and apparently ignored on other platforms, so we now set it to.</P
+></LI
+><LI
+><P
+>Set TZ environment variable for lines which uses fcron option timezone.</P
+></LI
+><LI
+><P
+>A file was closed twice by fcrontab: removed the duplicate close().</P
+></LI
+><LI
+><P
+>Replaced include sys/termios.h by termios.h.</P
+></LI
+><LI
+><P
+>Fixed a fcrontab bug cause by an return value not handled and resulting in many useless (but pretty much harmless) iteration in a loop.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.1 to 3.0.2</B
+></P
+><UL
+><LI
+><P
+>Use sockaddr's field sa_len/sun_len on system defining it (BSD, ...). It should allow fcrondyn to connect to fcron on these systems.</P
+></LI
+><LI
+><P
+>Non-SELinux systems: run each job in a different session by calling setuid() for each one of them. This is to improve compatibility with Vixie cron.</P
+></LI
+><LI
+><P
+>Don't use the shell defined in /etc/passwd by default, but use the default value from fcron.conf instead. This is for compatibility with Vixie cron.</P
+></LI
+><LI
+><P
+>Use root name and group instead of root uid and gid. This seems more logical since the configure scripts asks for the name and group and not the uid and gid.</P
+></LI
+><LI
+><P
+>Added an init file for Suse in script/ (contribution from Alex: thanks!).</P
+></LI
+><LI
+><P
+>Minor spelling fixes in the French documentation.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 3.0.0 to 3.0.1</B
+></P
+><UL
+><LI
+><P
+>fcrontab: access user's directory with user's rights (necessary if user/group fcron has not the right to read the directory).</P
+></LI
+><LI
+><P
+>improvement in check_system_crontabs: more comments, added some help messages, added command line options, cleaner, safer code.</P
+></LI
+><LI
+><P
+>Improved English documentation: clarified some previously-unclear points.</P
+></LI
+><LI
+><P
+>Added French translation of the manual pages (thanks go to Alain Portal)</P
+></LI
+><LI
+><P
+>Removed old documentation from the package.</P
+></LI
+><LI
+><P
+>Better handling of the pipes in job.c: this should remove some problems encountered on BSD systems.</P
+></LI
+><LI
+><P
+>bug fix: do not use a tv_usec &#62; 999999: should fix the problem encountered on BSD systems with select().</P
+></LI
+><LI
+><P
+>bug fix: fixed a bug in make_msg(): the size of a string written to a buffer was not controlled correctly in some cases. This could result in buffer overflow and thus this was security problem. However the bug seems not exploitable as the part of the string which could overflow the buffer could not be freely defined by an attacker (it was either ": " or one of the strings returned by strerror()).</P
+></LI
+><LI
+><P
+>Bug fix: set the FDs correctly for select().</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.7 to 3.0.0</B
+></P
+><UL
+><LI
+><P
+>Added a missing entry in changelog (changes from 2.9.6 to 2.9.7, bug fix for NetBSD).</P
+></LI
+><LI
+><P
+>Merged a patch for the check_system_crontabs script (Security enhancements and cleanups).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.6 to 2.9.7</B
+></P
+><UL
+><LI
+><P
+>Added time zone support (option timezone).</P
+></LI
+><LI
+><P
+>Better support FreeBSD's users and groups modifications in
+	       fcron's install scripts.</P
+></LI
+><LI
+><P
+>Fixed a bug which used to make fcron send empty mails on very
+	       recent systems.</P
+></LI
+><LI
+><P
+>Fixed a bug which prevented fcrondyn to being used on NetBSD (thanks go to Gabor Z. Papp).</P
+></LI
+><LI
+><P
+>Added some casts in fileconf.c and save.c (to avoid some
+	       warnings when compiling on HP-UX).</P
+></LI
+><LI
+><P
+>Added a FAQ entry on how to emulate an anacron entry.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.5.1 to 2.9.6</B
+></P
+><UL
+><LI
+><P
+>fixed the bug which made jobs run an hour too early after a
+	       daylight saving time change.</P
+><P
+>Added detailed explanations about when a job will run when
+	       there is a DST change in the FAQ.</P
+></LI
+><LI
+><P
+>fixed fcrondyn's "Unknown command" bug on x86_64 (thanks go to
+	       Georgi Georgiev).</P
+></LI
+><LI
+><P
+>made fcrontab behave better when there is no space left in the
+	       spool directory (used to truncate the fcrontab source file).
+	    </P
+></LI
+><LI
+><P
+>Added a script, check_system_crontabs, to emulate Vixie cron's
+	       behavior about /etc/crontab and /etc/cron.d. Please have a look
+	       at the top of script/check_system_crontabs for more information.
+	    </P
+></LI
+><LI
+><P
+>HP-UX support (needs more tests).</P
+></LI
+><LI
+><P
+>bug fix: restore umask even if fcron runs
+	       unprivileged.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.5 to 2.9.5.1</B
+></P
+><UL
+><LI
+><P
+>Fixed serious security vulnerabilities in fcronsighup, and
+	       improved fcronsighup's overall security (drop privileges, better
+	       check user inputs, etc).</P
+></LI
+><LI
+><P
+>Fixed several typos in the doc.</P
+></LI
+><LI
+><P
+>Updated debian package scripts (patch from debian
+	       maintainer).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.4 to 2.9.5</B
+></P
+><UL
+><LI
+><P
+>Ported to HP-UX (thanks go to Scott Tinsley)</P
+></LI
+><LI
+><P
+>Implemented fcrondyn commands run and runnow.</P
+></LI
+><LI
+><P
+>Merged patch from Russell Coker for new SE Linux.</P
+></LI
+><LI
+><P
+>Merged debian/ dir for debian package.</P
+></LI
+><LI
+><P
+>Mail reports: put the same username in the To: field than the
+	       one we give as recipient to the MTA. mailto can now also be a
+	       fully qualified email address.</P
+></LI
+><LI
+><P
+>changed a log message: a job which has ended without error is
+	       reported has "completed" (which is more appropriated than
+	       "terminated").
+	    </P
+></LI
+><LI
+><P
+>Internal changes in log.c: code is more segmented, and code
+	       has been added to be able to send log message to fcrondyn. Syslog
+	       messages are now never longer than MAX_MSG (even with string from
+	       strerror()).</P
+></LI
+><LI
+><P
+>Fixed a bug which happened on Daylight Saving Time change on
+	       some systems. It would make fcron run into a nasty infinite loop.
+	       Added a sanity check in set_nextexe() to avoid such
+	       things.</P
+></LI
+><LI
+><P
+>Fixed a crash bug: in 2.9.4, if a user run ls_exeq when a job
+	       is running and has been removed from its fcrontab, it makes fcron
+	       crash.</P
+></LI
+><LI
+><P
+>Fixed a small bug: scripts were supposing perl was in
+	       /usr/bin.</P
+></LI
+><LI
+><P
+>Fixed a bug which caused the pid of a child process to be
+	       incorrectly read</P
+></LI
+><LI
+><P
+>fixed memory leak: some strings returned by log.c:make_msg()
+	       weren't always free()d.</P
+></LI
+><LI
+><P
+>bug fix: fcrondyn commands renice and kill used not to handle
+	       correctly the case where a job has several entries in exeq
+	       (exesev jobs).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.3 to 2.9.4</B
+></P
+><UL
+><LI
+><P
+>Merged support for SE Linux (patch from Russell Coker: thanks!)
+	    </P
+></LI
+><LI
+><P
+>Work on the documentation (fixed spelling mistakes, tried to
+	       make things clearer in fcrontab.5) (thanks Bill Wohler for your
+	       help!)</P
+></LI
+><LI
+><P
+>Changed the subject line of mail reports: it now contains the
+	       subject line, and is very similar to vixie cron's one.</P
+></LI
+><LI
+><P
+>Added a sum-up at the end of ./configure.</P
+></LI
+><LI
+><P
+>bug fix: "makewhatis" bug is fixed -- at last!</P
+><P
+>In fact, the problems encountered were due to an abusively
+	       ignored signal SIGPIPE.</P
+></LI
+><LI
+><P
+>bug fix: possible crash of fcron when trying to save a file
+	       if there was no space left on device.</P
+></LI
+><LI
+><P
+>bug fix: we don't consider '-' and '_' as word delimiters for
+	       a username before the command anymore, since many programs have
+	       one of these characters in their name.</P
+></LI
+><LI
+><P
+>bug fix: option first was broken in fcron 2.9.3.</P
+></LI
+><LI
+><P
+>fixed a little typo in an error message
+	       (could-&#62;couldn't)</P
+></LI
+><LI
+><P
+>bug fix: do not ignore the last line of a fcrontab if there
+	       is no \n before the end of file.</P
+></LI
+><LI
+><P
+>fixed compile on SunOS 5.9 .</P
+></LI
+><LI
+><P
+>Fcron now compiles on MacOS X.</P
+></LI
+><LI
+><P
+>added some $srcdir to be able (again ;) ) to run configure
+	       from another directory.</P
+></LI
+><LI
+><P
+>Perf improvement: use buffer for i/o in run_job().</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.2 to 2.9.3</B
+></P
+><UL
+><LI
+><P
+>security issue: fcron used not to check the fcrontabs
+	       installed by root for a standard user. This could make an
+	       inattentive superuser install a user job runas(root)
+	       involontary.</P
+></LI
+><LI
+><P
+>Perf improvement: we now use buffers to write something to
+	       disk (became necessary due to the use of O_SYNC).</P
+></LI
+><LI
+><P
+>To avoid loss of data in case of an hardware failure or a
+	       system crash, fcron now saves files to a temporary name, and then
+	       renames them to their definitive filename if everything's
+	       ok.</P
+></LI
+><LI
+><P
+>The PID indicated by fcrondyn is now the pid of the job itself
+	       (up to now, it was the one of the fcron process controlling the
+	       job).</P
+></LI
+><LI
+><P
+>Implemented functions kill (send a signal to a running job)
+	       and renice (change the priority of a running job) in
+	       fcrondyn.</P
+></LI
+><LI
+><P
+>Added fcron's option -q to control the lavg and serial queue
+	       sizes.
+	    </P
+></LI
+><LI
+><P
+>Added some timeouts in fcron for fcrondyn clients.</P
+></LI
+><LI
+><P
+>Fcron is less restrictive concerning mailto addresses. In
+	       particular, you can now use address like user@host.</P
+></LI
+><LI
+><P
+>bug fix: in 2.9.2, fcrontab and fcron did not set correctly
+	       some file modes.</P
+></LI
+><LI
+><P
+>bug (introduced in 2.9.1): when a job stops with an non-zero
+	       exit status or because it has been signaled, send a mail to its
+	       owner to inform him (in 2.9.1 and 2.9.2, the mail was sent, but
+	       contained nothing).</P
+></LI
+><LI
+><P
+>code clean: use the same scheme for all struct types, removed
+	       some code redundancy (save to disk management).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.1 to 2.9.2</B
+></P
+><UL
+><LI
+><P
+>Added a system fcrontab. Root can access it with fcrontab by
+	       using "-u systab".</P
+></LI
+><LI
+><P
+>fcrondyn's ls_lavgq, ls_serialq and ls_exeq are now
+	       functional.</P
+></LI
+><LI
+><P
+>mailto can now be set to a non-real user (for ex., an
+	       alias).</P
+></LI
+><LI
+><P
+>fcron now calls shutdown() when a connection from fcrondyn is
+	       closed.  Another change in the code should prevent fcrondyn from
+	       not returning to the prompt after a command has been run.</P
+></LI
+><LI
+><P
+>use open() instead of fopen() to write files, for more
+	       security.</P
+></LI
+><LI
+><P
+>fcrontab sets euid=uid before running the editor. This is
+	       required by some programs (for instance, perl).</P
+></LI
+><LI
+><P
+>bug fix: using DESTDIR with make did not work with the
+	       doc.</P
+></LI
+><LI
+><P
+>Code clean: changed macros to make parameters clearly
+	       different from vars.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.9.0 to 2.9.1</B
+></P
+><UL
+><LI
+><P
+>fcron can now be run without root's privileges (<A
+HREF="faq.html"
+>see FAQ</A
+>)</P
+></LI
+><LI
+><P
+>added configure's option --with-boot-install .</P
+></LI
+><LI
+><P
+>Minor change in the PAM code of fcron: may work better on
+	       some systems.</P
+></LI
+><LI
+><P
+>configure script now uses getpwnam() and getgrnam() instead of
+	       reading directly /etc/passwd and /etc/group: this makes easier
+	       the use of NIS, LDAP, etc.</P
+></LI
+><LI
+><P
+>Bug fix: using some "cmd &#62; /dev/stderr" (or stdout) in a
+	       script used to make fcron send a bogus output mail. (rewrite of
+	       the code managing the output of jobs)</P
+></LI
+><LI
+><P
+>Bug fix: typo error prevented fcrontab to be compiled on some
+	       systems.</P
+></LI
+><LI
+><P
+>Minor bug fix about stdout option.</P
+></LI
+><LI
+><P
+>Minor bug fix: giving fcrontab's option -c a relative path
+	       now works correctly.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.1.0 to 2.9.0</B
+></P
+><UL
+><LI
+><P
+>Added some new options to fcron: -y, -o, -l; and some
+	       fcrontab options: stdout and volatile. All these permit to make
+	       fcron run in foreground, execute all the pending jobs (mainly
+	       %-jobs), and return. May be used, for instance, in a ppp-up
+	       script with a dialup connection to update a software
+	       regularly.</P
+></LI
+><LI
+><P
+>Added fcrondyn: this software allows users to dialog
+	       dyn-amically with a running fcron daemon. Currently, it can list
+	       jobs of the user running it (or all jobs for root). In the near
+	       future, it should be able to run a job, change its next time and
+	       date of execution, renice a running job, send a signal to a
+	       running job, etc.</P
+></LI
+><LI
+><P
+>All the documentation has been ported to SGML DocBook.</P
+><P
+>It results on a much better HTML version, which I recommand
+	       you use. It is installed by default in fcron documentation
+	       directory (for instance, on my system:
+	       <TT
+CLASS="FILENAME"
+>/usr/share/doc/fcron-X.X.X/</TT
+>).</P
+></LI
+><LI
+><P
+>Fcrontab.5 has been updated and improved. Some examples have
+	       been added and some possible use of the different lines and
+	       options are mentioned.</P
+></LI
+><LI
+><P
+>Added option random, which allows an entry run periodically to
+	       be run at a random time in its intervals of execution, instead of
+	       being run as soon as possible.</P
+></LI
+><LI
+><P
+>added some more checks in fileconf.c: allow user to use
+	       hours, days, hourly, daily, etc options only with %-lines: it is
+	       ignored if set for a &#38;-line, which is quite confusing for users
+	       who may type, for instance "&#38;hourly" instead of
+	       "%hourly".</P
+></LI
+><LI
+><P
+>bug fixed: you can now use arguments in the var EDITOR and
+	       VISUAL.</P
+></LI
+><LI
+><P
+>bug fixed: fcron used to call sometimes a sleep(-1), which
+	       causes a freeze (no crash, but a very very long sleep :) ) under
+	       system using LIBC5, and maybe on some non-linux systems. It was
+	       not causing any problem under GLIBC2. Thanks go to Nick
+	       Pasich.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 2.0.0 to 2.1.0</B
+></P
+><UL
+><LI
+><P
+>PAM support for fcron and fcrontab (need testing! - help
+	       would be appreciated).</P
+></LI
+><LI
+><P
+>Fcron now send a mail if a job has noticenotrun set and could
+	       not be run because of a queue full.</P
+></LI
+><LI
+><P
+>Fcron now compiles on AIX (thank you, John A. Parker!), and a
+	       few AIX-only bugs have been fixed, but it may remain some
+	       problems to correct.  Please try, and tell me!</P
+></LI
+><LI
+><P
+>We now use constants ROOTUID and ROOTGID instead of some
+	       hard-coded "0", and those constants are defined by the configure
+	       script (we use the uid/gid of the name given with the option
+	       "--with-root{name|group}"). It allows fcron to be run on system
+	       on which root is not uid/gid 0/0.</P
+></LI
+><LI
+><P
+>code cleaning.</P
+></LI
+><LI
+><P
+>bug fixed: setting lavg to (0,0,0) used to make the line be
+	       added in the lavg queue instead of the serial queue (but the
+	       lavgs were ignored anyway).</P
+></LI
+><LI
+><P
+>bug fixed: fcrontab's "-z" option was not ignoring previous
+	       user's fcrontab version.</P
+></LI
+><LI
+><P
+>bug fixed: on systems using putenv(), the var HOME, USER and
+	       SHELL wasn't correctly assigned. On system supporting setenv()
+	       (which is the default), the problem did not occur. (thanks go to
+	       Evan A. Zacks).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 1.1.1 to 2.0.0</B
+></P
+><UL
+><LI
+><P
+>using SIGUSR2 on fcron makes it print its current schedule on
+	       syslog and toggles on/off the printing of debug info on
+	       syslog.</P
+></LI
+><LI
+><P
+>fcron behavior on serial and lavg queues overflow has changed: 
+	       in previous versions, it used to run a job to make room to put
+	       a new one. As it may conduct to a overwhelming of system
+	       resources, the new job is now refused (and not run). An error
+	       message is also logged through syslog.</P
+></LI
+><LI
+><P
+>a mail is now sent if the job exited due to a signal, or if
+	       exit status is non-zero. Read FAQ if you experience problems
+	       about that.</P
+></LI
+><LI
+><P
+>added a FAQ.</P
+></LI
+><LI
+><P
+>bug fixed: a midmonthly job executed after the 15th of the
+	       month used to cause an endless loop. Thanks go to Guy Geens
+	       (thanks a lot!).</P
+></LI
+><LI
+><P
+>bug fixed: inserting a job in serial queue or running a job
+	       not finished at startup was broken, unless the job was
+	       strict(no).</P
+></LI
+><LI
+><P
+>bug fixed: some 1.1.1 changes used to make fcron impossible
+	       to compile without sendmail (./configure's option
+	       "--with-sendmail=no").</P
+></LI
+><LI
+><P
+>bug fixed in sysV boot script: we know specify explicitly the
+	       path to fcron.</P
+></LI
+><LI
+><P
+>bug fixed: unresolved error used to occur on some system not
+	       defining getopt_long().</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 1.1.0 to 1.1.1</B
+></P
+><UL
+><LI
+><P
+>security fix: sym link attack against fcrontab. Any user
+	       allowed to use fcrontab used to be able to remove any fcrontab,
+	       and potentially to truncate any file to zero-length (under
+	       certain conditions, anyway).</P
+></LI
+><LI
+><P
+>fcron and fcrontab now have a configuration file: fcron.conf.
+	       It contains the default paths (spool dir, etc) and programs to
+	       use (editor, shell, etc). Thanks to that file, several fcron
+	       processes can run simultaneously if they have a different config
+	       (different spool dir and pid file).</P
+></LI
+><LI
+><P
+>added fcron's option "-m" to control the number of serial jobs
+	       which can be executed simultaneously.</P
+></LI
+><LI
+><P
+>added fcron's option "-n" to create a new spool dir.</P
+></LI
+><LI
+><P
+>command line syntax of fcrontab has changed: you can know use
+	       "user" (after the file name if any) instead of "-u user". It
+	       should make fcrontab a little more intuitive.</P
+></LI
+><LI
+><P
+>It is now possible to put a user name between the time/date
+	       fields and the shell command of a fcrontab line (for Vixie cron
+	       format compatibility): it is equivalent to runas(user).</P
+></LI
+><LI
+><P
+>support of Solaris (and SysV).</P
+></LI
+><LI
+><P
+>early support of OpenBSD.</P
+></LI
+><LI
+><P
+>the installation scripts now use nsswitch.conf to detect if a
+	       user or a group exists on the system. That way, naming services
+	       (NYS, ldap, etc) are supported.</P
+></LI
+><LI
+><P
+>the man page and doc is now installed by default in
+	       $prefix/share/{man|doc} (instead of the previous
+	       $prefix/{man|doc}) ($prefix is generally "/usr").</P
+></LI
+><LI
+><P
+>bug corrected: fcron used not to add a serial_sev line to
+	       serial/lavg queue if this line was running, saying "already in
+	       serial queue".</P
+></LI
+><LI
+><P
+>bug corrected: a "all" in fcron.allow with no fcron.deny file
+	       was not considered as an allow rule.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 1.0.3 to 1.1.0</B
+></P
+><UL
+><LI
+><P
+>The binary format of the binary fcrontabs has changed: there
+	       is now no more need to reinstall the fcrontabs when upgrading
+	       fcron (but you need to convert your fcrontabs to the new format
+	       once), and this format should allow extensions without losing any
+	       information.</P
+></LI
+><LI
+><P
+>better management of the errors in load/save fcrontabs
+	       functions.</P
+></LI
+><LI
+><P
+>the doc is a clearer about @-lines.</P
+></LI
+><LI
+><P
+>more security tests by fcrontab in the case it is suid root
+	       (but, if possible, it should be suid fcron as it is far more
+	       secure).</P
+></LI
+><LI
+><P
+>we now remove unwanted fcrontabs before loading them in memory: 
+	       well, it seems to be more logical like that :)) .</P
+></LI
+><LI
+><P
+>bug fix: using options first with a &#38;-line may have led to
+	       some problems during the first read by fcron (mail send
+	       erroneously if noticenotrun was used, bad set of the first
+	       execution's time and date or immediate execution if bootrun was
+	       set: in fact, the line was not recognized as a new line).</P
+></LI
+><LI
+><P
+>bug fix: fcron used not to be able to be compiled from any
+	       directory because of an absent -I. line option for the compiler
+	       (the config.h file was not found).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 1.0.2 to 1.0.3</B
+></P
+><UL
+><LI
+><P
+>fcron can now be configured and compiled from any directory
+	       (not only from the source dir).</P
+></LI
+><LI
+><P
+>bug fix: fcron now sets umask to the value it got at start
+	       before running a job.</P
+></LI
+><LI
+><P
+>bug corrected: a bug used to make the "truncated" system not
+	       to work correctly, so a too long log message used to make fcron
+	       crash.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 1.0.1 to 1.0.2</B
+></P
+><UL
+><LI
+><P
+>the user for whom a job is run is now logged.</P
+></LI
+><LI
+><P
+>installation script is now more explicit about what it is
+	       going to do.</P
+></LI
+><LI
+><P
+>a boolean value can now also be set by "yes" and "no".</P
+></LI
+><LI
+><P
+>bug corrected: bootrun option works again.</P
+></LI
+><LI
+><P
+>bug corrected: shell variable containing underscore (_) used
+	       to be rejected.</P
+></LI
+><LI
+><P
+>bug corrected: installation script used not to check if user
+	       fcron was in group fcron, in which case fcrontab doesn't work
+	       correctly (it cannot, in that case, read the fcrontabs for
+	       non-privileged users).</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 1.0.0 to 1.0.1</B
+></P
+><UL
+><LI
+><P
+>security fix: a user used to be able to read a file owned by
+	       root if root runs a "fcrontab -u user -e".</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.9.5 to 1.0.0</B
+></P
+><UL
+><LI
+><P
+>added fcron's option "-s" to control the time between two
+	       saves of the fcrontabs on disk.</P
+></LI
+><LI
+><P
+>installation scripts now support better FreeBSD and sh.</P
+></LI
+><LI
+><P
+>bug corrected: configure's options prefix and
+	       without-sendmail used not to work.</P
+></LI
+><LI
+><P
+>bug corrected: installing an fcrontab by "fcrontab file"
+	       wasn't working correctly with a relative path (a path not
+	       beginning by a "/").</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.9.4 to 0.9.5</B
+></P
+><UL
+><LI
+><P
+>security fix: the jobs of a fcrontab reinstalled by root used
+	       to be run as root (until the next action of the owner on the
+	       fcrontab).</P
+></LI
+><LI
+><P
+>added options strict and noticenotrun to tell fcron
+	       respectively if a job should be removed from lavg queue if its
+	       execution interval is exceeded, and if fcron should mail user to
+	       report the non-execution of a job.</P
+></LI
+><LI
+><P
+>added option nolog in order to log only errors (i.e. no
+	       message like "job x started"). This can help to reduce the disk
+	       access and save energy on a laptop, and make the log more
+	       readable if some jobs are run very often.</P
+></LI
+><LI
+><P
+>better handle of changes of the uids of users in /etc/passwd
+	       (no more need to reinstall the fcrontabs).</P
+></LI
+><LI
+><P
+>fcron.deny and fcron.allow files are now owned by root (they
+	       used to be owned by user fcron).</P
+></LI
+><LI
+><P
+>added ./configure's option --with-answer-all to be able to use
+	       "make install" in a non-interactive way (can be useful for
+	       automatic installers).</P
+></LI
+><LI
+><P
+>added option --with-rootname and --with-rootgroup to
+	       ./configure script for a better support of exotic systems.</P
+></LI
+><LI
+><P
+>bug corrected in make install (script user-group): the script
+	       used not to handle correctly the absence of both useradd and
+	       adduser commands.  This script now checks and tries to add a
+	       group fcron if necessary.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.9.3 to 0.9.4</B
+></P
+><UL
+><LI
+><P
+>security improvement: after the (horrible) root exploit found
+	       in version 0.9.3, I decided to improve fcron/fcrontab's security.
+	       I've included some strong (I hope :)) ) tests in fcron to ensure
+	       that only root can run commands as superuser and use option
+	       runas. Even an corrupted fcrontab should not be able to get
+	       root's privileges. Pretty reassuring, isn't it?</P
+></LI
+><LI
+><P
+>runfreq(1) lines have been replaced and extended by a new kind
+	       of line: the lines beginning by a "%". It's now possible to tell
+	       fcron to run a command once an hour, a week, etc, but only at
+	       some specified moments. For instance: '%weekly * 4-7 echo "foo"'
+	       will run the command 'echo "foo"' once a week between 4 and 7 in
+	       the morning. (see "man 5 fcrontab" for more details).</P
+></LI
+><LI
+><P
+>installation process improved: user is now consulted before
+	       anything is done about installation in boot scripts, etc. The
+	       default username of fcron is now ... fcron! (this is more secure
+	       than daemon, which can be used by other programs). </P
+></LI
+><LI
+><P
+>fcron now adds the host name to the addresses of the mails it
+	       sends.</P
+></LI
+><LI
+><P
+>fcrontab determines the identity of the running user by his
+	       uid (it used to use the var USER). That way, fcrontab should act
+	       as crontab under a "su".</P
+></LI
+><LI
+><P
+>bug fixed: a tmp file was not removed after a "fcron
+	       -z"</P
+></LI
+><LI
+><P
+>bug fixed in fcrontab: an expression of the form "start-stop"
+	       with start &#62; stop used to be incorrectly managed by fcron.</P
+></LI
+><LI
+><P
+>bug fixed: when fcron and fcrontab were installed under a
+	       non-privileged user rights, a normal user used to be not able to
+	       use fcrontab.</P
+></LI
+><LI
+><P
+>bug fixed: while fcrontab was asking user if he would like to
+	       correct an erroneous line, the answer was not correctly
+	       handled.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.9.2.1 to 0.9.3</B
+></P
+><UL
+><LI
+><P
+>installation scripts improved.</P
+></LI
+><LI
+><P
+>added code to avoid infinite loops.</P
+></LI
+><LI
+><P
+>bugs corrected in the functions to set the time and date of
+	       next execution.</P
+></LI
+><LI
+><P
+>bug corrected in the check for invalid lines.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.9.2 to 0.9.2.1</B
+></P
+><UL
+><LI
+><P
+>minor bug corrected in Makefile</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.9.1 to 0.9.2</B
+></P
+><UL
+><LI
+><P
+>fcron now uses autoconf (the configure script), so it should
+	       be easier to compile and install it and various systems.</P
+></LI
+><LI
+><P
+>support of lavg options for all systems where getloadavg() is
+	       defined (BSD unix, etc) and on Linux systems with a proc
+	       filesystem (fcron can use /proc/loadavg).</P
+></LI
+><LI
+><P
+>a job can now be executed several times simultaneously if
+	       option exesev is set to 1.</P
+></LI
+><LI
+><P
+>user can determine if a job can be put several times in the
+	       serial queue simultaneously thanks to option serialonce.</P
+></LI
+><LI
+><P
+>fcron does not wait anymore for the completion of all jobs of
+	       a file before deleting it from memory.</P
+></LI
+><LI
+><P
+>fcron handles correctly the jobs which are both serial and
+	       lavg.</P
+></LI
+><LI
+><P
+>fcron now runs under a specific user and group (other than
+	       root) for basic security reasons.</P
+></LI
+><LI
+><P
+>bug corrected: fcron used to crash after a file was deleted
+	       from memory in some conditions.</P
+></LI
+><LI
+><P
+>corrected the bug which used to appear when a line was put
+	       several times in the serial queue: in this case, fcron used not
+	       to count correctly the number of running serial jobs.</P
+></LI
+><LI
+><P
+>bug corrected: fcrontab used not to remove the temporary file
+	       it creates if no modification where done to a file after an
+	       edition using the -e option and on errors.</P
+></LI
+><LI
+><P
+>bug corrected: fcrontab now defines correctly the remain
+	       value of a line based on time and date beginning with a "&#38;" but
+	       without runfreq definition.</P
+></LI
+><LI
+><P
+>bug corrected: fcron used to not install correctly a file
+	       edited if a correction was made.</P
+></LI
+><LI
+><P
+>bug corrected: reset option was not working correctly when
+	       set to a single line.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.9.0 to 0.9.1</B
+></P
+><UL
+><LI
+><P
+>support of the option mailto for each line (it used to be set
+	       for the whole file).</P
+></LI
+><LI
+><P
+>the value of the runas and mailto options are now stored
+	       internally as a uid number: you must reinstall all the system's
+	       fcrontabs if you change the uid of a user.</P
+></LI
+><LI
+><P
+>Support of options "lavg*", in order to run a job under a
+	       specific 1, 5 and/or 15 minutes system load average value(s).
+	       When the job should be run, it is placed in a specific queue and
+	       the load average is checked regularly until the right value(s)
+	       is/are got. The options "lavgor" and "lavgand" permits users to
+	       tell fcron if they prefer to perform a logic OR or AND between
+	       the 1, 5 and 15 load average values. The option "until" can be
+	       use to force the execution of a job after a determined timeout if
+	       the right conditions to run the job are not filled.</P
+></LI
+><LI
+><P
+>fcron now uses putenv() in place of setenv() (setenv() is not
+	       POSIX compliant).</P
+></LI
+><LI
+><P
+>a mailto option set to "" is now equivalent to
+	       "mail(false)".</P
+></LI
+><LI
+><P
+>corrected the bug which used to make a bootrun and runfreq(1)
+	       job executed twice when fcron's start occurs in an interval of
+	       execution of the job.</P
+></LI
+><LI
+><P
+>corrected the bug which used to make fcron crash after
+	       serial_array is resized.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.8.3 to 0.9.0</B
+></P
+><UL
+><LI
+><P
+>support of options in fcrontabs. Options can be specific to a
+	       line or defined once for every line located after their
+	       definition (a special option "reset" set all options to their
+	       default). Some options also have too names: a long name and an
+	       abbreviation.</P
+></LI
+><LI
+><P
+>jobs can now be run be run one after the other (option
+	       "serial"): when the job should normally be run, it is added to a
+	       queue, which entries are executed one by one. It permits to avoid
+	       the use of a lot of system resources for a brief moment by the
+	       simultaneous execution of several tasks.</P
+></LI
+><LI
+><P
+>jobs can be run at system start up if they should have been
+	       run during system down time (option "bootrun").</P
+></LI
+><LI
+><P
+>root can run jobs as an another user (option "runas")</P
+></LI
+><LI
+><P
+>user can set a nice value to a job, but only root can use a
+	       negative value (a negative value will increase priority)</P
+></LI
+><LI
+><P
+>user can choose to perform a logic AND or a logic OR between
+	       day of month and day of week (option "dayor" and "dayand")</P
+></LI
+><LI
+><P
+>user can choose to mail the output of jobs (option "mail") if
+	       any, and can force fcron to send a mail even if output is
+	       zero-length (option "forcemail").</P
+></LI
+><LI
+><P
+>fixed the bug which used to make fcron run a job with a
+	       runfreq set to 1 at a wrong time.</P
+></LI
+><LI
+><P
+>fixed a bug which used to make fcrontab crash after several
+	       corrections in edit mode.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.8.2 to 0.8.3</B
+></P
+><UL
+><LI
+><P
+>(all this bugs appeared in version 0.8.2 :)</P
+></LI
+><LI
+><P
+>fixed the bug which used to make fcron crash after a
+	       SIGHUP</P
+></LI
+><LI
+><P
+>fixed the bug which used to prevent fcron from running some
+	       job based on time and date</P
+></LI
+><LI
+><P
+>fixed the bug which used to makes fcron run the jobs one
+	       second too late</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.8.1 to 0.8.2</B
+></P
+><UL
+><LI
+><P
+>code has been optimized: The jobs are now queued in order of
+	       execution. It permits avoid useless tests of all jobs every time
+	       fcron wakes up, speeds up the determination of the time fcron
+	       should sleep, speeds up the processing after the end of a job,
+	       etc. I don't know why I haven't made it before :-) ...</P
+></LI
+><LI
+><P
+>fcrontab has been improved: it is now more stable (many bugs
+	       which used to make fcrontab crash in case of errors in the
+	       fcrontab has been fixed). Plus, it now asks if you want to make
+	       corrections if needed when editing.</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.8.0 to 0.8.1</B
+></P
+><UL
+><LI
+><P
+>ported to FreeBSD 4.0</P
+></LI
+></UL
+><P
+></P
+><P
+><B
+>From version 0.7.0 to 0.8.0</B
+></P
+><UL
+><LI
+><P
+>corrected the bug which keep normal users from listing and
+	       editing their current configuration file with fcrontab -l or
+	       -e.</P
+></LI
+><LI
+><P
+>corrected the bugs which used to block fcron when a task was
+	       marked for execution but fcron stopped before it has been
+	       launched, and when fcron stopped after the end of a job but
+	       before the output has been mailed.</P
+></LI
+><LI
+><P
+>day of week 0 and 7 now both mean Sunday.</P
+></LI
+><LI
+><P
+>the abbreviations of months and day of week are not any more
+	       case dependent.</P
+></LI
+><LI
+><P
+>months are now defined from 1 to 12 (and not from 0 to 11) (it
+	       was a little bit illogical :-).</P
+></LI
+><LI
+><P
+>you can now force spaces in strings if you place them in
+	       quotes.</P
+></LI
+><LI
+><P
+>I discovered ispell :-) ...</P
+></LI
+><LI
+><P
+>I've added a kind of signature in the formated configuration
+	       files in order to keep the daemon from attempting to read an old
+	       configuration file which doesn't use the same syntax.</P
+></LI
+><LI
+><P
+>You can now install a file with fcrontab from standard
+	       input.</P
+></LI
+><LI
+><P
+>others minor adds and bug corrections.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="install.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="relnotes.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>How to install fcron</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="how-and-why.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Release notes: <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> 3.2.0</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

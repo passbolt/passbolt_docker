@@ -1,0 +1,10 @@
+#!/bin/sh
+
+FILE=/var/spool/fcron/root.orig
+
+if [ -f $FILE ]; then
+  grep -v "/etc/cron.\(daily\)\|\(weekly\)\|\(monthly\)" $FILE > $FILE.new
+  mv $FILE.new $FILE
+fi
+
+#DEBHELPER#

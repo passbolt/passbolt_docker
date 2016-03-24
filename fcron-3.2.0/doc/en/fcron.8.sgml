@@ -1,0 +1,317 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<refentry id="fcron.8">
+    <refmeta>
+	<refentrytitle>fcron</refentrytitle>
+	<manvolnum>8</manvolnum>
+	<refmiscinfo>Fcron &version; <![%devrelease; [
+(<emphasis>development</emphasis> release)]]></refmiscinfo>
+	<refmiscinfo>&date;</refmiscinfo>
+    </refmeta>
+    <refnamediv>
+	<refname>fcron</refname>
+	<refpurpose>daemon to execute scheduled tasks</refpurpose>
+    </refnamediv>
+
+    <refsynopsisdiv>
+	<cmdsynopsis>
+	    <command>fcron</command>
+	    <arg>-c <replaceable>file</replaceable></arg> 
+	    <arg>-d</arg>
+	    <arg>-b</arg> 
+	    <arg>-s <replaceable>time</replaceable></arg> 
+	    <arg>-m <replaceable>num</replaceable></arg> 
+	    <arg>-q <replaceable>num</replaceable></arg>
+	</cmdsynopsis>
+	<cmdsynopsis>
+	    <command>fcron</command>
+	    <arg>-c <replaceable>file</replaceable></arg> 
+	    <arg>-d</arg>
+	    <arg>-f</arg> 
+	    <arg>-o</arg>
+	    <arg>-y</arg>
+	    <arg>-p <replaceable>file</replaceable></arg>
+	    <arg>-l <replaceable>time</replaceable></arg>
+	</cmdsynopsis>
+	<cmdsynopsis>
+	    <command>fcron</command>
+	    <arg>-n <replaceable>dir</replaceable></arg>
+	</cmdsynopsis>
+	<cmdsynopsis>
+	    <command>fcron</command>
+	    <arg>-h</arg>
+	</cmdsynopsis>
+	<cmdsynopsis>
+	    <command>fcron</command>
+	    <arg>-V</arg>
+	</cmdsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+	<title>Description</title>
+	<para>
+&Fcron; should be started from <filename>/etc/rc</filename> or
+<filename>/etc/rc.local</filename>. Unless the <option>-f</option> (or
+<option>--foreground</option>) option is given, it will return immediately, so
+you don't need to start it with '&'.</para>
+	<para>
+&Fcron; loads users &fcrontabf;s (see <link
+linkend="fcrontab.5">&fcrontab;(5)</link>) files previously installed by
+<command>fcrontab</command> (see <link
+linkend="fcrontab.1">&fcrontab;(1)</link>). Then, &fcron; calculates the time
+and date of each job's next execution, and determines how long it has to sleep,
+and sleeps for this amount of time. When it wakes up, it checks all jobs loaded
+and runs them if needed. When a job is executed, &fcron; forks, changes its user
+and group permissions to match those of the user the job is being done for,
+executes that job and mails the outputs to the user (this can be changed: see
+<link linkend="fcrontab.5">&fcrontab;(5)</link>).</para>
+	<para>
+Informative message about what &fcron; is doing are sent to
+<application>syslogd</application>(8) under facility <emphasis>cron</emphasis>,
+priority <emphasis>notice</emphasis>. Warning and error messages are sent
+respectively at priority <emphasis>warning</emphasis> and
+<emphasis>error</emphasis>.</para>
+	<para><note>
+		<para>
+&fcron; sleeps at least &firstsleep; seconds after it has been started before
+executing a job to avoid to use too much resources during system boot.</para>
+	    </note></para>
+    </refsect1>
+
+    <refsect1>
+	<title>Options</title>
+	<variablelist>
+	    <varlistentry>
+		<term><option>-f</option></term>
+		<term><option>--foreground</option></term>
+		<listitem>
+		    <para>
+		    Don't fork to the background. In this mode, &fcron; will
+output informational message to standard error as well as to syslogd.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-b</option></term>
+		<term><option>--background</option></term>
+		<listitem>
+		    <para>Force running in background, even if &fcron; has been
+compiled to run in foreground as default.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-s</option> <replaceable>time</replaceable></term>
+		<term><option>--savetime</option>
+<replaceable>time</replaceable></term>
+		<listitem>
+		  <para>Save &fcrontabf;s on disk every 
+		     <replaceable>time</replaceable> sec (default is 1800).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-m</option> <replaceable>num</replaceable></term>
+		<term><option>--maxserial</option>
+<replaceable>num</replaceable></term>
+		<listitem>
+		  <para>Set to <replaceable>num</replaceable> the maximum number
+		     of serial jobs which can run simultaneously. By default,
+		     this value is set to &serialmaxrunning;.</para>
+		    <para>&seealso; option &optserial; in &fcrontab;(5).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-q</option> <replaceable>num</replaceable></term>
+		<term><option>--queuelen</option> <replaceable>num</replaceable></term>
+		<listitem>
+		    <para>Set to n the number of jobs the serial queue and
+the lavg queue can contain.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-c</option> <replaceable>file</replaceable></term>
+		<term><option>--configfile</option>
+<replaceable>file</replaceable></term>
+		<listitem>
+		    <para>Make &fcron; use config file
+<replaceable>file</replaceable> instead of default config file
+<filename>&etc;/&fcron.conf.location;</filename>. To interact with that running
+&fcron; process, &fcrontab; must use the same config file (which is defined by
+&fcrontab;'s option <option>-c</option>). That way, several &fcron; processes
+can run simultaneously on an only system (but each &fcron; process *must* have a
+different spool dir and pid file from the other processes).</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry id="fcron.8.once">
+		<term><option>-o</option></term>
+		<term><option>--once</option></term>
+		<listitem>
+		    <para>Execute all jobs that need to be run at the time &fcron;
+was started, wait for them, then return. Sets &argfirstsleep; to 0.
+May be especially useful when used with options <option>-y</option> and
+<option>-f</option> in a script run, for instance, at dialup connection.</para>
+		    <para>&seealso; fcrontab's options &optvolatile;,
+&optstdout;.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-y</option></term>
+		<term><option>--nosyslog</option></term>
+		<listitem>
+		    <para>Don't log to syslog at all. May be useful when running
+in foreground.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-p</option> <replaceable>file</replaceable></term>
+		<term><option>--logfilepath</option>
+<replaceable>file</replaceable></term>
+		<listitem>
+		    <para>If set, log to the file given as argument. &fcron; will
+                    log to both that file and syslog in parallel unless
+                    <option>-y</option> is also set.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry id="fcron.8.firstsleep">
+		<term><option>-l</option> <replaceable>time</replaceable></term>
+		<term><option>--firstsleep</option>
+<replaceable>time</replaceable></term>
+		<listitem>
+		    <para>Sets the initial delay (in seconds) before any job is
+executed, default to &firstsleep; seconds.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-n</option> <replaceable>dir</replaceable></term>
+		<term><option>--newspooldir</option>
+<replaceable>dir</replaceable></term>
+		<listitem>
+		    <para>Create <replaceable>dir</replaceable> as a new spool
+directory for &fcron;. Set correctly its mode and owner. Then, exit.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-h</option></term>
+		<term><option>--help</option></term>
+		<listitem>
+		    <para>Display a brief description of the options.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-V</option></term>
+		<term><option>--version</option></term>
+		<listitem>
+		    <para>Display an informational message about &fcron;,
+including its version and the license under which it is distributed.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><option>-d</option></term>
+		<term><option>--debug</option></term>
+		<listitem>
+		    <para>Run in debug mode (more details on stderr -- if option
+<option>-f</option> is set -- and in log file)</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+    </refsect1>
+
+    <refsect1>
+	<title>Return values</title>
+	<para>&Fcron; returns &exitok; on normal exit, and &exiterr; on
+error.</para>
+    </refsect1>
+
+    <refsect1>
+	<title>Signals</title>
+	<variablelist>
+	    <varlistentry>
+		<term><constant>SIGTERM</constant></term>
+		<listitem>
+		    <para>Save configuration (time remaining until next
+execution, time and date of next execution, etc), wait for all running jobs and
+exit.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><constant>SIGUSR1</constant></term>
+		<listitem>
+		    <para>Force &fcron; to reload its configuration.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><constant>SIGUSR2</constant></term>
+		<listitem>
+		    <para>Make &fcron; print its current schedule on syslog. It
+also toggles on/off the printing on debug info on syslog.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><constant>SIGHUP</constant></term>
+		<listitem>
+		    <para>Tell &fcron; to check if there is any configuration
+update (this signal is used by &fcrontab;(5))</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+    </refsect1>
+
+    <refsect1>
+	<title>Conforming to</title>
+	<para>Should be POSIX compliant.</para>
+    </refsect1>
+
+    <refsect1>
+	<title>Files</title>
+	<variablelist>
+	    <varlistentry>
+		<term><filename>&etc;/&fcron.conf.location;</filename></term>
+		<listitem>
+		    <para>Configuration file for &fcron;, &fcrontab; and
+&fcrondyn;: contains paths (spool dir, pid file) and default programs to use
+(editor, shell, etc). See <link linkend="fcron.conf.5">&fcron.conf;(5)</link>
+for more details.</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><filename>&etc;/&fcron.allow;</filename></term>
+		<listitem>
+		    <para>Users allowed to use &fcrontab; and &fcrondyn; (one
+name per line, special name "all" acts for everyone)</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><filename>&etc;/&fcron.deny;</filename></term>
+		<listitem>
+		    <para>Users who are not allowed to use &fcrontab; and
+&fcrondyn; (same format as allow file)</para>
+		</listitem>
+	    </varlistentry>
+	    <varlistentry>
+		<term><filename>&etc;/pam.d/fcron</filename> (or
+<filename>&etc;/pam.conf</filename>)</term>
+		<listitem>
+		    <para><productname>PAM</productname> configuration file for
+&fcron;. Take a look at &pam;(8) for more details.</para>
+		</listitem>
+	    </varlistentry>
+	</variablelist>
+    </refsect1>
+
+    &manpage-foot;
+
+</refentry>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "")
+End:
+-->

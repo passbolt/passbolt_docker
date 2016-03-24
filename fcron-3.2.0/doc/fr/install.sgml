@@ -1,0 +1,149 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<sect1 id="install">
+    <title>How to install fcron</title>
+    <itemizedlist>
+	<listitem>
+	    <para>uncompress the archive:</para>
+	    <screen><prompt>bash$ </prompt><command>
+tar -xzf fcron-X.Y.Z.src.tar.gz</command></screen>
+	</listitem>
+	<listitem>
+	    <para>cd to the archive directory</para>
+	    <screen><prompt>bash$ </prompt><command>cd fcron-X.Y.Z</command></screen>
+	</listitem>
+	<listitem>
+	    <para>run the <command>configure</command> script:</para>
+	    <screen><prompt>bash$
+</prompt><command>./configure</command></screen>
+	    <para>
+		<note>
+		    <itemizedlist>
+			<listitem>
+			    <para>
+				The command <command>make install</command> asks
+you by default some questions you have to answer. To avoid that (which can be
+useful for automatic installers), you can use the
+<command>./configure</command>'s option <option>--with-answer-all</option>
+and/or <option>--with-boot-install</option> (see "<command>./configure</command>
+<option>--help</option>" for more details).
+			    </para>
+			</listitem>
+			<listitem>
+			    <para>
+				You may also want to change the place where
+&fcron; will be installed: you can use the <command>configure </command>'s
+option <option>--prefix</option> to do that. For instance:
+<command>./configure</command> <option>--prefix=/usr/local</option> (default is
+prefix=/usr)
+			    </para>
+			</listitem>
+			<listitem>
+			    <para>
+				To disable the use of
+<productname>PAM</productname>, <productname>SE Linux</productname> or &fcrondyn;, use <command>configure</command>'s
+option <option>--with-pam=no</option>, <option>--with-selinux=no</option> 
+and/or <option>--with-fcrondyn=no</option>.</para>
+			</listitem>
+			<listitem>
+			    <para>To debug &fcron;, you should use
+<command>configure </command>'s option <option>--with-debug</option>.
+			    </para>
+			</listitem>
+			<listitem>
+			    <para>
+				You can get info on the others
+<command>configure </command>'s options by running
+"<command>./configure</command> <option>--help</option>".
+			    </para>
+			</listitem>
+		    </itemizedlist>
+		</note>
+		<warning>
+		    <itemizedlist>
+			<listitem>
+			    <para>
+				The <command>configure</command> script may not
+define a correct directory for the man pages and the documentation on some
+systems. You may check the values defined by <command>configure</command> and if
+necessary force a value by the options <option>--mandir</option> and
+<option>-with-docdir </option> (see the help by running
+"<command>./configure</command> <option>--help</option>").
+			    </para>
+			</listitem>
+			<listitem>
+			    <para>
+				If you get older &fcron;'s man-pages with
+<command>man</command> command after having upgraded, it's probably because
+&fcron; has changed its default man directory: you should remove manually the
+outdated man-pages.
+			    </para>
+			</listitem>
+			<listitem>
+			    <para>
+				The <filename>Makefile</filename> has been
+designed for <application>GNU make</application>. Some other version of
+<command>make</command> may fail to use it.
+			    </para>
+			</listitem>
+		    </itemizedlist>
+		</warning>
+	    </para>
+	</listitem>
+
+	<listitem>
+	    <para><emphasis>(optional)</emphasis> check the file
+<filename>config.h</filename>, and change it if necessary (the configurable part
+is on the top of the file and clearly delimited).</para>
+	</listitem>
+
+	<listitem>
+	    <para>compile:</para>
+	    <screen><prompt>bash$ </prompt><command>make</command></screen>
+	</listitem>
+
+	<listitem>
+	    <para>then install binaries as root:</para>
+	    <screen><prompt>bash$ </prompt><command>su root</command></screen>
+	    <screen><prompt>bash# </prompt><command>make install</command></screen>
+	</listitem>
+    </itemizedlist>
+    <para>You can now run <command>fcron</command> and
+<command>fcrontab</command>.</para>
+    <note>
+	<itemizedlist>
+	    <listitem>
+		<para>
+			This is a <productname>POSIX</productname> conforming
+software. You must have a <productname>POSIX</productname> compiler
+(<application>gcc</application> for example) in order to compile it.
+		    </para>
+	    </listitem>
+	    <listitem>
+		<para>
+			This software has been written for
+<productname>GNU/Linux</productname> systems. If you want to port it on an other
+<productname>Unix</productname> platform (thank you if you do it), try to modify
+- if possible - only the <application>configure</application> script. Please
+send me any modifications at &email; in order to include it in future releases.
+		    </para>
+	    </listitem>
+	</itemizedlist>
+    </note>
+</sect1>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "")
+End:
+-->

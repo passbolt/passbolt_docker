@@ -1,0 +1,243 @@
+############################
+# fcron-doc's Makefile  ####
+############################
+
+# @configure_input@
+
+
+# The following should not be edited manually (use configure options)
+# If you must do it, BEWARE: some of the following is also defined
+# in config.h, so you must modify config.h AND Makefile in order
+# to set the same values in the two files.
+
+
+SRCDIR		= @srcdir@
+
+prefix		= @prefix@
+datarootdir	= @datarootdir@
+DESTMAN		= @mandir@
+DESTDOC		= @DOCDIR@
+
+INSTALL		= @INSTALL@
+JADE 		= @JADE@
+DB2MAN_BEFORE	= @DB2MAN_BEFORE@
+DB2MAN_AFTER	= @DB2MAN_AFTER@
+
+ROOTNAME	= @ROOTNAME@
+ROOTGROUP	= @ROOTGROUP@
+
+ANSWERALL	= @ANSWERALL@
+
+####################################
+# Should not be changed under this #
+####################################
+STYLESHEET = stylesheets/fcron-doc.dsl
+MODFILE = fcron-doc.mod
+VERSION = @VERSION@
+SGMLFILES = fcron-doc.sgml readme.sgml relnotes.sgml changes.sgml faq.sgml thanks.sgml todo.sgml fcron.8.sgml fcrontab.1.sgml install.sgml fcron.conf.5.sgml fcrontab.5.sgml fcrondyn.1.sgml fdl.sgml gpl.sgml 
+TXTFILES = readme install thanks faq gpl todo relnotes changes
+MANPAGES = fcron.8 fcron.conf.5 fcrontab.1 fcrontab.5 fcrondyn.1
+LANGUAGES = en fr
+
+# this is a regular expression:
+# do not ci these files
+RCSNOCI=.*\(bitstring.3\|fcron-doc.ced\|Makefile\|${STYLESHEET}\|fcron-doc.mod\|HTML.*\|txt.*\|man\/.*\|CVS.*\|.git.*\)
+
+all: doc
+
+doc:
+# Build all the HTML, text and manual pages in all the languages
+	@(for i in $(LANGUAGES); \
+	do \
+		test -d $(SRCDIR)/$$i/HTML || mkdir $(SRCDIR)/$$i/HTML ; \
+		test -d $(SRCDIR)/$$i/txt || mkdir $(SRCDIR)/$$i/txt ; \
+		test -d $(SRCDIR)/$$i/man || mkdir $(SRCDIR)/$$i/man ; \
+		$(MAKE) $(SRCDIR)/$$i/HTML/index.html $(SRCDIR)/$$i/txt/readme.txt \
+			$(SRCDIR)/$$i/man/fcron.8 ; \
+	done)
+
+doc-if-none:
+# Only generate the doc if there is none (e.g. if the sources came from git
+# and not a tarball)
+# The reason we don't try to generate the doc everytime is that we want the user
+# to be able to compile and install fcron without needing all the tools required
+# to generate the documentations.
+#
+# "make doc" will be called once at max, as all the tests will 
+# succeed after the first time "make doc" is called
+	@(for i in $(LANGUAGES); \
+	do \
+		test -f $(SRCDIR)/$$i/HTML/index.html || $(MAKE) doc ; \
+		test -f $(SRCDIR)/$$i/txt/readme.txt || $(MAKE) doc ; \
+		test -f $(SRCDIR)/$$i/man/fcron.8 || $(MAKE) doc ; \
+	done)
+
+# man/fcron.8 means in fact "build *all* the man pages"
+%/man/fcron.8: %/*.sgml fcron-doc.mod ${STYLESHEET}.in
+	@(if test -z "$(DB2MAN_BEFORE)"; then \
+	   echo "ERROR: cannot generate man pages." ; \
+	   echo "  Please check if a db2man converter is installed, or if" \
+	   echo "  nsgmls, sgmlspl are installed, and if configure's options" \
+	   echo "  --with-db2man and --with-db2man-spec are correctly set." ; \
+	   exit 1 ; \
+	fi)
+	@(echo ; echo "Building $(@D) manual pages..."; echo )
+	@(cp -f bitstring.3 $(@D)/)
+	@(cd $(@D)/../ ; \
+	  ln ../fcron-doc.mod ./ ; \
+	  for i in $(MANPAGES); do \
+	    echo "  $(@D)/$$i..."; \
+	    echo '<!doctype refentry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [<!ENTITY % decl SYSTEM "fcron-doc.mod">%decl;]>' > _tmp_ ; \
+            echo "&$$i;" >> _tmp_ ; \
+            $(DB2MAN_BEFORE) _tmp_ $(DB2MAN_AFTER) > /dev/null 2>&1 ; \
+	    rm -f _tmp_ ; \
+	    mv `basename $$i .sgml` man/ ; \
+          done ; \
+	  rm fcron-doc.mod ; \
+	  rm -f manpage.links manpage.refs)
+
+
+# txt/readme.txt means in fact "build *all* the text pages"
+%/txt/readme.txt: %/HTML/index.html
+	@(echo ; echo "Building $(@D) files..."; echo )
+	@(for i in $(TXTFILES); do \
+	  echo "  $(@D)/$$i..."; \
+	  lynx -dump -nolist $(@D)/../HTML/$$i.html > $(@D)/$$i.txt; done )
+
+fcron-doc.mod: fcron-doc.mod.in ../configure.in
+	@(echo ; echo "Building fcron-doc.mod")
+	@(../script/gen-in.pl fcron-doc.mod.in fcron-doc.mod ../)
+
+# HTML/index.html means in fact "build *all* the HTML pages"
+%/HTML/index.html: %/*.sgml fcron-doc.mod ${STYLESHEET}.in
+	@(echo ; echo "Building $(@D)...")
+	@(rm -fR $(@D)/*.html)
+	@(cd $(@D)/../ ; $(JADE) -D ../ -D ./ -t sgml -i html -d ../${STYLESHEET}\#html fcron-doc.sgml)
+
+install: install-staged perms
+
+install-staged: doc-if-none clean
+	@(echo "Installing man pages in $(DESTDIR)$(DESTMAN)...")
+	@(for l in $(LANGUAGES); do \
+		if test "x$$l" = "xen"; then \
+			DIR=$(DESTDIR)$(DESTMAN); \
+		else \
+			DIR=$(DESTDIR)$(DESTMAN)/$$l; \
+		fi ; \
+		for i in 1 3 5 8; do \
+			if test ! -d $$DIR/man$$i; then \
+				$(INSTALL) -m 755 -d $$DIR/man$$i ; \
+			 fi ; \
+			for m in $(SRCDIR)/$$l/man/*.$$i; do \
+				$(INSTALL) -m 644 $$m $$DIR/man$$i ; \
+			done ; \
+		done ; \
+	done )
+
+	@(echo "Installing documentation files in $(DESTDIR)$(DESTDOC)/fcron-$(VERSION)...")
+	@(if test ! -d $(DESTDIR)$(DESTDOC)/fcron-$(VERSION); then $(INSTALL) -m 755 -d $(DESTDIR)$(DESTDOC)/fcron-$(VERSION) ; fi)
+
+	@(for l in $(LANGUAGES); do \
+		DIR=$(DESTDIR)$(DESTDOC)/fcron-$(VERSION) ; \
+		if test ! -d $$DIR/$$l; then \
+	$(INSTALL) -m 755 -d $$DIR/$$l ; \
+		fi ; \
+		for i in txt HTML; do \
+			if test ! -d $$DIR/$$l/$$i; then \
+				$(INSTALL) -m 755 -d $$DIR/$$l/$$i ; \
+			 fi ; \
+			for m in $(SRCDIR)/$$l/$$i/* ; do \
+				$(INSTALL) -m 644 $$m $$DIR/$$l/$$i/ ;\
+			done ; \
+		done ; \
+	done )
+
+perms:
+	for l in $(LANGUAGES); do \
+		if test "x$$l" = "xen"; then \
+			DIR=$(DESTDIR)$(DESTMAN); \
+		else \
+			DIR=$(DESTDIR)$(DESTMAN)/$$l; \
+		fi ; \
+		chown $(ROOTNAME) $$DIR; \
+		chgrp $(ROOTGROUP) $$DIR; \
+		for i in 1 3 5 8; do \
+			chown $(ROOTNAME) $$DIR/man$$i; \
+			chgrp $(ROOTGROUP) $$DIR/man$$i; \
+		done ; \
+		for f in man1/fcrontab.1 man1/fcrondyn.1 man3/bitstring.3 \
+			man5/fcrontab.5 man5/fcron.conf.5 man8/fcron.8 ; do \
+			chown $(ROOTNAME) $$DIR/$$f; \
+			chgrp $(ROOTGROUP) $$DIR/$$f; \
+		done ; \
+	done
+	chown $(ROOTNAME) $(DESTDIR)$(DESTDOC)
+	chgrp $(ROOTGROUP) $(DESTDIR)$(DESTDOC)
+	chown $(ROOTNAME) $(DESTDIR)$(DESTDOC)/fcron-$(VERSION) 
+	chgrp $(ROOTGROUP) $(DESTDIR)$(DESTDOC)/fcron-$(VERSION) 
+	for l in $(LANGUAGES); do \
+		DIR=$(DESTDIR)$(DESTDOC)/fcron-$(VERSION)/$$l ; \
+		chown $(ROOTNAME) $$DIR ; \
+		chgrp $(ROOTGROUP) $$DIR ; \
+		for i in txt HTML; do \
+			chown $(ROOTNAME) $$DIR/$$i; \
+			chgrp $(ROOTGROUP) $$DIR/$$i; \
+			chown $(ROOTNAME) $$DIR/$$i/*; \
+			chgrp $(ROOTGROUP) $$DIR/$$i/*; \
+		done ; \
+	done
+
+
+uninstall:
+	rm -fR $(DESTDOC)/fcron-$(VERSION)
+	@(echo "Removing man pages ...")
+	@(for l in $(LANGUAGES); do \
+		if test "x$$l" = "xen"; then \
+			DIR=$(DESTDIR)$(DESTMAN); \
+		else \
+			DIR=$(DESTDIR)$(DESTMAN)/$$l; \
+		fi ; \
+		rm -f $$DIR/man1/fcrontab.1 ; \
+		rm -f $$DIR/man1/fcrondyn.1 ; \
+		rm -f $$DIR/man3/bitstring.3 ; \
+		rm -f $$DIR/man5/fcrontab.5 ; \
+		rm -f $$DIR/man5/fcron.conf.5 ; \
+		rm -f $$DIR/man8/fcron.8 ; \
+	done )
+
+
+clean:
+	@(cd $(SRCDIR) ; \
+	  BASEDIR=`pwd` ; \
+	  for i in stylesheets $(LANGUAGES) . ; do \
+	    cd $$i ; \
+	    echo "Cleaning: `pwd`"; \
+            rm -f *~ *.html *.htm *.texi *.info *.refs manpage.links manpage.refs \
+	        core *.tar.gz ; \
+            cd $$BASEDIR ;  \
+          done)
+
+tarclean: clean
+	rm -f Makefile ${STYLESHEET} fcron-doc.mod
+
+vclean: clean
+#	rm -f */HTML/* */man/* */txt/*
+	rm -f Makefile ${STYLESHEET}
+
+ci: clean
+# we run a "cd .." because it makes the path of the file appear ( ./doc/XXXX )
+# during the ci-ing
+# the symbolic links verX_X_X has been created since version 2.9.4
+	@(cd ..; find ./doc/ -type f ! -regex '.*RCS.*' ! -regex "$(RCSNOCI)" \
+             -exec ci -l -Nver`echo $(VERSION) | tr '.' '_'` {} \;)
+
+tarhtmldoc: doc
+	for i in $(LANGUAGES); do \
+	  cd $$i ; \
+	  mkdir fcron-$(VERSION)-doc-$$i-html ;\
+	  cp HTML/*.html fcron-$(VERSION)-doc-$$i-html ;\
+	  rm -f fcron-doc-$$i-html.tar.gz ;\
+	  tar -czvf fcron-doc-$$i-html.tar.gz fcron-$(VERSION)-doc-$$i-html/* ;\
+	  rm -fR fcron-$(VERSION)-doc-$$i-html ; \
+	  cd .. ; \
+	done

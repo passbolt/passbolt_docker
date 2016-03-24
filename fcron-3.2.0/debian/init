@@ -1,0 +1,72 @@
+#! /bin/sh
+#
+# fcron		fcron is a scheduler especially useful for people \
+#		who are not running their system all the time.
+#
+#		Initscript by Henrique M. Holschuh <hmh@debian.org>.
+#
+#		Based in /etc/init.d/skeleton:
+#		Written by Miquel van Smoorenburg <miquels@cistron.nl>.
+#		Modified for Debian GNU/Linux
+#		by Ian Murdock <imurdock@gnu.ai.mit.edu>.
+#
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/fcron
+NAME=fcron
+DESC=fcron
+
+startdaemon () {
+    start-stop-daemon --start --quiet "$@" --pidfile /var/run/$NAME.pid --exec ${DAEMON} -- -b
+}
+
+stopdaemon () {
+    start-stop-daemon --stop --quiet "$@" --pidfile /var/run/$NAME.pid --exec ${DAEMON}
+}
+
+test -x $DAEMON || exit 0
+
+set -e
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+	startdaemon
+	echo "${NAME}."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	stopdaemon --oknodo
+	echo "${NAME}."
+	;;
+  reload|force-reload)
+	echo "Reloading $DESC configuration files."
+	fcron-update-crontabs >/dev/null 2>&1
+	stopdaemon --signal 1
+  	;;
+  restart)
+	echo -n "Restarting $DESC: "
+	stopdaemon
+	sleep 1
+	startdaemon
+	echo "${NAME}."
+	;;
+#  restart-if-running)
+#  	echo -n "Stopping $DESC if it is running: "
+#	if start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid --exec ${DAEMON} ; then
+#		echo "${NAME}."
+#		echo -n "Restarting $DESC: "
+#		startdaemon
+#		echo "${NAME}."
+#	else
+#		echo "(not running)."
+#	fi
+#	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0

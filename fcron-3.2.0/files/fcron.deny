@@ -1,0 +1,7 @@
+#
+# fcron.deny
+#
+# List here every users who are not allowed to use fcron/fcrontab.
+# You must put one name by line.
+# The word "all" means that every users that are not in fcron.allow
+# are not allowed to use that softwares ( should be put on the top ).

@@ -97,6 +97,10 @@ cat > $DATABASE_CONF << EOL
     };
 EOL
 
+#######################################################
+## Install passbolt
+########################################################
+
 # Check if passbolt is already installed.
 IS_PASSBOLT_INSTALLED=0
 OUTPUT=$(mysql -N -s -u ${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -e "select count(*) from information_schema.tables where table_schema='${MYSQL_DATABASE}' and table_name='users';")
@@ -115,5 +119,19 @@ if [ $IS_PASSBOLT_INSTALLED == "0" ]; then
     echo "We are all set. Have fun with Passbolt !"
     echo "Reminder : THIS IS A DEMO CONTAINER. DO NOT USE IT IN PRODUCTION!!!!"
 fi
+
+########################################################
+## After install
+########################################################
+
+# start fcron
+fcron &
+
+# add passbolt email sender job to fcron
+touch /var/log/passbolt.log
+chown www-data:www-data /var/log/passbolt.log
+env > /etc/cron.d/passbolt
+echo "* * * * * /var/www/passbolt/app/Console/cake EmailQueue.sender > /var/log/passbolt.log" >> /etc/cron.d/passbolt
+fcrontab -u www-data /etc/cron.d/passbolt
 
 /bin/bash

@@ -1,0 +1,12 @@
+#! /bin/sh
+# Debconf config file for fcron
+
+set -e
+. /usr/share/debconf/confmodule
+
+# Babysit users who don't read README.Debian
+db_title fcron
+db_input high fcron/anacronwarn || true
+db_go
+
+exit 0

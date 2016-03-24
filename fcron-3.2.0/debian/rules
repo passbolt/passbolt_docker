@@ -1,0 +1,107 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+# Modified for package fcron
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# This is the debhelper compatability version to use.
+export DH_COMPAT=3
+
+# Enable debug package build if DEB_BUILD_OPTIONS contains debug
+CONFFLAGS =
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	CONFFLAGS += --with-debug
+endif
+
+configure-stamp: configure
+	dh_testdir
+	./configure --prefix=/usr --with-mandir=/usr/share/man --with-docdir=/usr/share/doc --with-editor=/usr/bin/sensible-editor --with-spooldir=/var/spool/fcron --with-etcdir=/etc --with-sendmail=/usr/sbin/sendmail $(CONFFLAGS) --with-selinux=yes
+
+	touch configure-stamp
+
+configure:
+	autoconf
+
+build: configure-stamp build-stamp
+build-stamp:
+	dh_testdir
+	$(MAKE)
+	touch build-stamp
+
+clean:	configure
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+
+	-$(MAKE) clean
+	-$(RM) -f config.cache config.log config.status config.h Makefile
+
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	#$(MAKE) install prefix=`pwd`/debian/tmp/usr
+
+	install -m 755 fcron `pwd`/debian/fcron/usr/sbin
+	install -m 755 fcrontab fcronsighup fcrondyn `pwd`/debian/fcron/usr/bin
+	install files/fcron.deny files/fcron.allow `pwd`/debian/fcron/etc
+	install files/fcron.conf `pwd`/debian/fcron/etc
+	install -m 644 files/fcrontab.pam `pwd`/debian/fcron/etc/pam.d/fcrontab
+	install -m 644 files/fcron.pam `pwd`/debian/fcron/etc/pam.d/fcron
+
+	install -m 755 debian/fcron-update-crontabs `pwd`/debian/fcron/usr/sbin
+
+	# root's default crontab
+	install -m 640 debian/crontab.root `pwd`/debian/fcron/var/spool/fcron/systab.orig
+
+	# lintian overrides
+	install -D -m 644 debian/lintian `pwd`/debian/fcron/usr/share/lintian/overrides/fcron
+
+	# add anacron hack
+	ln -s /bin/true `pwd`/debian/fcron/usr/sbin/anacron
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+#	dh_testversion
+	dh_testdir
+	dh_testroot
+	dh_installdebconf	
+	dh_installdocs
+	dh_installexamples
+#	dh_installmenu
+#	dh_installpam
+	dh_installinit -- defaults 89 11
+#	dh_installcron
+	dh_installmanpages bitstring.3
+#	dh_installinfo
+	dh_installchangelogs
+	dh_link
+ifeq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	dh_strip
+endif
+	dh_compress
+	dh_fixperms
+	chmod 640 `pwd`/debian/fcron/etc/fcron.allow `pwd`/debian/fcron/etc/fcron.deny
+	chmod 640 `pwd`/debian/fcron/etc/fcron.conf
+	chmod 770 `pwd`/debian/fcron/var/spool/fcron
+	#dh_suidregister
+#	dh_makeshlibs
+	dh_installdeb
+#	dh_perl
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

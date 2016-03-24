@@ -1,0 +1,1124 @@
+dnl Process this file with autoconf to produce a configure script.
+
+
+dnl ---------------------------------------------------------------------
+dnl Initial settings
+dnl ---------------------------------------------------------------------
+
+AC_INIT(allow.c)
+AC_CONFIG_HEADER(config.h)
+AC_PREREQ(2.57)
+m4_include([m4/ax_lib_readline.m4])
+
+vers="3.2.0"
+vers_quoted="\"$vers\""
+AC_DEFINE_UNQUOTED(VERSION, $vers)
+AC_DEFINE_UNQUOTED(VERSION_QUOTED, $vers_quoted)
+VERSION="$vers"
+AC_SUBST(VERSION)
+
+copyright_quoted="\"2000-2014\""
+AC_DEFINE_UNQUOTED(COPYRIGHT_QUOTED, $copyright_quoted)
+
+
+dnl ---------------------------------------------------------------------
+dnl Check for programs, header files, types, etc (autoconf builtins)
+dnl ---------------------------------------------------------------------
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PATH_PROGS(MAKE, $MAKE gmake make, $PATH:/local/bin:/usr/local/bin:/opt/TWWfsw/bin:/opt/sfw/bin)
+AC_MSG_CHECKING(if make is actually GNU Make)
+if test x"$MAKE" = x; then
+  AC_MSG_ERROR(Cannot locate a make utility, 1)
+elif $MAKE --version 2>/dev/null |grep "^GNU Make" >/dev/null; then
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+  AC_MSG_ERROR($MAKE is not GNU Make.
+Please install GNU Make or adjust your PATH so that GNU make can be found
+before any others., 1)
+fi
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PATH_PROGS(STRIP, $STRIP strip, /usr/css/bin:$PATH:/local/bin:/usr/local/bin:/opt/TWWfsw/bin:/opt/sfw/bin)
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(fcntl.h sys/file.h sys/ioctl.h sys/time.h syslog.h unistd.h)
+AC_CHECK_HEADERS(errno.h sys/fcntl.h getopt.h limits.h)
+AC_CHECK_HEADERS(stdarg.h)
+AC_CHECK_HEADERS(termios.h)
+AC_CHECK_HEADERS(strings.h)
+AC_CHECK_HEADERS(sys/types.h sys/socket.h sys/un.h)
+AC_CHECK_HEADERS(security/pam_appl.h pam/pam_appl.h crypt.h shadow.h libaudit.h)
+AC_CHECK_HEADERS(sys/resource.h)
+AC_CHECK_HEADERS(grp.h)
+
+AC_CHECK_SIZEOF(time_t)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_TYPE_UID_T
+
+dnl Define sizeof constants
+AC_CHECK_SIZEOF(pid_t)
+AC_CHECK_SIZEOF(time_t)
+AC_CHECK_SIZEOF(short int)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long int)
+AC_CHECK_SIZEOF(long long int)
+
+dnl Checks for library functions.
+AC_PROG_GCC_TRADITIONAL
+AC_FUNC_MEMCMP
+AC_TYPE_SIGNAL
+AC_FUNC_STRFTIME
+AC_FUNC_WAIT3
+AC_CHECK_LIB(xnet, shutdown)
+AC_CHECK_LIB(selinux, getcon, [selinuxavail=1], [selinuxavail=0])
+AC_CHECK_LIB(audit, audit_open, [auditavail=1], [auditavail=0])
+AX_LIB_READLINE
+AC_CHECK_FUNC(getloadavg, [getloadavg=1], [getloadavg=0])
+AC_CHECK_LIB(kstat, kstat_open, [kstat=1], [kstat=0])
+if test $getloadavg -eq 1; then
+dnl Nothing to do ...
+  AC_FUNC_GETLOADAVG
+  AC_MSG_CHECKING(function to use for lavg* options)  
+  AC_MSG_RESULT(getloadavg())
+elif test $kstat -eq 1;  then
+  AC_MSG_CHECKING(function to use for lavg* options)  
+  LIBS="$LIBS -lkstat"
+  AC_LIBOBJ([getloadavg])
+  AC_DEFINE_UNQUOTED(HAVE_KSTAT, 1)
+  AC_MSG_RESULT(kstat)
+else
+dnl Try to use the /proc/loadavg file ...
+  AC_FUNC_GETLOADAVG
+  AC_MSG_CHECKING(function to use for lavg* options)  
+  AC_MSG_RESULT(/proc/loadavg)
+fi
+AC_CHECK_FUNCS(getcwd gettimeofday mktime putenv strerror setenv unsetenv gethostname)
+AC_CHECK_FUNCS(getopt_long)
+AC_CHECK_FUNCS(mkstemp)
+AC_CHECK_FUNCS(flock lockf)
+AC_CHECK_FUNCS(setlinebuf)
+AC_CHECK_FUNCS(signal)
+AC_CHECK_FUNCS(sigset)
+
+AC_CHECK_FUNCS(seteuid, [seteuid=1], [seteuid=0])
+AC_CHECK_FUNCS(setegid, [setegid=1], [setegid=0])
+AC_CHECK_FUNCS(setresuid, [setresuid=1], [setresuid=0])
+AC_CHECK_FUNCS(setresgid, [setresgid=1], [setresgid=0])
+if test \( \( $seteuid -eq 1 \) -a \( $setegid -eq 1 \) \) -o \( \( "$setresuid" -eq 1 \) -a \( "$setresgid" -eq 1 \) \) ; then
+  has_euid=1
+else
+  has_euid=0
+fi
+
+AC_CHECK_FUNCS(setpriority)
+
+AC_SEARCH_LIBS([getspnam],[shadow sec], [AC_DEFINE_UNQUOTED(HAVE_GETSPNAM, 1)], [])
+
+AC_CHECK_FUNCS(crypt, [crypt=1], [crypt=0])
+if test "$crypt" -eq "0"; then
+  AC_CHECK_LIB(crypt, crypt, [crypt=1], [crypt=0])
+  if test "$crypt" -eq "1"; then
+    LIBS="$LIBS -lcrypt"
+  fi
+fi
+if test "$crypt" -eq "1"; then
+  AC_DEFINE_UNQUOTED(HAVE_CRYPT, 1)
+fi
+
+
+dnl --- sockets
+dnl Check for post-Reno style struct sockaddr
+AC_CACHE_CHECK([for sa_len],
+  ac_cv_sa_len,
+[AC_TRY_COMPILE([#include <sys/types.h>
+#include <sys/socket.h>], [int main(void) {
+ struct sockaddr t;t.sa_len = 0;}],
+  ac_cv_sa_len=yes,ac_cv_sa_len=no)])
+if test $ac_cv_sa_len = yes; then
+  AC_DEFINE(HAVE_SA_LEN)
+fi
+
+dnl --- Socket authentication
+AC_CHECK_HEADERS(cred.h sys/cred.h ucred.h sys/ucred.h)
+AC_CHECK_FUNCS(getpeerucred) dnl Solaris 10 onward
+AC_CHECK_FUNCS(getpeereid) dnl OpenBSD/FreeBSD
+
+dnl ---------------------------------------------------------------------
+dnl Check for fcron more specific stuffs (paths, progs, ...)
+dnl ---------------------------------------------------------------------
+
+fcron_enable_checks=yes
+AC_ARG_ENABLE(checks,
+[  --disable-checks   Don't verify that programs exist on the host ], dnl '
+[ case "$enableval" in 
+   no)
+     fcron_enable_checks=no
+     ;;
+   yes)
+     fcron_enable_checks=yes
+     ;;
+   *)
+     AC_MSG_WARN([Bad value for --disable-checks])
+     ;;
+  esac
+])
+     
+
+dnl ---------------------------------------------------------------------
+dnl Programs ...
+
+AC_PATH_PROG(FOUND_SENDMAIL, sendmail, , $PATH:/usr/lib:/usr/sbin )
+SENDMAIL=
+USE_SENDMAIL=1
+AC_MSG_CHECKING([actual sendmail to use])
+AC_ARG_WITH(sendmail, [  --with-sendmail=PATH	Path to sendmail.],
+[ case "$withval" in
+  no)  USE_SENDMAIL=0 ;;
+  yes) ;;
+  *)   SENDMAIL=$withval ;;
+  esac ],
+)
+
+if test "$USE_SENDMAIL" != "1" ; then
+  AC_MSG_RESULT([disabled])
+  AC_MSG_WARN([Without sendmail you will not get the output of the jobs by mail])
+elif test -n "$SENDMAIL" ; then
+  dnl The user defined a sendmail program to use:
+  if test ! -x "$SENDMAIL" ; then
+    dnl ... but it is not an executable file!
+    AC_MSG_RESULT([$SENDMAIL])
+    AC_MSG_ERROR([File $SENDMAIL is not an executable file])
+  else
+    dnl ... and it is valid
+    AC_MSG_RESULT([$SENDMAIL])
+  fi
+elif test -z "$FOUND_SENDMAIL" ; then
+  dnl The user didn't defined a program to use, and we didn't find one automatically
+  AC_MSG_RESULT([not found])
+  AC_MSG_ERROR([Empty sendmail path or cannot determine path to sendmail: try option --with-sendmail=PATH])
+else
+  dnl Use the automatically found sendmail program:
+  SENDMAIL="$FOUND_SENDMAIL"
+  AC_MSG_RESULT([$SENDMAIL])
+fi
+
+AC_SUBST([SENDMAIL])
+if test "$USE_SENDMAIL" = "1"; then
+  AC_DEFINE([USE_SENDMAIL])
+fi
+
+AC_PATH_PROG(FOUND_FCRON_SHELL, sh, , $PATH)
+FCRON_SHELL=
+AC_MSG_CHECKING([default shell to use to run a job])
+AC_ARG_WITH(shell,
+[  --with-shell=PATH	Path to default shell (by default, path to sh).],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need a default shell)
+    ;;
+  yes)
+    ;;
+  *)
+    FCRON_SHELL=$withval
+    if test $fcron_enable_checks = 'yes' -a ! -x "$withval"; then
+      AC_MSG_ERROR([
+File $withval is not an executable file])
+    fi
+    ;;
+  esac ]
+)
+if test x"$FCRON_SHELL" = x ; then
+  FCRON_SHELL=$FOUND_FCRON_SHELL
+  if test "$FOUND_FCRON_SHELL" = "" ; then
+     AC_MSG_ERROR([
+Cannot determine path to sh: try option --with-shell=PATH])
+  fi
+fi
+
+AC_MSG_RESULT([$FCRON_SHELL])
+AC_SUBST([FCRON_SHELL])
+
+AC_PATH_PROG(FOUND_FCRON_EDITOR, vi)
+FCRON_EDITOR=
+AC_MSG_CHECKING([editor to use for fcrontab])
+AC_ARG_WITH(editor,
+[  --with-editor=PATH	Path to default editor (by default, path to vi).],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR([Need a default editor])
+    ;;
+  yes)
+    ;;
+  *)
+    FCRON_EDITOR=$withval
+    if test $fcron_enable_checks = 'yes' -a ! -x "$withval"; then
+      AC_MSG_ERROR([
+File $withval is not an executable file])
+    fi
+    ;;
+  esac ]
+)
+
+if test x"$FCRON_EDITOR" = x; then
+  FCRON_EDITOR=$FOUND_FCRON_EDITOR
+  if test x"$FCRON_EDITOR" = x ; then
+    AC_MSG_ERROR([
+Cannot determine path to vi: try option --with-editor=PATH])
+  fi
+fi
+
+AC_MSG_RESULT([$FCRON_EDITOR])
+AC_SUBST([FCRON_EDITOR])
+
+dnl ---------------------------------------------------------------------
+dnl Paths ...
+
+PIDDIR="${localstatedir}/run"
+AC_MSG_CHECKING(location of pid files)
+AC_ARG_WITH(piddir,
+[  --with-piddir=PATH	Directory containing pid files.],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR([Need PIDDIR.])
+    ;;
+  yes)
+    ;;
+  *)
+    PIDDIR=$withval
+    ;;
+  esac ]
+)
+AC_MSG_RESULT([$PIDDIR])
+PIDFILE="${PIDDIR}/fcron.pid"
+REBOOT_LOCK="${PIDDIR}/fcron.reboot"
+AC_SUBST(PIDDIR)
+AC_SUBST(PIDFILE)
+AC_SUBST(REBOOT_LOCK)
+
+FIFODIR="${localstatedir}/run"
+AC_MSG_CHECKING(location of fifo files)
+AC_ARG_WITH(fifodir,
+[  --with-fifodir=PATH	Directory containing fifo files.],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need FIFODIR.)
+    ;;
+  yes)
+    ;;
+  *)
+    FIFODIR=$withval
+    ;;
+  esac]
+)
+AC_MSG_RESULT([$FIFODIR])
+FIFOFILE="${FIFODIR}/fcron.fifo"
+AC_SUBST(FIFODIR)
+AC_SUBST(FIFOFILE)
+
+sp="${localstatedir}/spool/fcron"
+AC_MSG_CHECKING(location of spool directory)
+AC_ARG_WITH(spooldir,
+[  --with-spooldir=PATH	Directory containing fcron spool (default PREFIX/var/spool/fcron).],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need SPOOLDIR.)
+    ;;
+  yes)
+    ;;
+  *)
+    sp="$withval"
+    ;;
+  esac ]
+)
+AC_MSG_RESULT($sp)
+FCRONTABS="$sp"
+AC_DEFINE_UNQUOTED(FCRONTABS, "$sp")
+AC_SUBST(FCRONTABS)
+
+if test \( $getloadavg -eq 0 \) -a \( $kstat -eq 0 \); then
+proc=/proc
+AC_MSG_CHECKING(proc directory)
+AC_ARG_WITH(proc,
+[  --with-proc=PATH	Directory where linux procfs is mounted (default /proc).],
+[ case "$withval" in
+  no)
+    AC_MSG_WARN([
+Without proc, you won't be able to use the lavg* options 
+])
+    AC_DEFINE(NOLOADAVG)
+    ;;
+  yes)
+    ;;
+  *)
+    proc=$withval
+    ;;
+  esac ]
+)
+
+if test "$withval" != "no" -a $fcron_enable_checks = 'yes'; then
+  if test -f "$proc/loadavg"; then :
+  else
+       AC_MSG_WARN([
+Cannot determine value for proc directory: try option --with-proc=PATH])
+       AC_MSG_ERROR(Use --with-proc=no to disable the lavg* options)
+  fi
+fi
+
+AC_MSG_RESULT($proc)
+PROC=$proc
+AC_DEFINE_UNQUOTED(PROC, "$proc")
+fi
+
+docdir="${datadir}/doc"
+AC_MSG_CHECKING(location of doc directory)
+AC_ARG_WITH(docdir,
+[  --with-docdir=PATH	Directory containing documentation.],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need DOCDIR.)
+    ;;
+  yes)
+    ;;
+  *)
+    docdir="$withval"
+    ;;
+  esac ])
+
+AC_MSG_RESULT($docdir)
+DOCDIR="$docdir"
+AC_SUBST(DOCDIR)
+
+
+dnl systemd init system
+SYSTEMD_DIR="no"
+
+AC_CHECK_PROGS(PKG_CONFIG, $PKG_CONFIG pkg-config, , $PATH:/local/bin:/usr/local/bin:/opt/sfw/bin)
+AC_MSG_CHECKING(for systemd)
+AC_ARG_WITH([systemdsystemunitdir],
+[ --with-systemdsystemunitdir=DIR   Directory for systemd service files.],
+[], [ if test "x" != "x$PKG_CONFIG"; then
+    with_systemdsystemunitdir=`$PKG_CONFIG --variable=systemdsystemunitdir systemd`
+  fi])
+if test "x$with_systemdsystemunitdir" != xno; then
+   if test "x" != "x$with_systemdsystemunitdir"; then
+       SYSTEMD_DIR="$with_systemdsystemunitdir"
+       AC_MSG_RESULT(yes)
+   else
+       AC_MSG_RESULT(no)
+   fi
+else
+   AC_MSG_RESULT(disabled)
+fi
+AC_SUBST(SYSTEMD_DIR)
+
+
+dnl ---------------------------------------------------------------------
+dnl Users and groups ...
+
+AC_MSG_CHECKING(run non-privileged)
+AC_ARG_WITH(run-non-privileged,
+[ --with-run-non-privileged=[yes|no]	Run fcron without root's rights (see FAQ !)],
+[ case "$withval" in
+  no)
+    run_non_privileged=0
+    AC_MSG_RESULT(no)
+    ;;
+  yes)
+    run_non_privileged=1
+    AC_MSG_RESULT(yes)
+    AC_MSG_WARN([
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+WARNING : 
+	This option allows a non privileged user to run fcron. When used,
+	fcron does not change its rights before running a job (i.e.,
+	if joe runs fcron, every job will run as joe).
+	It means that YOU SHOULD NOT RUN FCRON AS A PRIVILEGED USER WHEN
+	COMPILED WITH THIS OPTION or you'll have a serious security hole.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+])
+    AC_DEFINE(RUN_NON_PRIVILEGED)
+    RUN_NON_PRIVILEGED=1
+    AC_SUBST(RUN_NON_PRIVILEGED)
+    bootinstall=0
+    fcrondyn=0
+    usepam=0
+    useselinux=0
+    useaudit=0
+    ;;
+  *)
+    AC_MSG_ERROR(Invalid argument : please use 'yes' or 'no'.)
+    ;;
+  esac],
+  run_non_privileged=0
+  AC_MSG_RESULT(no)
+)
+
+
+if test "$fcrondyn" = ""; then
+  fcrondyn=1
+fi
+AC_MSG_CHECKING(if fcrondyn should be compiled)
+AC_ARG_WITH(fcrondyn,
+[ --with-fcrondyn=[yes|no]	Compile (or not) fcrondyn (default: yes).],
+[ case "$withval" in
+  no)
+    fcrondyn=0
+    AC_MSG_RESULT(no)
+    ;;
+  yes)
+    if test "$crypt" -eq 1; then
+      fcrondyn=1
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_ERROR(Need a crypt() function.)
+    fi
+    ;;
+  *)
+    AC_MSG_ERROR(Must be set to either "yes" or "no".)
+    ;;
+  esac ],
+  if test "$fcrondyn" = "1" && test "$crypt" -eq 1; then
+    AC_MSG_RESULT(yes)
+  else
+    fcrondyn=0
+    AC_MSG_RESULT(no)
+  fi
+)
+FCRONDYN="$fcrondyn"
+if test "$fcrondyn" = 1; then
+  AC_DEFINE_UNQUOTED(FCRONDYN, "$fcrondyn")
+  AC_SUBST(FCRONDYN)
+fi
+
+AC_MSG_CHECKING([root's username])
+rootname=root
+AC_ARG_WITH(rootname,
+[ --with-rootname=USERNAME	Root's username (default root) ],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR([Need rootname.])
+    ;;
+  yes)
+    ;;
+  *)
+	rootname=$withval
+    ;;
+  esac 
+])
+
+if test $fcron_enable_checks = 'yes'; then
+
+   rootuid=`$srcdir/script/has_usrgrp.pl -user $rootname -printuid`
+   if test "x$rootuid" = "x"; then
+    AC_MSG_ERROR([
+Invalid root's username or cannot determine root's username: try option --with-rootname=USERNAME])
+  fi
+fi
+AC_MSG_RESULT([$rootname])
+
+
+AC_MSG_CHECKING([root's groupname])
+AC_ARG_WITH(rootgroup,
+[ --with-rootgroup=GROUPNAME	Root's groupname (default root (or wheel)) ],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need rootgroup.)
+    ;;
+  yes)
+    ;;
+  *)
+    rootgroup=$withval
+    ;;
+    esac ]
+)
+
+if test $fcron_enable_checks = 'yes'; then
+
+  if test x"$rootgroup" = x; then
+    # rootgroup not defined: test a few possibilities
+    rgid=`$srcdir/script/has_usrgrp.pl -group root -printgid`
+    wgid=`$srcdir/script/has_usrgrp.pl -group wheel -printgid`
+    if test "x$rgid" != "x"; then
+        rootgid=$rgid
+	rootgroup=root
+    elif test "x$wgid" != "x"; then
+        rootgid=$wgid
+	rootgroup=wheel
+    else
+	AC_MSG_ERROR([
+Cannot determine root's groupname: try option --with-rootgroup=GROUPNAME])
+    fi
+  else
+    # rootgroup defined: check it
+    rootgid=`$srcdir/script/has_usrgrp.pl -group $rootgroup -printgid`
+    if test "x$rootgid" = "x"; then
+	AC_MSG_ERROR([
+Cannot determine root's groupname: try option --with-rootgroup=GROUPNAME])
+    fi
+  fi
+
+else
+  # no check: use values given by user or default values
+  if test x"$rootgroup" = x ; then
+    rootgroup=root
+  fi
+
+fi
+
+AC_MSG_RESULT([$rootgroup])
+
+ROOTNAME="$rootname"
+AC_SUBST(ROOTNAME)
+AC_DEFINE_UNQUOTED(ROOTNAME, "$rootname")
+ROOTGROUP="$rootgroup"
+AC_SUBST(ROOTGROUP)
+AC_DEFINE_UNQUOTED(ROOTGROUP, "$rootgroup")
+
+
+username="$rootname"
+groupname="$rootgroup"
+
+AC_MSG_CHECKING(username to run fcrontab under)
+AC_ARG_WITH(username,
+[ --with-username=USERNAME	Username to run fcrontab under (default fcron) ],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need USERNAME.)
+    ;;
+  yes)
+    if test "$has_euid" -eq 1 ; then
+	username=fcron
+    fi
+    AC_MSG_RESULT($username)
+    ;;
+  *)
+    if test "$has_euid" -eq 1 ; then
+        username="$withval";
+	AC_MSG_RESULT($username)
+	if test "$withval" = "$rootname" && test "$RUN_NON_PRIVILEGED" != "1"; then
+            AC_MSG_ERROR([
+
+Running fcrontab setuid root is NOT secure and would completely break
+the security model of fcron. You must use a different user name.
+])
+            has_euid=0
+        fi
+    else
+	AC_MSG_RESULT($username)
+	AC_MSG_WARN(username must be $rootname as your system has no seteuid)
+    fi
+    ;;
+    esac ],
+    if test "$has_euid" -eq 1 ; then
+	username=fcron
+    fi
+    AC_MSG_RESULT($username)
+)
+
+AC_MSG_CHECKING(groupname to run fcrontab under)
+AC_ARG_WITH(groupname,
+[ --with-groupname=GROUPNAME	Groupname to run fcrontab under (default fcron) ],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need GROUPNAME.)
+    ;;
+  yes)
+    if test "$has_euid" -eq 1 ; then
+	groupname=fcron
+    fi
+    AC_MSG_RESULT($groupname)
+    ;;
+  *)
+    if test "$has_euid" -eq 1 ; then
+	groupname="$withval";
+	AC_MSG_RESULT($groupname)
+    else
+	AC_MSG_RESULT($groupname)
+	AC_MSG_WARN(groupname must be $rootgroup as username is $username)
+    fi
+    ;;
+    esac ],
+    if test "$has_euid" -eq 1 ; then
+	groupname=fcron
+    fi
+    AC_MSG_RESULT($groupname)
+)
+
+USERNAME="$username"
+AC_SUBST(USERNAME)
+AC_DEFINE_UNQUOTED(USERNAME, "$username")
+GROUPNAME="$groupname"
+AC_SUBST(GROUPNAME)
+AC_DEFINE_UNQUOTED(GROUPNAME, "$groupname")
+
+
+if test "$has_euid" -eq 1 ; then
+  AC_DEFINE(USE_SETE_ID)
+fi
+
+
+
+sysfcrontab="systab"
+use_sysfcrontab=1
+AC_MSG_CHECKING(use a system fcrontab)
+AC_ARG_WITH(sysfcrontab,
+[ --with-sysfcrontab=NAME	Use (or not) a system fcrontab (default: yes)],
+[ case "$withval" in
+  no)
+    use_sysfcrontab=0
+    AC_MSG_RESULT(no)
+    ;;
+  yes)
+    AC_MSG_RESULT(yes)
+    ;;
+  *)
+    sysfcrontab="$withval"
+    AC_MSG_RESULT($sysfcrontab)
+  esac ],
+  AC_MSG_RESULT(yes)
+)
+if test "$use_sysfcrontab" -eq 1 ; then
+  AC_DEFINE_UNQUOTED(SYSFCRONTAB, "$sysfcrontab")
+  SYSFCRONTAB="$sysfcrontab"
+  AC_SUBST(SYSFCRONTAB)
+fi
+
+
+dnl ---------------------------------------------------------------------
+dnl Misc ...
+
+AC_ARG_WITH(debug,
+[  --with-debug=CFLAGS	Use default debug flags or CFLAGS if given to compile fcron in debug mode.],
+[ case "$withval" in
+  no)
+    cflags="-O2 -Wall"
+    debug="0"
+    ;;
+  yes)
+    cflags="-DDEBUG -g -Wall -DFOREGROUND -DMALLOC_CHECK_=2 -Wpointer-arith -Wstrict-prototypes"
+    bootinstall=0
+    debug="1"
+    ;;
+  *)
+    cflags="$withval"
+    debug="1"
+    ;;
+  esac ],
+    cflags="-O2 -Wall"
+    debug="0"
+)
+DEBUG=$debug
+AC_SUBST(DEBUG)
+
+
+if test "$bootinstall" = ""; then
+  bootinstall=1
+fi
+AC_MSG_CHECKING(install interactively a boot script)
+AC_ARG_WITH(boot-install,
+[  --with-boot-install=[yes|no]	Install (interactively) a boot script (default: yes).],
+[ case "$withval" in
+  no)
+    bootinstall=0
+    AC_MSG_RESULT(no)
+    ;;
+  yes)
+    bootinstall=1
+    AC_MSG_RESULT(yes)
+    ;;
+  *)
+    AC_MSG_ERROR(Must be set to either "yes" or "no".)
+    ;;
+  esac ],
+    if test "$bootinstall" = "1"; then
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no)
+    fi
+)
+BOOTINSTALL="$bootinstall"
+AC_DEFINE_UNQUOTED(BOOTINSTALL, "$bootinstall")
+AC_SUBST(BOOTINSTALL)
+
+
+AC_ARG_WITH(cflags,
+[  --with-cflags=CFLAGS	Use CFLAGS flags to compile fcron.],
+[ case "$withval" in
+  no)
+    AC_MSG_ERROR(Need an explicit value for --with-cflags.)
+    ;;
+  yes)
+    AC_MSG_ERROR(Need an explicit value for --with-cflags.)
+    ;;
+  *)
+    cflags="$withval"
+    ;;
+  esac ],
+)
+CFLAGS=$cflags
+AC_DEFINE_UNQUOTED(CFLAGS, "$cflags")
+
+
+AC_MSG_CHECKING(automatic answer to make install's questions)
+AC_ARG_WITH(answer-all,
+[  --with-answer-all=[yes|no]	Answer the argument to every make install's questions.],
+[ case "$withval" in
+  no)
+    answerall=0
+    AC_MSG_RESULT(yes (answer "no"))
+    ;;
+  yes)
+    answerall=1
+    AC_MSG_RESULT(yes (answer "yes"))
+    ;;
+  *)
+    AC_MSG_ERROR(Must be set to either "yes" or "no".)
+    ;;
+  esac ],
+    answerall=2
+    AC_MSG_RESULT(no)
+)
+ANSWERALL="$answerall"
+AC_DEFINE_UNQUOTED(ANSWERALL, "$answerall")
+AC_SUBST(ANSWERALL)
+
+
+AC_MSG_CHECKING(if audit trails should be enabled if available)
+AC_ARG_WITH(audit,
+[ --with-audit=[yes|no]	Enable (or not) audit trails if available (default: yes).],
+[ case "$withval" in
+  no)
+    useaudit=0
+    ;;
+  yes)
+    useaudit=1
+    ;;
+  *)
+    AC_MSG_ERROR(Must be set to either "yes" or "no".)
+    ;;
+  esac ]
+)
+if test useaudit = "0"; then
+  AC_MSG_RESULT(no)
+elif test "$useaudit" = "1" && test "$auditavail" != 1; then
+  useaudit=0
+  AC_MSG_RESULT(not available)
+  AC_MSG_ERROR([
+  You requested audit trails to be enabled, but libaudit was not found.
+])
+elif test "$auditavail" = 1; then
+  useaudit=1
+  AC_MSG_RESULT(yes)
+  LIBS="$LIBS -laudit"
+  AC_DEFINE(WITH_AUDIT)
+else
+  useaudit=0
+  AC_MSG_RESULT(no)
+fi
+
+
+if test "$usepam" = ""; then
+  usepam=1
+fi
+AC_MSG_CHECKING(if pam should be used if available)
+AC_ARG_WITH(pam,
+[ --with-pam=[yes|no]	Use (or not) PAM if available (default: yes).],
+[ case "$withval" in
+  no)
+    usepam=0
+    AC_MSG_RESULT(no)
+    ;;
+  yes)
+    AC_MSG_RESULT(yes)
+    AC_CHECK_LIB(pam, pam_acct_mgmt)
+    ;;
+  *)
+    AC_MSG_ERROR(Must be set to either "yes" or "no".)
+    ;;
+  esac ],
+  if test "$usepam" = "1"; then 
+    AC_MSG_RESULT(yes)
+    AC_CHECK_LIB(pam, pam_acct_mgmt)
+  else
+    usepam=0
+    AC_MSG_RESULT(no)
+  fi    
+)
+if test "$usepam" != "0" && echo "$LIBS" | grep -- "-lpam" > /dev/null ; then
+  usepam=1
+else
+  usepam=0
+fi
+USEPAM="$usepam"
+AC_SUBST(USEPAM)
+
+
+if test "$useselinux" = ""; then
+  useselinux=1
+fi
+AC_MSG_CHECKING(if SELinux should be used)
+AC_ARG_WITH(selinux,
+[ --with-selinux=[yes|no]	Use (or not) SELinux (default: yes).],
+[ case "$withval" in
+  no)
+    useselinux=0
+    AC_MSG_RESULT(no)
+    ;;
+  yes)
+    if test "$selinuxavail" -eq 1; then
+	useselinux=1
+	AC_MSG_RESULT(yes)
+    else
+	AC_MSG_RESULT(not available)
+        AC_MSG_ERROR([
+  You requested the use of SELinux, but SELinux is considered 
+  as not available by configure script.
+])
+    fi
+    ;;
+  *)
+    AC_MSG_ERROR(Must be set to either "yes" or "no".)
+    ;;
+  esac ],
+  if test "$useselinux" != "0" && test "$selinuxavail" -eq 1; then
+    useselinux=1
+    AC_MSG_RESULT(yes)
+  else
+    useselinux=0
+    AC_MSG_RESULT(not available)
+  fi
+)
+if test "$useselinux" -eq 1; then
+  LIBS="$LIBS -lselinux"
+  AC_DEFINE(WITH_SELINUX)
+  CFLAGS="$CFLAGS -I/usr/include/selinux"
+fi
+
+
+dnl ---------------------------------------------------------------------
+dnl DocBook
+
+AC_PATH_PROG(JADE,openjade)
+if test -z "$JADE"; then
+	AC_PATH_PROG(JADE,jade)
+fi
+
+AC_PATH_PROG(DB2MAN,docbook2man)
+if test -z "$DB2MAN"; then
+	AC_PATH_PROG(DB2MAN,db2man)
+fi
+AC_MSG_CHECKING(Looking for docbook2man converter)
+AC_ARG_WITH(db2man,
+[ --with-db2man=PATH(or 'no')	set PATH to a docbook2man converter.],
+[ case "$withval" in
+  no) 
+    DB2MAN=""
+    AC_MSG_RESULT(none)
+    ;;
+  yes)
+    AC_MSG_ERROR(Must be set to PATH or "no".)
+    ;;
+  *)
+    if test ! -x "$withval"; then
+      AC_MSG_ERROR($withval is not an exe file.)
+    fi
+    DB2MAN="$withval"
+    AC_MSG_RESULT($withval)
+    ;;
+  esac ],
+  AC_MSG_RESULT(default: $DB2MAN)
+)
+AC_SUBST(DB2MAN)
+
+AC_PATH_PROG(NSGMLS, nsgmls)
+AC_PATH_PROG(SGMLSPL, sgmlspl)
+
+DB2MAN_SPEC="/usr/share/sgml/docbook/utils-0.6.9/helpers/docbook2man-spec.pl"
+
+AC_MSG_CHECKING(Looking for docbook2man-spec file)
+AC_ARG_WITH(db2man-spec,
+[ --with-db2man-spec=PATH	set the PATH to docbook2man-spec file
+				(needed if no db2man converter is set).],
+[ case "$withval" in
+  no) 
+    DB2MAN_SPEC=""
+    AC_MSG_RESULT(none)
+    ;;
+  yes)
+    AC_MSG_ERROR(Must be set to PATH or "no".)
+    ;;
+  *)
+    if test ! -f "$withval"; then
+      AC_MSG_ERROR($withval is not a file.)
+    fi
+    DB2MAN_SPEC="$withval"
+    AC_MSG_RESULT($withval)
+    ;;
+  esac ],
+  AC_MSG_RESULT(default)
+)
+AC_SUBST(DB2MAN_SPEC)
+
+if test -x "$DB2MAN"; then
+  DB2MAN_BEFORE="$DB2MAN"
+  DB2MAN_AFTER=""
+else
+  if test \( \( -f "$DB2MAN_SPEC" \) -a \( -x "$NSGMLS" \) \
+          -a \( -x "$SGMLSPL" \) \); then
+    DB2MAN_BEFORE="$NSGMLS"
+    DB2MAN_AFTER="2> /dev/null | $SGMLSPL $DB2MAN_SPEC"
+  else
+    DB2MAN_BEFORE=""
+    DB2MAN_AFTER=""
+  fi
+fi
+AC_SUBST(DB2MAN_BEFORE)
+AC_SUBST(DB2MAN_AFTER)
+
+
+DSSSL_DIR="/usr/share/sgml/docbook/stylesheet/dsssl/modular"
+
+AC_MSG_CHECKING(Looking for dsssl stylsheets)
+AC_ARG_WITH(dsssl-dir,
+[ --with-dsssl-dir=DIR	change the default location of DSSSL stylesheets.],
+[ case "$withval" in
+  no) 
+    DSSSL_DIR=""
+    AC_MSG_RESULT(none)
+    ;;
+  yes)
+    AC_MSG_ERROR(Must be set to DIR or "no".)
+    ;;
+  *)
+    if test ! -f "$withval/html/docbook.dsl"; then
+      AC_MSG_ERROR($withval/html/docbook.dsl does not exist.)
+    fi
+    DSSSL_DIR="$withval"
+    AC_MSG_RESULT($withval)
+    ;;
+  esac ],
+  AC_MSG_RESULT(default)
+  if test ! -f "$DSSSL_DIR/html/docbook.dsl"; then
+    AC_MSG_WARN([
+
+$DSSSL_DIR/html/docbook.dsl does not exist. You will probably not be able to generate the documentation from the DocBook source files.])
+    AC_MSG_WARN([Use --with-dsssl-dir to specify a directory.
+])
+  fi
+)
+AC_SUBST(DSSSL_DIR)
+
+
+dnl ---------------------------------------------------------------------
+dnl Final settings
+dnl ---------------------------------------------------------------------
+
+
+AC_OUTPUT(Makefile doc/Makefile doc/stylesheets/fcron-doc.dsl)
+
+
+dnl ---------------------------------------------------------------------
+dnl Info for user
+dnl ---------------------------------------------------------------------
+
+echo
+echo "Summary :"
+echo "-------"
+echo
+echo -n "run in debug mode by default :      "
+if test "$debug" -eq "1"; then
+	echo "yes"
+else
+	echo "no"
+fi
+
+echo -n "Audit trails :                      "
+if test "$useaudit" -eq 1; then
+	echo "yes"
+else
+	echo "no"
+fi
+
+echo -n "PAM :                               "
+if test "$usepam" -eq 1; then
+	echo "yes"
+else
+	echo "no"
+fi
+
+echo -n "SELinux :                           "
+if test "$useselinux" -eq 1; then
+	echo "yes"
+else
+	echo "no"
+fi
+
+echo -n "Readline :                          "
+if test "$ax_cv_lib_readline" = "no"; then
+	echo "no"
+else
+	echo "yes"
+fi
+
+
+echo -n "Run without root's rights :         "
+if test "$run_non_privileged" -eq 1; then
+	echo "yes"
+else
+	echo "no"
+fi
+
+echo -n "Load average support :              "
+if test "$getloadavg" -eq 1 -o -n "$proc"; then
+	echo "yes"
+else
+	echo "no"
+fi
+
+echo -n "compile fcrondyn :                  "
+if test "$fcrondyn" -eq 1; then
+	echo "yes"
+else
+	echo "no"
+fi
+
+echo "fcron's user (resp. group) name :   $username (resp. $groupname)"
+
+echo -n "sysfcrontab :                       "
+if test "$use_sysfcrontab" -eq 1; then
+	echo "yes ($sysfcrontab)"
+else
+	echo "no"
+fi
+
+echo "prefix:                             $prefix"
+echo "exec_prefix:                        $exec_prefix"
+echo "datarootdir:                        $datarootdir"
+echo "bin dir:                            $bindir"
+echo "sbin dir:                           $sbindir"
+echo "spool dir:                          $sp"
+echo "etc dir:                            $sysconfdir"
+echo "doc dir:                            $docdir"
+echo "man dir:                            $mandir "
+
+
+echo
+echo "You can now run '$MAKE' to compile"
+echo "and then (as root) '$MAKE install' to install fcron."
+echo

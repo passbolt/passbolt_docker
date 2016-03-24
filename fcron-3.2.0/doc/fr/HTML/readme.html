@@ -1,0 +1,602 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>About fcron</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Documentation de fcron"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Fcron: how and why?"
+HREF="how-and-why.html"><LINK
+REL="PREVIOUS"
+TITLE="Fcron: how and why?"
+HREF="how-and-why.html"><LINK
+REL="NEXT"
+TITLE="How to install fcron"
+HREF="install.html"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Documentation de fcron</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="how-and-why.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Fcron: how and why?</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="install.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="README"
+>1.1. About fcron</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN40"
+>1.1.1. What is fcron?</A
+></H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> is a scheduler. It aims at replacing <SPAN
+CLASS="APPLICATION"
+>Vixie
+Cron</SPAN
+>, so it implements most of its functionalities.</P
+><P
+>But contrary to <SPAN
+CLASS="APPLICATION"
+>Vixie Cron</SPAN
+>, <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>
+does not need your system to be up 7 days a week, 24 hours a day: it also works
+well with systems which are not running neither all the time nor regularly
+(contrary to <SPAN
+CLASS="APPLICATION"
+>anacrontab</SPAN
+>).</P
+><P
+>In other words, <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> does both the job of <SPAN
+CLASS="APPLICATION"
+>Vixie
+Cron</SPAN
+> and <SPAN
+CLASS="APPLICATION"
+>anacron</SPAN
+>, but does even more
+and better :)) ...</P
+><P
+>To do so, <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> allows you to use the standard mode in which you
+tell it to execute one command at a given date and hour and to make it run a
+command according to its time of execution, which is normally the same as system
+up time. For example:
+
+            <A
+NAME="AEN55"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+>Run the task 'save /home/ directory' every 3h15 of system
+up time.</P
+></BLOCKQUOTE
+> and, of course, in order to make it really useful, the
+time remaining until next execution is saved each time the system is stopped.
+You can also say:
+	
+            <A
+NAME="AEN57"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+>run that command once between 2am and 5am</P
+></BLOCKQUOTE
+> which will be done if the system is running at any
+time in this interval.</P
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> also includes a useful system of options, which can be
+applied either to every lines following the declaration or to a single line.
+Some of the supported options permit to:
+	    <P
+></P
+><UL
+><LI
+><P
+>run jobs one by one (fcrontab option
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.SERIAL"
+><CODE
+CLASS="VARNAME"
+>serial</CODE
+></A
+>),</P
+></LI
+><LI
+><P
+>set the max system load average value under
+which the job should be run (fcrontab option <A
+HREF="fcrontab.5.html#FCRONTAB.5.LAVG"
+><CODE
+CLASS="VARNAME"
+>lavg</CODE
+></A
+>),</P
+></LI
+><LI
+><P
+>set a nice value for a job (fcrontab option
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.NICE"
+><CODE
+CLASS="VARNAME"
+>nice</CODE
+></A
+>),</P
+></LI
+><LI
+><P
+>run jobs at <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>'s startup if they should
+have been run during system down time (fcrontab option
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.BOOTRUN"
+><CODE
+CLASS="VARNAME"
+>bootrun</CODE
+></A
+>),</P
+></LI
+><LI
+><P
+>mail user to tell him a job has not run and why
+(fcrontab option <A
+HREF="fcrontab.5.html#FCRONTAB.5.NOTICENOTRUN"
+><CODE
+CLASS="VARNAME"
+>noticenotrun</CODE
+></A
+>),</P
+></LI
+><LI
+><P
+>a better management of the mailing of outputs
+...</P
+></LI
+></UL
+>
+	</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN85"
+>1.1.2. License</A
+></H2
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> is distributed under GPL license (please read the license
+in the <A
+HREF="gpl.html"
+>gpl</A
+> file).</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN90"
+>1.1.3. Requirements</A
+></H2
+><P
+></P
+><UL
+><LI
+><P
+>a <SPAN
+CLASS="PRODUCTNAME"
+>Linux/Unix system</SPAN
+></P
+><P
+><SPAN
+CLASS="APPLICATION"
+>Fcron</SPAN
+> should work on every
+<SPAN
+CLASS="PRODUCTNAME"
+>POSIX</SPAN
+> system, but it has been developed on
+<SPAN
+CLASS="PRODUCTNAME"
+>Mandrake</SPAN
+> Linux (so it should work without any
+problems on <SPAN
+CLASS="PRODUCTNAME"
+>Redhat</SPAN
+>).</P
+><P
+>Fcron has been reported to work correctly on:
+		</P
+><P
+></P
+><UL
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>Linux Mandrake</SPAN
+>
+		     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>Linux Debian 3.0</SPAN
+>
+		     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>LFS</SPAN
+></P
+><P
+>(take a look at the <A
+HREF="http://www.linuxfromscratch.org/blfs/"
+TARGET="_top"
+>Beyond
+			   LFS book</A
+> to find the installation
+			informations).</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeBSD 4.2</SPAN
+>
+		     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>OpenBSD 2.8</SPAN
+>
+		     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>NetBSD 2.0</SPAN
+>
+		     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>Darwin/MacOS-X</SPAN
+></P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>Solaris 8</SPAN
+>
+		     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>AIX 4.3.3</SPAN
+>
+		     </P
+></LI
+><LI
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>HP-UX 11.11</SPAN
+>
+		     </P
+></LI
+></UL
+><P
+>but fcron should work on other OS as well. Yet,
+		  if you have troubles
+		  making it work on a <SPAN
+CLASS="PRODUCTNAME"
+>POSIX</SPAN
+> system, please
+		  contact me at <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+>.</P
+></LI
+><LI
+><P
+>a running <SPAN
+CLASS="APPLICATION"
+>syslog</SPAN
+> (or you
+won't have any log)</P
+></LI
+><LI
+><P
+>a running mail system (
+<SPAN
+CLASS="APPLICATION"
+>sendmail</SPAN
+> or <SPAN
+CLASS="APPLICATION"
+>postfix</SPAN
+> for
+example) (or users will not able to read their jobs output)
+		    </P
+></LI
+><LI
+><P
+>(optional) a <SPAN
+CLASS="PRODUCTNAME"
+>PAM</SPAN
+>
+library.</P
+></LI
+><LI
+><P
+>(optional) a system with a working <SPAN
+CLASS="PRODUCTNAME"
+>SE Linux</SPAN
+> environment.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN151"
+>1.1.4. Compilation and installation</A
+></H2
+><P
+>See the <A
+HREF="install.html"
+>install</A
+> file (either install.txt
+or install.html).</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN155"
+>1.1.5. Configuration</A
+></H2
+><P
+>See the <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8)</A
+>, <A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5)</A
+> and <A
+HREF="fcrontab.1.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(1)</A
+> manpages.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="AEN164"
+>1.1.6. Bug reports, corrections, propositions...</A
+></H2
+><P
+>Please send me the description of any bug you happen to encounter
+(with, even better, the corresponding patch -:) and any propositions,
+congratulations or flames at <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+></P
+><P
+>Please contact Russell Coker directly for problems about SE Linux support at <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:russell@coker.com.au"
+>russell@coker.com.au</A
+>&#62;</CODE
+>, since he maintains this part of the code.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="how-and-why.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="install.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Fcron: how and why?</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="how-and-why.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>How to install fcron</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

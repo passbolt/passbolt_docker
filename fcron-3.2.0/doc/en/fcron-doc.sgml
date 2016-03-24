@@ -1,0 +1,108 @@
+<!doctype book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+
+<!ENTITY % decl SYSTEM "fcron-doc.mod">
+%decl;
+
+]>
+
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+<book lang="en" id="fcron-doc">
+    <bookinfo id="bookinfo">
+	<title>Fcron documentation</title>
+	<date>&date;</date>
+	<releaseinfo>Fcron &version; <![%devrelease; [
+(<emphasis>development</emphasis> release)]]></releaseinfo>
+	<authorgroup>
+	    <author>
+		<firstname>Thibault</firstname>
+		<surname>Godouet</surname>
+	    </author>
+	</authorgroup>
+	<copyright>
+	    <year>&copyrightdate;</year>
+	    <holder>Thibault Godouet</holder>
+	</copyright>
+	<legalnotice id="legalnotice">
+	    <para><citetitle>Fcron documentation</citetitle> Copyright &copy;
+&copyrightdate; Thibault Godouet, &email;</para>
+	    <para>Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License, Version 1.1 or
+any later version published by the Free Software Foundation; with the Back-Cover
+Texts being <!-- ulink hack because this legal notice gets diverted --> <ulink
+url="#backcover">Back Cover Text</ulink>. A copy of the license is included in
+<xref linkend="fdl">.</para>
+	</legalnotice>
+
+	<abstract>
+	    <para>&Fcron; is distributed under GPL license (please read the
+license in <xref linkend="gpl">).</para>
+	    <para>Project home page: &webpage;</para>
+	    <para>Author: Thibault GODOUET &email;</para>
+	</abstract>
+	<abstract>
+	    <para>You can get the latest HTML version of this document at:
+&docurlEN; . The SGML DocBook sources are included with fcron packages.</para>
+	</abstract>
+
+	<![%devrelease; [ 
+	<abstract>
+	    <para>
+		<warning>
+		    <para>This release (&version;) - as every version of the
+form x.y.z where y is an odd number -, is a <emphasis>development</emphasis>
+release, so it may contain more bugs (and uglier ones :)) ) than a stable
+release.
+		    </para>
+		</warning>
+	    </para>
+	</abstract>
+	]]>
+    </bookinfo>
+
+    <chapter id="how-and-why">
+	<title>Fcron: how and why?</title>
+	<para>This chapter will explain you what is &fcron;, why you should need
+it, and how to install it.</para>
+	&about;
+	&install;
+	&changes;
+	&relnotes;
+	&todo;
+	&thanks;
+    </chapter>
+
+    <chapter id="using-fcron">
+	<title>Using fcron ...</title>
+	<sect1 id="manpages">
+	    <title>Manual pages of fcron</title>
+	    <para>This section contains the manual pages, which tell you how to use &fcron;.</para>
+	    &fcron.8;
+	    &fcron.conf.5;
+	    &fcrontab.1;
+	    &fcrontab.5;
+	    &fcrondyn.1;
+	</sect1>
+	&faq;
+    </chapter>
+
+    &gpl;
+    &fdl;
+</book>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-indent-data:nil
+sgml-local-ecat-files:("psgml-ecat.file")
+End:
+-->

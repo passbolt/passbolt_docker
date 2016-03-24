@@ -1,0 +1,115 @@
+<!-- Dev. release: -->
+<!--ENTITY % devrelease "INCLUDE"-->
+<!-- Stable release: -->
+<!ENTITY % devrelease "IGNORE">
+
+<!-- General information -->
+
+<!ENTITY date "@@Date@">
+<!ENTITY version "@@VERSION_QUOTED@">
+<!ENTITY copyrightdate "2000-2014">
+<!ENTITY emailadr "fcron@free.fr">
+<!ENTITY selinuxadr "russell@coker.com.au">
+<!ENTITY email "<email>&emailadr;</email>">
+<!ENTITY selinuxemail "<email>&selinuxadr;</email>">
+<!ENTITY webpageadr "http://fcron.free.fr">
+<!ENTITY webpage '<ulink url="&webpageadr;">&webpageadr;</ulink>'>
+<!ENTITY docurlEN '<ulink url="&webpageadr/files/fcron-doc-en-html.tar.gz">&webpageadr/files/fcron-doc-html.tar.gz</ulink>'>
+<!ENTITY docurlFR '<ulink url="&webpageadr/files/fcron-doc-fr-html.tar.gz">&webpageadr/files/fcron-doc-html.tar.gz</ulink>'>
+
+<!-- Compilation variables -->
+
+<!ENTITY editor "@@FCRON_EDITOR@">
+<!ENTITY etc "@@ETC@">
+<!ENTITY exiterr "@@EXIT_ERR@">
+<!ENTITY exitok "@@EXIT_OK@">
+<!ENTITY fcron.allow "@@FCRON_ALLOW@">
+<!ENTITY fcron.conf.location "@@FCRON_CONF@">
+<!ENTITY fcron.deny "@@FCRON_DENY@">
+<!ENTITY fcron.pid "@@PIDFILE@">
+<!ENTITY fcron.fifo "@@FIFOFILE@">
+<!ENTITY fcrontabsdir "@@FCRONTABS@">
+<!ENTITY firstsleep "@@FIRST_SLEEP@">
+<!ENTITY lavgoncedef "@@LAVG_ONCE@">
+<!ENTITY lavgqueuemax "@@LAVG_QUEUE_MAX@">
+<!ENTITY save "@@SAVE@">
+<!ENTITY sendmail "@@SENDMAIL@">
+<!ENTITY serialmaxrunning "@@SERIAL_MAX_RUNNING@">
+<!ENTITY serialoncedef "@@SERIAL_ONCE@">
+<!ENTITY serialqueuemax "@@SERIAL_QUEUE_MAX@">
+<!ENTITY shell "@@FCRON_SHELL@">
+<!ENTITY sysfcrontab "@@SYSFCRONTAB@">
+
+<!-- shortcuts -->
+
+<!ENTITY seealso "<emphasis>See also</emphasis>:">
+<!ENTITY voiraussi "<emphasis>Voir aussi</emphasis>&nbsp;:">
+<!ENTITY fcron "<application>fcron</application>">
+<!ENTITY Fcron "<application>Fcron</application>">
+<!ENTITY fcrontab "<application>fcrontab</application>">
+<!ENTITY Fcrontab "<application>Fcrontab</application>">
+<!ENTITY fcrondyn "<application>fcrondyn</application>">
+<!ENTITY Fcrondyn "<application>Fcrondyn</application>">
+<!ENTITY fcrontabf "<systemitem>fcrontab</systemitem>">
+<!ENTITY fcron.conf "<systemitem>fcron.conf</systemitem>">
+<!ENTITY pam "<application>pam</application>">
+
+<!-- documents -->
+
+<!ENTITY about SYSTEM "readme.sgml">
+<!ENTITY install SYSTEM "install.sgml">
+<!ENTITY todo SYSTEM "todo.sgml">
+<!ENTITY thanks SYSTEM "thanks.sgml">
+<!ENTITY changes SYSTEM "changes.sgml">
+<!ENTITY relnotes SYSTEM "relnotes.sgml">
+<!ENTITY fcron.8 SYSTEM "fcron.8.sgml">
+<!ENTITY fcron.conf.5 SYSTEM "fcron.conf.5.sgml">
+<!ENTITY fcrontab.1 SYSTEM "fcrontab.1.sgml">
+<!ENTITY fcrontab.5 SYSTEM "fcrontab.5.sgml">
+<!ENTITY fcrondyn.1 SYSTEM "fcrondyn.1.sgml">
+<!ENTITY manpage-foot SYSTEM "manpage-foot.sgml">
+<!ENTITY faq SYSTEM "faq.sgml">
+<!ENTITY fdl SYSTEM "fdl.sgml">
+<!ENTITY gpl SYSTEM "gpl.sgml">
+
+<!-- command line arguments -->
+<!ENTITY argfirstsleep '<link linkend="fcron.8.firstsleep"><varname>--sleeptime</varname></link>'>
+<!ENTITY argonce '<link linkend="fcron.8.once"><varname>--once</varname></link>'>
+
+<!-- fcrontab options -->
+
+<!ENTITY optbootrun '<link linkend="fcrontab.5.bootrun"><varname>bootrun</varname></link>'>
+<!ENTITY optdayand '<link linkend="fcrontab.5.dayand"><varname>dayand</varname></link>'>
+<!ENTITY optdayor '<link linkend="fcrontab.5.dayor"><varname>dayor</varname></link>'>
+<!ENTITY opterroronlymail '<link linkend="fcrontab.5.erroronlymail"><varname>erroronlymail</varname></link>'>
+<!ENTITY optexesev '<link linkend="fcrontab.5.exesev"><varname>exesev</varname></link>'>
+<!ENTITY optfirst '<link linkend="fcrontab.5.first"><varname>first</varname></link>'>
+<!ENTITY optforcemail '<link linkend="fcrontab.5.forcemail"><varname>forcemail</varname></link>'>
+<!ENTITY optjitter '<link linkend="fcrontab.5.jitter"><varname>jitter</varname></link>'>
+<!ENTITY optlavg '<link linkend="fcrontab.5.lavg"><varname>lavg</varname></link>'>
+<!ENTITY optlavg1 '<link linkend="fcrontab.5.lavgX"><varname>lavg1</varname></link>'>
+<!ENTITY optlavg5 '<link linkend="fcrontab.5.lavgX"><varname>lavg5</varname></link>'>
+<!ENTITY optlavg15 '<link linkend="fcrontab.5.lavgX"><varname>lavg15</varname></link>'>
+<!ENTITY optlavgand '<link linkend="fcrontab.5.lavgand"><varname>lavgand</varname></link>'>
+<!ENTITY optlavgonce '<link linkend="fcrontab.5.lavgonce"><varname>lavgonce</varname></link>'>
+<!ENTITY optlavgor '<link linkend="fcrontab.5.lavgor"><varname>lavgor</varname></link>'>
+<!ENTITY optmail '<link linkend="fcrontab.5.mail"><varname>mail</varname></link>'>
+<!ENTITY optmailto '<link linkend="fcrontab.5.mailto"><varname>mailto</varname></link>'>
+<!ENTITY optnice '<link linkend="fcrontab.5.nice"><varname>nice</varname></link>'>
+<!ENTITY optnolog '<link linkend="fcrontab.5.nolog"><varname>nolog</varname></link>'>
+<!ENTITY optnoticenotrun '<link linkend="fcrontab.5.noticenotrun"><varname>noticenotrun</varname></link>'>
+<!ENTITY optrandom '<link linkend="fcrontab.5.random"><varname>random</varname></link>'>
+<!ENTITY optrebootreset '<link linkend="fcrontab.5.rebootreset"><varname>rebootreset</varname></link>'>
+<!ENTITY optreset '<link linkend="fcrontab.5.reset"><varname>reset</varname></link>'>
+<!ENTITY optrunas '<link linkend="fcrontab.5.runas"><varname>runas</varname></link>'>
+<!ENTITY optrunatreboot '<link linkend="fcrontab.5.runatreboot"><varname>runatreboot</varname></link>'>
+<!ENTITY optrunfreq '<link linkend="fcrontab.5.runfreq"><varname>runfreq</varname></link>'>
+<!ENTITY optrunonce '<link linkend="fcrontab.5.runonce"><varname>runonce</varname></link>'>
+<!ENTITY optserial '<link linkend="fcrontab.5.serial"><varname>serial</varname></link>'>
+<!ENTITY optserialonce '<link linkend="fcrontab.5.serialonce"><varname>serialonce</varname></link>'>
+<!ENTITY optstdout '<link linkend="fcrontab.5.stdout"><varname>stdout</varname></link>'>
+<!ENTITY optstrict '<link linkend="fcrontab.5.strict"><varname>strict</varname></link>'>
+<!ENTITY opttimezone '<link linkend="fcrontab.5.timezone"><varname>timezone</varname></link>'>
+<!ENTITY opttzdiff '<link linkend="fcrontab.5.tzdiff"><varname>tzdiff</varname></link>'>
+<!ENTITY optuntil '<link linkend="fcrontab.5.until"><varname>until</varname></link>'>
+<!ENTITY optvolatile '<link linkend="fcrontab.5.volatile"><varname>volatile</varname></link>'>

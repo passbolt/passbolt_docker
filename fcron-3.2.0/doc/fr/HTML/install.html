@@ -1,0 +1,596 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>How to install fcron</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Documentation de fcron"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Fcron: how and why?"
+HREF="how-and-why.html"><LINK
+REL="PREVIOUS"
+TITLE="About fcron"
+HREF="readme.html"><LINK
+REL="NEXT"
+TITLE="Changes"
+HREF="changes.html"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Documentation de fcron</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="readme.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. Fcron: how and why?</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="changes.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="INSTALL"
+>1.2. How to install fcron</A
+></H1
+><P
+></P
+><UL
+><LI
+><P
+>uncompress the archive:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash$ </SAMP
+><B
+CLASS="COMMAND"
+>tar -xzf fcron-X.Y.Z.src.tar.gz</B
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>cd to the archive directory</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash$ </SAMP
+><B
+CLASS="COMMAND"
+>cd fcron-X.Y.Z</B
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>run the <B
+CLASS="COMMAND"
+>configure</B
+> script:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash$</SAMP
+><B
+CLASS="COMMAND"
+>./configure</B
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>		<DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+></P
+><UL
+><LI
+><P
+>				The command <B
+CLASS="COMMAND"
+>make install</B
+> asks
+you by default some questions you have to answer. To avoid that (which can be
+useful for automatic installers), you can use the
+<B
+CLASS="COMMAND"
+>./configure</B
+>'s option <CODE
+CLASS="OPTION"
+>--with-answer-all</CODE
+>
+and/or <CODE
+CLASS="OPTION"
+>--with-boot-install</CODE
+> (see "<B
+CLASS="COMMAND"
+>./configure</B
+>
+<CODE
+CLASS="OPTION"
+>--help</CODE
+>" for more details).
+			    </P
+></LI
+><LI
+><P
+>				You may also want to change the place where
+<SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> will be installed: you can use the <B
+CLASS="COMMAND"
+>configure </B
+>'s
+option <CODE
+CLASS="OPTION"
+>--prefix</CODE
+> to do that. For instance:
+<B
+CLASS="COMMAND"
+>./configure</B
+> <CODE
+CLASS="OPTION"
+>--prefix=/usr/local</CODE
+> (default is
+prefix=/usr)
+			    </P
+></LI
+><LI
+><P
+>				To disable the use of
+<SPAN
+CLASS="PRODUCTNAME"
+>PAM</SPAN
+>, <SPAN
+CLASS="PRODUCTNAME"
+>SE Linux</SPAN
+> or <SPAN
+CLASS="APPLICATION"
+>fcrondyn</SPAN
+>, use <B
+CLASS="COMMAND"
+>configure</B
+>'s
+option <CODE
+CLASS="OPTION"
+>--with-pam=no</CODE
+>, <CODE
+CLASS="OPTION"
+>--with-selinux=no</CODE
+> 
+and/or <CODE
+CLASS="OPTION"
+>--with-fcrondyn=no</CODE
+>.</P
+></LI
+><LI
+><P
+>To debug <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>, you should use
+<B
+CLASS="COMMAND"
+>configure </B
+>'s option <CODE
+CLASS="OPTION"
+>--with-debug</CODE
+>.
+			    </P
+></LI
+><LI
+><P
+>				You can get info on the others
+<B
+CLASS="COMMAND"
+>configure </B
+>'s options by running
+"<B
+CLASS="COMMAND"
+>./configure</B
+> <CODE
+CLASS="OPTION"
+>--help</CODE
+>".
+			    </P
+></LI
+></UL
+></BLOCKQUOTE
+></DIV
+>
+		<DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="90%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+></P
+><UL
+><LI
+><P
+>				The <B
+CLASS="COMMAND"
+>configure</B
+> script may not
+define a correct directory for the man pages and the documentation on some
+systems. You may check the values defined by <B
+CLASS="COMMAND"
+>configure</B
+> and if
+necessary force a value by the options <CODE
+CLASS="OPTION"
+>--mandir</CODE
+> and
+<CODE
+CLASS="OPTION"
+>-with-docdir </CODE
+> (see the help by running
+"<B
+CLASS="COMMAND"
+>./configure</B
+> <CODE
+CLASS="OPTION"
+>--help</CODE
+>").
+			    </P
+></LI
+><LI
+><P
+>				If you get older <SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>'s man-pages with
+<B
+CLASS="COMMAND"
+>man</B
+> command after having upgraded, it's probably because
+<SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+> has changed its default man directory: you should remove manually the
+outdated man-pages.
+			    </P
+></LI
+><LI
+><P
+>				The <TT
+CLASS="FILENAME"
+>Makefile</TT
+> has been
+designed for <SPAN
+CLASS="APPLICATION"
+>GNU make</SPAN
+>. Some other version of
+<B
+CLASS="COMMAND"
+>make</B
+> may fail to use it.
+			    </P
+></LI
+></UL
+></TD
+></TR
+></TABLE
+></DIV
+>
+	    </P
+></LI
+><LI
+><P
+><EM
+>(optional)</EM
+> check the file
+<TT
+CLASS="FILENAME"
+>config.h</TT
+>, and change it if necessary (the configurable part
+is on the top of the file and clearly delimited).</P
+></LI
+><LI
+><P
+>compile:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash$ </SAMP
+><B
+CLASS="COMMAND"
+>make</B
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>then install binaries as root:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash$ </SAMP
+><B
+CLASS="COMMAND"
+>su root</B
+></PRE
+></TD
+></TR
+></TABLE
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash# </SAMP
+><B
+CLASS="COMMAND"
+>make install</B
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+></UL
+><P
+>You can now run <B
+CLASS="COMMAND"
+>fcron</B
+> and
+<B
+CLASS="COMMAND"
+>fcrontab</B
+>.</P
+><DIV
+CLASS="NOTE"
+><BLOCKQUOTE
+CLASS="NOTE"
+><P
+></P
+><UL
+><LI
+><P
+>			This is a <SPAN
+CLASS="PRODUCTNAME"
+>POSIX</SPAN
+> conforming
+software. You must have a <SPAN
+CLASS="PRODUCTNAME"
+>POSIX</SPAN
+> compiler
+(<SPAN
+CLASS="APPLICATION"
+>gcc</SPAN
+> for example) in order to compile it.
+		    </P
+></LI
+><LI
+><P
+>			This software has been written for
+<SPAN
+CLASS="PRODUCTNAME"
+>GNU/Linux</SPAN
+> systems. If you want to port it on an other
+<SPAN
+CLASS="PRODUCTNAME"
+>Unix</SPAN
+> platform (thank you if you do it), try to modify
+- if possible - only the <SPAN
+CLASS="APPLICATION"
+>configure</SPAN
+> script. Please
+send me any modifications at <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+> in order to include it in future releases.
+		    </P
+></LI
+></UL
+></BLOCKQUOTE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="readme.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="changes.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>About fcron</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="how-and-why.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Changes</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

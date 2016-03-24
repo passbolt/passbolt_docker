@@ -1,0 +1,971 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Frequently Asked Questions</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="HOME"
+TITLE="Documentation de fcron"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Using fcron ..."
+HREF="using-fcron.html"><LINK
+REL="PREVIOUS"
+TITLE="fcrondyn"
+HREF="fcrondyn.1.html"><LINK
+REL="NEXT"
+TITLE="GNU GENERAL PUBLIC LICENSE"
+HREF="gpl.html"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="40%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="LEGALNOTICE.html"
+>Copyright</A
+> &copy; 2000-2014 <A
+HREF="mailto:fcron@free.fr"
+>Thibault Godouet</A
+></TD
+><TD
+WIDTH="20%"
+ALIGN="center"
+VALIGN="top"
+>Fcron 3.2.0 </TD
+><TD
+WIDTH="40%"
+ALIGN="right"
+VALIGN="top"
+>Web page : <A
+HREF="http://fcron.free.fr"
+>http://fcron.free.fr</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Documentation de fcron</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="fcrondyn.1.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Using fcron ...</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="gpl.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="FAQ"
+>2.2. Frequently Asked Questions</A
+></H1
+><P
+>This FAQ intends to complement the man pages by following a more
+practical approach.</P
+><P
+>If you think a QA should be added, please mail me it!</P
+><DIV
+CLASS="QANDASET"
+><DL
+><DT
+>2.2.1. <A
+HREF="faq.html#AEN2789"
+>How does fcron handle system clock adjustments?</A
+></DT
+><DT
+>2.2.2. <A
+HREF="faq.html#AEN2799"
+>How does fcron handle daylight saving time changes?</A
+></DT
+><DT
+>2.2.3. <A
+HREF="faq.html#AEN2806"
+>What about fcron and software suspend 
+		  (aka. suspend to RAM, to disk)?</A
+></DT
+><DT
+>2.2.4. <A
+HREF="faq.html#AEN2813"
+>How can I prevent fcrontab from considering the first
+"word" of my command line as a user name i.e. "runas(word)"?</A
+></DT
+><DT
+>2.2.5. <A
+HREF="faq.html#AEN2820"
+>       I have a job which usually terminates with a non-zero status. When it
+does, I receive a mail with the exit status even if the command had no output.
+How can I avoid the mail?</A
+></DT
+><DT
+>2.2.6. <A
+HREF="faq.html#AEN2826"
+>What does "loadavg" mean anyway?</A
+></DT
+><DT
+>2.2.7. <A
+HREF="faq.html#AEN2834"
+>How can I use fcrontab in scripts?</A
+></DT
+><DT
+>2.2.8. <A
+HREF="faq.html#AEN2847"
+>Can I use fcron from time to time, for instance in a
+script?</A
+></DT
+><DT
+>2.2.9. <A
+HREF="faq.html#AEN2886"
+>Can I run fcron without root's privileges?</A
+></DT
+><DT
+>2.2.10. <A
+HREF="faq.html#AEN2913"
+>Has fcron some incompatibilities with Vixie cron?</A
+></DT
+><DT
+>2.2.11. <A
+HREF="faq.html#AEN2922"
+>How can I emulate an anacron entry?</A
+></DT
+></DL
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2789"
+></A
+><H3
+>2.2.1. How does fcron handle system clock adjustments?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>       First, you must understand that fcron determines, for each job, its next
+time and date of execution. It then determines which of those jobs would be the
+next to run and then, sleeps until that job should be run. In other words, fcron
+doesn't wake up like Vixie cron each minute to check all job in case one should
+be run ... and it avoids some problems associated with clock adjusts.</P
+><P
+>       This means that if the new time value is set into the past, fcron won't
+run a particular job again. For instance, suppose the real time and system clock
+are 3:00, so the next job cannot be scheduled to run before 3:00, as it would
+have already been run and re-scheduled.</P
+><P
+>       First, suppose you set your system clock into the past, say to 2:00,
+Presuming that the last run was shortly before 3:00. then fcron will sleep until
+the next job should be executed. The execution time for a job is determined by
+identifying the last time that the job ran and computing the next scheduled
+time. This means that the next scheduled time must be on or after 3:01.
+Therefore, in this example, fcron will not run a job for at least one
+hour.</P
+><P
+>       Next, if you set the system time into the future, say to 4:00, fcron will
+run every job scheduled between the old and the new time value once, regardless
+of how many times it would have been scheduled. When fcron wakes up to run a job
+after the time value has changed, it runs all the jobs which should have run
+during the interval because they are scheduled to run in a past time.</P
+><P
+>       As special case is when "@xxx" style scheduling rules are involved, you
+must consider the "adjustment-interval". The "adjustment-interval" is the time
+difference between the original system time and the new system time. The concerned
+jobs will run at "adjust-interval" too
+early or too late depending of the nature of the adjust.</P
+><P
+>       To conclude, fcron behaves quite well for small clock adjusts. Each job
+which should have run does so once, but not exactly at the correct time as if
+the job were scheduled within the adjustment interval. But, if you have to make
+a big change in the time and date, you should probably reset all the scheduled
+"nextexe" by running "fcrontab -z" on all the fcrontabs.</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2799"
+></A
+><H3
+>2.2.2. How does fcron handle daylight saving time changes?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>There are two types of daylight saving time change: 
+the remove-one-hour change (for instance, "at 3:00, it will be 2:00"), 
+and the add-one-hour one (for instance, "at 2:00, it will be 3:00").
+In both cases, fcron will run the job only once (more precisely, it won't
+run the job twice as many as it should have).</P
+><P
+>In the first case, the official time changes as follow
+(in order of real chronological time): [x, 2:00] -&#62; i1: [2:00, 3:00]
+ -&#62; i2: [2:00, 3:00] -&#62; [3:00, y]. i1 and i2 are the names of the two
+intervals [2:00, 3:00]. For this kind of DST change, a job which should
+run between 2:00 and 3:00 will run either in i1 or in i2, but not both.
+Consequently, a job scheduled to run every day at 2:30 (for instance)
+will be run only once. There is no way for a user to know if the job will
+be run in i1 or i2.</P
+><P
+>In the second case, there is a gap in time:
+the official time changes as follow (in order of real chronological time):
+[x, 2:00] -&#62; [3:00, y]. A job scheduled between 2:00 and 3:00 will get
+run once, and only once, even if it should have been run several times.
+For instance, a job which should have run every 10 minutes will run only
+once, not 6 times, between 1:59 and 3:01. A job scheduled to run at
+2:xx will run at 3:xx. For instance, if a job is scheduled to run
+every day at 2:30, it will run at 3:30 the day of this kind of DST change.</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2806"
+></A
+><H3
+>2.2.3. What about fcron and software suspend 
+		  (aka. suspend to RAM, to disk)?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>We suppose here that you are using swsusp and the hibernate
+		  script to do a "suspend to disk", but it should be similar
+		  with other methods.</P
+><P
+>When you switch on your computer after a suspend to disk,
+		  the system time will be incorrect, and will then be corrected
+		  by the hibernate script. Before it is corrected, fcron may
+		  compute the time and date of the next execution of a job:
+		  the computation would then be incorrect (please see the entry
+		  about system clock adjustment in the present FAQ).</P
+><P
+>So you should have the hibernate script stop fcron before
+		  the suspend, and then restart it when the system is switched on,
+		  ie. put a line like "RestartServices fcron" in your hibernate.conf
+		  file. That way, the system time will always be correct when
+		  fcron runs (assuming that fcron is started after the system time
+		  is corrected).</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2813"
+></A
+><H3
+>2.2.4. How can I prevent fcrontab from considering the first
+"word" of my command line as a user name i.e. "runas(word)"?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>      Suppose you have an user called "echo" (weird idea ... :)) ). If you use
+the line '* * * * * echo "Hello!"' in root's fcrontab, "echo" will be
+interpreted as "runas(echo)".</P
+><P
+>To suppress that, put your command in quotes:
+<TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>* * * * * 'echo "Hello!"'</PRE
+></TD
+></TR
+></TABLE
+> will work as
+expected as quotes are allowed for the shell command but not for the user
+name.</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2820"
+></A
+><H3
+>2.2.5.        I have a job which usually terminates with a non-zero status. When it
+does, I receive a mail with the exit status even if the command had no output.
+How can I avoid the mail?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>      You could disable mail entirely by setting the "mail" option to "no". But,
+if you still want to receive the standard output as mail, you can add an command
+which always evaluates to 0, like "/bin/true", after your primary command. This
+will not affect your job nor create additional output. For example:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>* * * * * /a/non/zero/status/job ; /bin/true</PRE
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2826"
+></A
+><H3
+>2.2.6. What does "loadavg" mean anyway?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>      The "/proc/loadavg" file provides loadavg values. These values are (in
+order): the system load averages for the past 1, 5, and 15 minutes; a count of
+the (active tasks/active processes); the pid of last process run;
+		</P
+><P
+>      The active task count includes those processes marked as running or
+uninterruptable. A load average is an estimate of the average number of
+processes running within a specified period. The load averages are computed from
+active task count. They are updated each time active task counts are taken.
+		</P
+><P
+> 
+The load average formula is: <TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+>loadavg(d,n) = active_task_cnt - (active_task_cnt - old_loadavg)*(1/exp(d/n)</PRE
+></TD
+></TR
+></TABLE
+>
+where: d is the time interval between active task count readings, typically every
+5 seconds; n is the time over which the readings are averaged.
+		</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2834"
+></A
+><H3
+>2.2.7. How can I use fcrontab in scripts?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>      You can use pipes with "<B
+CLASS="COMMAND"
+>fcrontab -l</B
+>" (list the
+fcrontab) and "<B
+CLASS="COMMAND"
+>fcrontab -</B
+>" (read the new fcrontab from
+input). For example: </P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+> <B
+CLASS="COMMAND"
+>echo -e "`fcrontab -l | grep -v exim`\n0 * * * *	/usr/sbin/exim -q" | fcrontab -</B
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>		  can be used to add a line. Another way to do it would be to:
+list the fcrontab settings into a temporary file ("<B
+CLASS="COMMAND"
+>fcrontab -l &#62;
+tmpfile</B
+>"); modify the temporary file ("<B
+CLASS="COMMAND"
+>echo $LINE &#62;&#62;
+tmpfile</B
+>"); replace the original fcrontab by the temporary; and
+finally, remove the temporary file ("<B
+CLASS="COMMAND"
+>fcrontab tmpfile ; rm -f
+tmpfile</B
+>").
+		</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2847"
+></A
+><H3
+>2.2.8. Can I use fcron from time to time, for instance in a
+script?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>Let's suppose you use fcron in your ppp-up script. Fcron
+can permit you to run some jobs at connection startup, but not at each
+connection, like it would be if the job was run directly by the ppp-up script:
+for instance, only once every week.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2852"
+></A
+><P
+><B
+>Example 2-5. Using fcron in a script: running a job once
+every day, week, etc, at dialup connection</B
+></P
+><P
+>You can use a script like:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># A ppp-up script ... 
+# run the jobs pending, then returns: 
+fcron -f -y -o</PRE
+></TD
+></TR
+></TABLE
+><P
+>in conjunction with a fcrontab file like:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># a fcrontab file ... 
+%random(no),weekly,stdout * * /a/command/to/download/latest/mozilla/release 
+%monthly,stdout * * * /update/junkbuster/config/files</PRE
+></TD
+></TR
+></TABLE
+></DIV
+></P
+><P
+>You can also use fcron to run some jobs until the end of
+the connection. For instance, you can make fetchmail retrieve mails more often
+during connection: we suppose that it is configured to retrieve mails every
+hour, which launches a dialup connection if necessary, and we want it to check
+for mails every 5 minutes while connected.</P
+><P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="AEN2860"
+></A
+><P
+><B
+>Example 2-6. Using fcron in a script: running a job until the
+end of the connection</B
+></P
+><P
+>ppp-up script:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># A ppp-up script ... 
+# run fcron at the beginning of the connection: 
+fcron -b</PRE
+></TD
+></TR
+></TABLE
+><P
+>ppp-down script:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># A ppp-down script ... 
+# stop fcron at the end of the connection: 
+# -- Warning: killall may have unwanted effect on non linux systems -- 
+killall -TERM fcron</PRE
+></TD
+></TR
+></TABLE
+><P
+>the fcrontab:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="PROGRAMLISTING"
+># a fcrontab file ... 
+@volatile,first(0) 5 fetchmail</PRE
+></TD
+></TR
+></TABLE
+></DIV
+></P
+><P
+>If you run fcron in several scripts, or if you run fcron
+as a daemon and want also to run fcron in scripts, then you should use fcron,
+fcrontab and fcrondyn's <CODE
+CLASS="OPTION"
+>--configfile</CODE
+>.</P
+><P
+>For more details, see fcron's options
+<CODE
+CLASS="OPTION"
+>--once</CODE
+>, <CODE
+CLASS="OPTION"
+>--nosyslog</CODE
+>,
+<CODE
+CLASS="OPTION"
+>--firstsleep</CODE
+> and <CODE
+CLASS="OPTION"
+>--configfile</CODE
+> in <A
+HREF="fcron.8.html"
+><SPAN
+CLASS="APPLICATION"
+>fcron</SPAN
+>(8)</A
+>, and fcrontab's options <A
+HREF="fcrontab.5.html#FCRONTAB.5.VOLATILE"
+><CODE
+CLASS="VARNAME"
+>volatile</CODE
+></A
+>,
+<A
+HREF="fcrontab.5.html#FCRONTAB.5.STDOUT"
+><CODE
+CLASS="VARNAME"
+>stdout</CODE
+></A
+>, <A
+HREF="fcrontab.5.html#FCRONTAB.5.FIRST"
+><CODE
+CLASS="VARNAME"
+>first</CODE
+></A
+> in <A
+HREF="fcrontab.5.html"
+><SPAN
+CLASS="APPLICATION"
+>fcrontab</SPAN
+>(5)</A
+></P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2886"
+></A
+><H3
+>2.2.9. Can I run fcron without root's privileges?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>Yes, you can. To do that, see the
+following instructions, but please note that fcrondyn currently does *not* work
+without root privileges.</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>First, create a directory where you'll install fcron,
+ and some subdirectories:</P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash$</SAMP
+> <B
+CLASS="COMMAND"
+>mkdir /home/thib/fcron</B
+>
+<SAMP
+CLASS="PROMPT"
+>bash$</SAMP
+> <B
+CLASS="COMMAND"
+>cd /home/thib/fcron</B
+>
+<SAMP
+CLASS="PROMPT"
+>bash$</SAMP
+> <B
+CLASS="COMMAND"
+>mkdir doc man spool</B
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Then, run configure with option 
+<CODE
+CLASS="OPTION"
+>--with-run-non-privileged</CODE
+>, set all user names and groups to yours,
+and set appropriately the paths:</P
+><P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+BORDER="1"
+WIDTH="90%"
+><TR
+><TD
+ALIGN="CENTER"
+><B
+>Warning</B
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+><P
+>This option allows a non privileged user to run
+	fcron. When used, fcron does not change its rights before running a job
+	(i.e., if joe runs fcron, every job will run as joe).  It means that
+	<EM
+>YOU SHOULD NOT RUN FCRON AS A PRIVILEGED USER WHEN COMPILED
+	WITH THIS OPTION</EM
+> or you'll have a serious security
+	hole.</P
+></TD
+></TR
+></TABLE
+></DIV
+></P
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="PROMPT"
+>bash$</SAMP
+> <B
+CLASS="COMMAND"
+>./configure --with-run-non-privileged --with-rootname=thib
+--with-rootgroup=thib --with-username=thib --with-groupname=thib
+--with-etcdir=/home/thib/fcron --with-piddir=/home/thib/fcron
+--with-fifodir=/home/thib/fcron --with-spooldir=/home/thib/fcron/spool
+--with-docdir=/home/thib/fcron/doc --prefix=/home/thib/fcron</B
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+></OL
+><P
+>The rest of the installation is described in the
+<A
+HREF="install.html"
+>install file</A
+>.</P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2913"
+></A
+><H3
+>2.2.10. Has fcron some incompatibilities with Vixie cron?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>As far as I know, fcron supports completely the syntax of
+		  Vixie cron's crontab, excepted the @* syntax (@annually,
+		  @weekly, etc: if you use that, you will have to replace it
+		  with the explicit equivalent given in crontab(5)). So you
+		  should not have much problem with that (otherwise, please
+		  contact me at <CODE
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:fcron@free.fr"
+>fcron@free.fr</A
+>&#62;</CODE
+>).</P
+><P
+>The main problem is about the management of the system (f)crontab.
+		  Vixie cron monitors the changes on /etc/crontab every minute,
+		  and automatically takes into account the changes if any.
+		  As for now, fcron do not do that. Fcron do not support the
+		  /etc/cron.d/ dir too, as it is just an extension of the /etc/crontab
+		  file.
+		  But be reassured: /etc/cron.{daily,weekly,monthly} are supported
+		  by fcron (in fact, those dirs are not managed by fcron directly,
+		  but by run-parts, which is independent from fcron).</P
+><P
+>So if you want to replace transparently Vixie cron by fcron,
+		  all you have to do is creating a /usr/bin/crontab link to
+		  /usr/bin/crontab, and to reinstall the system (f)crontab
+	       with fcrontab /etc/crontab each time you modify it
+		  (if you find something else to do, please tell me!).</P
+><P
+>You can also use the script script/check_system_crontabs
+		  to generate a system fcrontab from /etc/(f)crontab and /etc/cron.d/,
+		  and install it automatically. If you choose to do that, take 
+		  a look at the beginning of the script: you will find insctructions
+		  on how to use it -- and a few warnings you should pay attention to.
+		  With this script, the behavior of fcron should be very similar
+		  to Vixie cron's one concerning /etc/crontab and /etc/cron.d/.
+	       </P
+></DIV
+></DIV
+><DIV
+CLASS="QANDAENTRY"
+><DIV
+CLASS="QUESTION"
+><P
+><A
+NAME="AEN2922"
+></A
+><H3
+>2.2.11. How can I emulate an anacron entry?</H3
+></P
+></DIV
+><DIV
+CLASS="ANSWER"
+><P
+><B
+> </B
+>You should use a line similar to the following one:</P
+><P
+>@volatile,first(xx) BIG-period /your/command</P
+><P
+>where xx is the time you would have put in your anacron line.</P
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="fcrondyn.1.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="gpl.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>fcrondyn</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="using-fcron.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>GNU GENERAL PUBLIC LICENSE</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

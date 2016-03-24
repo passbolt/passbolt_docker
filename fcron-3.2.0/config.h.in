@@ -1,0 +1,523 @@
+/*
+ * FCRON - periodic command scheduler 
+ *
+ *  Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ *  The GNU General Public License can also be found in the file
+ *  `LICENSE' that comes with the fcron source distribution.
+ */
+
+
+
+/* *********************************************************** */
+/* This file is destined to be edited to match your preference */
+/* *********************************************************** */
+
+
+/* ****************************************************************** */
+/* ****************************************************************** */
+/* beginning of configurable stuff ********************************** */
+
+
+#define DEFAULT_JOB_PATH "/usr/bin:/bin" /* Default PATH to use when running jobs*/
+
+#define SENDMAIL_ARGS	 "-Ffcron", "-odi"   /* args of mail command */
+
+/* *** time *** */
+#define FIRST_SLEEP 20        /* fcron sleep at least this time after startup
+			       * before executing a job, to avoid to run jobs
+			       * during system boot */
+
+#define LAVG_SLEEP 30         /* the time we sleep when some jobs are in lavg queue */
+
+#define SAVE            1800  /* save every n seconds */
+
+/* *** behavior *** */
+#define SERIAL_ONCE 0 /* can a job be several times in the serial queue at
+		       * the same moment ? */
+
+#define LAVG_ONCE 1 /* can a job be several times in the lavg queue at
+		     * the same moment ? */
+
+#define MAXYEAR_SCHEDULE_TIME 10 /* a job can't be scheduled further than
+                             * now + MAXYEAR_SCHEDULE years. This is used
+                             * to prevent infinite loop on corrupted lines */
+
+/* *** memory *** */
+#define ENVVAR_INITIAL_SIZE 10 /* initial number of possible env var for a job
+			        * if more env var are required,
+			        * fcron will have to realloc() more memory */
+#define ENVVAR_GROW_SIZE 5 /* this is the number of entries that will be
+			    * added to env_list each time it has to grow
+			    * up */
+
+#define EXE_INITIAL_SIZE 6 /* initial number of possible running job 
+			    * if more jobs have to be run simultaneously,
+			    * fcron will have to realloc() more memory */
+#define EXE_GROW_SIZE 5 /* this is the number of entries that will be
+			 * added to exe_array each time it has to grow
+			 * up */
+
+#define SERIAL_QUEUE_MAX 30 /* if serial queue contains this number of entries,
+			     * the next serial job to be executed will be run
+			     * non-serially each time a serial job is added */
+#define SERIAL_INITIAL_SIZE 10 /* initial number of possible serial job. If
+				* more jobs have to be in queue simultaneously,
+				* fcron will have to realloc() more memory */
+#define SERIAL_GROW_SIZE 10 /* this is the number of entries that will be
+			     * added to serial queue each time it has to grow
+			     * up */
+
+#define SERIAL_MAX_RUNNING 1 /* fcron will run (by default) no more than this
+			      * number of serial job simultaneously.
+			      * (this may be overridden by fcron option -m */
+
+#define LAVG_QUEUE_MAX 30 /* if lavg queue contains this number of entries,
+			   * the next lavg job to be executed will be run
+			   * before a new lavg job is added */
+#define LAVG_INITIAL_SIZE 10 /* initial number of possible lavg job. If
+			      * more jobs have to be in queue simultaneously,
+			      * fcron will have to calloc() more memory */
+#define LAVG_GROW_SIZE 10 /* this is the number of entries that will be
+			   * added to lavg queue each time it has to grow
+			   * up */
+
+
+#define MAXENTRIES  1024  /* max lines in non-root fcrontabs */
+
+#define LINE_LEN    1024     /* max line length in user's config file */
+#define USER_NAME_LEN 128    /* max length of a user name */
+#define PATH_LEN 512         /* max length of a file path */
+#define SOCKET_MSG_LEN 20    /* max length of a socket msg (fcrondyn) */
+
+/* WARNING : do not set this too low, or add some more tests in print_field, print_line,
+ *           etc ... */
+#define TERM_LEN 196         /* max nb of char in a term line */
+
+#define MAX_MSG 175          /* max length of a log message */
+
+#define WRITE_BUF_LEN 1024   /* length of the buffer used for saving files to disk */
+
+
+/* *** socket *** */
+#define MAX_CONNECTION 25    /* max simultaneous connection allowed */
+#define MAX_IDLE_TIME 600    /* time (in sec) a socket stay idle before being closed */
+#define MAX_AUTH_TIME 60     /* time (in sec) before a socket is closed if not auth'ed */
+#define MAX_WAIT_TIME 10     /* time (in sec) we wait for data on a socket */
+#define MAX_AUTH_FAIL 10     /* auth nobody for some time if more than x fails */
+#define AUTH_WAIT 60         /* if too many fails, wait this time (seconds) before auth
+                              * another client */
+
+
+/* *** system dependent *** */
+#define EXIT_ERR   1         /* code returned by fcron/fcrontab on error */
+#define EXIT_OK    0         /* code returned  on normal exit */
+
+
+/* Syslog facility and priorities messages will be logged to (see syslog(3)) */
+
+/* NOTE : if you change anything here, check if the doc should not
+          be updated
+*/
+#define SYSLOG_FACILITY LOG_CRON
+#define EXPLAIN_LEVEL LOG_NOTICE  /* informational messages */
+#define WARNING_LEVEL LOG_WARNING /* warning messages */
+#define COMPLAIN_LEVEL LOG_ERR    /* error messages */
+#define DEBUG_LEVEL LOG_DEBUG     /* only used when DEBUG is defined */
+
+
+/* end of configurable stuff **************************************** */
+/* ****************************************************************** */
+/* ****************************************************************** */
+
+
+/* ****************************************************************** */
+/* ****************************************************************** */
+/* *** options which are set by configure script ******************** */
+
+/* The following should not be edited manually (use configure options)
+ * If you must do it, BEWARE : some of the following is also defined
+ * in the Makefile, so you must modify config.h AND Makefile in order
+ * to set the same values in the two files. */
+
+#undef VERSION_QUOTED
+#undef COPYRIGHT_QUOTED
+
+#undef CFLAGS
+
+/* ****************************************************************** */
+/* *** paths *** */
+
+#undef PROC
+
+/* ****************************************************************** */
+/* *** Compilation options *** */
+
+#undef USE_SENDMAIL
+/* 1 if we want to compile and install fcrondyn */
+#undef FCRONDYN
+#undef NOLOADAVG
+/* 1 if you want debug mode */
+#undef DEBUG
+/* 1 if you want foreground mode by default */
+#undef FOREGROUND
+#undef RUN_NON_PRIVILEGED
+
+/* Define if we should use sete[ug]id() funcs */
+#undef USE_SETE_ID
+
+/* root name and group */
+#undef ROOTNAME
+#undef ROOTGROUP
+
+/* user and group name to run under */
+#undef USERNAME
+#undef GROUPNAME
+
+/* special user for the system fcrontab */
+#undef SYSFCRONTAB
+
+/* ****************************************************************** */
+/* *** Types *** */
+
+/* Define to empty if the keyword does not work.  */
+#undef const
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef gid_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef uid_t
+
+/* Define as the return type of signal handlers (int or void).  */
+#undef RETSIGTYPE
+
+/* Define if your struct nlist has an n_un member.  */
+#undef NLIST_NAME_UNION
+
+/* Define for DGUX with <sys/dg_sys_info.h>.  */
+#undef DGUX
+
+/* Define for Encore UMAX.  */
+#undef UMAX
+
+/* Define for Encore UMAX 4.3 that has <inq_status/cpustats.h>
+   instead of <sys/cpustats.h>.  */
+#undef UMAX4_3
+
+/* Define on System V Release 4.  */
+#undef SVR4
+
+/* ****************************************************************** */
+/* *** Functions *** */
+
+/* Define if you have the crypt function.  */
+#undef HAVE_CRYPT
+
+/* Define if you have the flock function.  */
+#undef HAVE_FLOCK
+
+/* Define if you have the lockf function.  */
+#undef HAVE_LOCKF
+
+/* Define if your system has its own `getloadavg' function.  */
+#undef HAVE_GETLOADAVG
+
+/* Define if the `getloadavg' function needs to be run setuid or setgid.  */
+#undef GETLOADAVG_PRIVILEGED
+
+/* Define if you have the getcwd function.  */
+#undef HAVE_GETCWD
+
+/* Define if you have the gethostname function.  */
+#undef HAVE_GETHOSTNAME
+
+/* Define if you have the getopt_long function.  */
+#undef HAVE_GETOPT_LONG
+
+/* Define if you have the getpeereid function.  */
+#undef HAVE_GETPEEREID
+
+/* Define if you have the getpeerucred function.  */
+#undef HAVE_GETPEERUCRED
+
+/* Define if you have the getspnam function.  */
+#undef HAVE_GETSPNAM
+
+/* Define if you have the gettimeofday function.  */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define if you have the kstat* functions.  */
+#undef HAVE_KSTAT
+
+/* Define if you have the mkstemp function.  */
+#undef HAVE_MKSTEMP
+
+/* Define if you have the mktime function.  */
+#undef HAVE_MKTIME
+
+/* Define if you have the putenv function.  */
+#undef HAVE_PUTENV
+
+/* Define if (struct sockaddr) has an sa_len field.  */
+#undef HAVE_SA_LEN
+
+/* Define if you have the setenv function.  */
+#undef HAVE_SETENV
+
+/* Define if you have the setegid function.  */
+#undef HAVE_SETEGID
+
+/* Define if you have the seteuid function.  */
+#undef HAVE_SETEUID
+
+/* Define if you have the setlinebuf function.  */
+#undef HAVE_SETLINEBUF
+
+/* Define if you have the setpriority function.  */
+#undef HAVE_SETPRIORITY
+
+/* Define if you have the strerror function.  */
+#undef HAVE_STRERROR
+
+/* Define if you have the setresgid function.  */
+#undef HAVE_SETRESGID
+
+/* Define if you have the setresuid function.  */
+#undef HAVE_SETRESUID
+
+/* Define if you have the signal function.  */
+#undef HAVE_SIGNAL
+
+/* Define if you have the sigset function.  */
+#undef HAVE_SIGSET
+
+/* Define if you have the strftime function.  */
+#undef HAVE_STRFTIME
+
+/* Define if you have the wait3 system call.  */
+#undef HAVE_WAIT3
+
+/* ****************************************************************** */
+/* *** Headers *** */
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if your <sys/time.h> declares struct tm.  */
+#undef TM_IN_SYS_TIME
+
+/* Define if you have the <cred.h> header file.  */
+#undef HAVE_CRED_H
+
+/* Define if you have the <crypt.h> header file.  */
+#undef HAVE_CRYPT_H
+
+/* Define if you have the <dirent.h> header file.  */
+#undef HAVE_DIRENT_H
+
+/* Define if you have the <errno.h> header file.  */
+#undef HAVE_ERRNO_H
+
+/* Define if you have the <fcntl.h> header file.  */
+#undef HAVE_FCNTL_H
+
+/* Define if you have the <getopt.h> header file.  */
+#undef HAVE_GETOPT_H
+
+/* Define if you have the <grp.h> header file.  */
+#undef HAVE_GRP_H
+
+/* Define if you have the <history.h> header file.  */
+#undef HAVE_HISTORY_H
+
+/* Define if you have the <libaudit.h> header file.  */
+#undef HAVE_LIBAUDIT_H
+
+/* Define if you have the <readline.h> header file.  */
+#undef HAVE_READLINE_H
+
+/* Define if you have the <readline/history.h> header file.  */
+#undef HAVE_READLINE_HISTORY_H
+
+/* Define if you have the <readline/readline.h> header file.  */
+#undef HAVE_READLINE_READLINE_H
+
+/* Define if you have the <limits.h> header file.  */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the <mach/mach.h> header file.  */
+#undef HAVE_MACH_MACH_H
+
+/* Define if you have the <ndir.h> header file.  */
+#undef HAVE_NDIR_H
+
+/* Define if you have the <pam/pam_appl.h> header file.  */
+#undef HAVE_PAM_PAM_APPL_H
+
+/* Define if you have <shadow.h>.  */
+#undef HAVE_SHADOW_H
+
+/* Define if you have the unsetenv function.  */
+#undef HAVE_UNSETENV
+
+/* Define if you have <nlist.h>.  */
+#undef NLIST_STRUCT
+
+/* Define if you have the <security/pam_appl.h> header file.  */
+#undef HAVE_SECURITY_PAM_APPL_H
+
+/* Define if you have the <stdarg.h> header file.  */
+#undef HAVE_STDARG_H
+
+/* Define if you have the <strings.h> header file.  */
+#undef HAVE_STRINGS_H
+
+/* Define if you have the <sys/cred.h> header file.  */
+#undef HAVE_SYS_CRED_H
+
+/* Define if you have the <sys/dir.h> header file.  */
+#undef HAVE_SYS_DIR_H
+
+/* Define if you have the <sys/fcntl.h> header file.  */
+#undef HAVE_SYS_FCNTL_H
+
+/* Define if you have the <sys/file.h> header file.  */
+#undef HAVE_SYS_FILE_H
+
+/* Define if you have the <sys/ioctl.h> header file.  */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define if you have the <sys/ndir.h> header file.  */
+#undef HAVE_SYS_NDIR_H
+
+/* Define if you have the <sys/resource.h> header file.  */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define if you have the <sys/socket.h> header file.  */
+#undef HAVE_SYS_SOCKET_H
+
+/* Define if you have the <sys/time.h> header file.  */
+#undef HAVE_SYS_TIME_H
+
+/* Define if you have the <sys/types.h> header file.  */
+#undef HAVE_SYS_TYPES_H
+
+/* Define if you have the <sys/ucred.h> header file.  */
+#undef HAVE_SYS_UCRED_H
+
+/* Define if you have the <sys/un.h> header file.  */
+#undef HAVE_SYS_UN_H
+
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+#undef HAVE_SYS_WAIT_H
+
+/* Define if you have the <syslog.h> header file.  */
+#undef HAVE_SYSLOG_H
+
+/* Define if you have the <termios.h> header file.  */
+#undef HAVE_TERMIOS_H
+
+/* Define if you have the <ucred.h> header file.  */
+#undef HAVE_UCRED_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* ****************************************************************** */
+/* *** Libraries *** */
+
+/* Define if you have the audit library (-laudit).  */
+#undef HAVE_LIBAUDIT
+
+/* Define if you have the dgc library (-ldgc).  */
+#undef HAVE_LIBDGC
+
+/* Define if you have the pam library (-lpam).  */
+#undef HAVE_LIBPAM
+
+/* Define if you have the readline library.  */
+#undef HAVE_LIBREADLINE
+
+/* Define if you have the readline history library.  */
+#undef HAVE_READLINE_HISTORY
+
+/* Have audit trails (libaudit) support */
+#undef WITH_AUDIT
+
+/* Have SE Linux support */
+#undef WITH_SELINUX
+
+/* Define if you have the xnet library (-lxnet).  */
+#undef HAVE_LIBXNET
+
+/* some systems (*BSD, ...) use O_FSYNC instead of O_SYNC for open() */
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#elif HAVE_SYS_FCNTL_H
+#include <sys/fcntl.h>
+#endif
+#ifndef O_SYNC
+#define O_SYNC O_FSYNC
+#endif
+
+/* ****************************************************************** */
+/* *** Size of *** */
+
+/* These SIZEOF_* constants are defined by the AC_CHECK_SIZEOF macro */
+#undef SIZEOF_TIME_T
+#undef SIZEOF_PID_T
+#undef SIZEOF_SHORT_INT
+#undef SIZEOF_INT
+#undef SIZEOF_LONG_INT
+#undef SIZEOF_LONG_LONG_INT
+
+/* We need all these types in global.h to know which conversion string we whould
+ * use when reading a pid_t or a time_t */
+#ifndef SIZEOF_PID_T
+#error "sizeof pid_t unknown."
+#endif
+
+#ifndef SIZEOF_TIME_T
+#error "sizeof time_t unknown."
+#endif
+
+#ifndef SIZEOF_SHORT_INT
+#error "sizeof short int unknown."
+#endif
+
+#ifndef SIZEOF_INT
+#error "sizeof int unknown."
+#endif
+
+#ifndef SIZEOF_LONG_INT
+#error "sizeof long int unknown."
+#endif
+
+#ifndef SIZEOF_LONG_LONG_INT
+#error "sizeof long long int unknown."
+#endif
+

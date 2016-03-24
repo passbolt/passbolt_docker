@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# fcron-update-crontabs
+#
+# Copyright (c) 2000 Thibault Godouet
+# Released under the same license as the fcron program.
+
+fcrontabdir=/var/spool/fcron
+
+test -d ${fcrontabdir} || exit 0
+
+# Recompile all crontabs
+for FILE in ${fcrontabdir}/* ; do
+        if test -f ${FILE} ; then 
+		FCRONTAB=`basename "${FILE}" | \
+                          sed "s|\..*orig|| ; s|new\..*|| ; s|fcrontab\.sig|| ; s|rm\..*||"`
+        	( test ! -z "${FCRONTAB}" && fcrontab -u "${FCRONTAB}" -z ) || echo -n ""
+	fi
+done

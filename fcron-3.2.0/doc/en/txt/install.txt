@@ -1,0 +1,115 @@
+   #Fcron documentation Fcron: how and why? About fcron Changes
+
+   Copyright © 2000-2014 Thibault Godouet Fcron 3.2.0          Web page :
+                                                      http://fcron.free.fr
+   _______________________________________________________________________
+
+             Fcron documentation
+   Prev Chapter 1. Fcron: how and why? Next
+   _______________________________________________________________________
+
+1.2. How to install fcron
+
+1.2.1. Compilation requirements
+
+     * A C compiler (e.g. gcc)
+     * (optional) readline development library (e.g. libreadline-dev)
+     * (optional) PAM development library (e.g. libpam0g-dev)
+     * (optional) SE Linux development library (e.g. libselinux1-dev)
+     * (optional) Linux audit development library (e.g. libaudit-dev)
+     * If compiling from git checkout (rather than a tarball), then no
+       generated file will be included out of the box, so you will need
+       more tools to generate them. In particular the ./configure script
+       and the documentation will be generated from the sources.
+          + git
+          + autoconf
+          + docbook
+          + docbook-xsl
+          + docbook-xml
+          + docbook-util
+          + manpages-dev
+
+1.2.2. Compilation and installation instructions
+
+     * uncompress the archive:
+
+       bash$ tar -xzf fcron-X.Y.Z.src.tar.gz
+
+     * cd to the archive directory
+
+       bash$ cd fcron-X.Y.Z
+
+     * run the configure script:
+
+       bash$./configure
+
+          + If you can't see a ./configure, then you probably checked out
+            the files from git, in which case you need to run autoconf to
+            generate the configure script.
+          + If using PAM, beware that by default the PAM configuration
+            will be installed in /usr/local/etc/. That most likely mean
+            that your system won't use this config, and may ask you to
+            type your password everytime you start fcrontab or fcrondyn.
+            The simplest way to avoid this is to instruct configure to use
+            /etc instead with:
+
+            bash$ ./configure --sysconfdir=/etc
+
+          + You may also want to change the place where fcron will be
+            installed: you can use the configure 's option --prefix to do
+            that. For instance:
+
+            bash$ ./configure --prefix=/usr--sysconfdir=/etc
+
+            (default is prefix=/usr/local and sysconfdir=${prefix}/etc).
+          + To disable the use of PAM, SE Linux or fcrondyn, use
+            configure's option --with-pam=no, --with-selinux=no and/or
+            --with-fcrondyn=no.
+          + The command make install asks you by default some questions
+            you have to answer. To avoid that (which can be useful for
+            automatic installers), you can use the ./configure's option
+            --with-answer-all and/or --with-boot-install (see "./configure
+            --help" for more details).
+          + To debug fcron, you should use configure 's option
+            --with-debug.
+          + You can get info on the others configure 's options by running
+            "./configure --help".
+
+                                    Warning
+         + The configure script may not define a correct directory for
+           the man pages and the documentation on some systems. You may
+           check the values defined by configure and if necessary force a
+           value by the options --mandir and -with-docdir (see the help
+           by running "./configure --help").
+         + If you get older fcron's man-pages with man command after
+           having upgraded, it's probably because fcron has changed its
+           default man directory: you should remove manually the outdated
+           man-pages.
+         + The Makefile has been designed for GNU make. Some other
+           version of make may fail to use it.
+
+     * (optional) check the file config.h, and change it if necessary (the
+       configurable part is on the top of the file and clearly delimited).
+     * compile:
+
+       bash$ make
+
+     * then install binaries as root:
+
+       bash$ su root
+
+       bash# make install
+
+   You can now run fcron and fcrontab.
+
+     * This is a POSIX conforming software. You must have a POSIX compiler
+       (gcc for example) in order to compile it.
+     * This software has been written for GNU/Linux systems. If you want
+       to port it on an other Unix platform (thank you if you do it), try
+       to modify - if possible - only the configure script. Please send me
+       any modifications at <fcron@free.fr> in order to include it in
+       future releases.
+   _______________________________________________________________________
+
+   Prev        Home    Next
+   About fcron  Up  Changes

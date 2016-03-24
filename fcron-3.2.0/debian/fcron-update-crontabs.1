@@ -1,0 +1,26 @@
+.TH FCRON-UPDATE-CRONTABS 8
+.\" NAME should be all caps, SECTION should be 1-8, maybe w/ subsection
+.\" other parms are allowed: see man(7), man(1)
+.SH NAME
+fcron-update-crontabs \- refreshes all fcron crontabs
+.SH SYNOPSIS
+.B fcron-update-crontabs
+.SH "DESCRIPTION"
+This manual page documents briefly the
+.BR fcron-update-crontabs
+command.
+fcron keeps its crontabs in a binary format, which needs to be
+recompiled from their text source when fcron is updated or when 
+a userid referenced in the crontabs changes.
+.B fcron-update-crontabs
+can be used to recompile all fcron crontabs installed in the 
+system.
+.PP
+.SH "SEE ALSO"
+.BR fcron (8),
+.BR fcrontab (1),
+.BR fcrontab (1),
+.BR fcrontab (5).
+.SH AUTHOR
+This manual page was written by Henrique M. Holschuh <hmh@rcm.org.br>,
+for the Debian GNU/Linux system (but may be used by others).

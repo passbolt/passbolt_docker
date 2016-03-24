@@ -1,0 +1,37 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+    <refsect1>
+	<title>See also</title>
+	<simplelist>
+	    <member><link linkend="fcrontab.1">&fcrontab;(1),</link></member>
+	    <member><link linkend="fcrondyn.1">&fcrondyn;(1),</link></member>
+	    <member><link linkend="fcrontab.5">&fcrontab;(5),</link></member>
+	    <member><link linkend="fcron.conf.5">&fcron.conf;(5),</link></member>
+	    <member><link linkend="fcron.8">&fcron;(8).</link></member>
+	    <member>If you're learning how to use fcron from scratch, I suggest
+ that you read the HTML version of the documentation (if your are not reading it
+ right now! :) ): the content is the same, but it is easier to navigate thanks
+to the hyperlinks.</member>
+	</simplelist>
+    </refsect1>
+
+    <refsect1>
+	<title>Author</title>
+	<para>Thibault Godouet &email;</para>
+    </refsect1>
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "refentry" "")
+End:
+-->

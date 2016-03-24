@@ -1,0 +1,134 @@
+<!-- 
+Fcron documentation
+Copyright 2000-2014 Thibault Godouet <fcron@free.fr>
+Permission is granted to copy, distribute and/or modify this
+document under the terms of the GNU Free Documentation License,
+Version 1.1 or any later version published by the Free Software
+Foundation.
+A copy of the license is included in gfdl.sgml.
+-->
+
+
+   <sect1 id="todo">
+      <title>Todo</title>
+      <para>Here are some things that should be done ... Note that some of these
+	 entries are just some ideas, which <emphasis>may</emphasis> be done in
+	 the long run.</para> 
+      <para>If you see something you'd really like to see implemented here, feel
+	 free to send me a mail: it may make me move it to the top of my to-do list ;) .
+      </para>
+      <para>If you plan to help me, please send a mail at &email; to prevent two
+	 people from doing the same thing. You can send me some propositions as
+	 well, or ask me to move something to the top of the heap ;) .</para>
+      <sect2>
+	 <title>High priority</title>
+	 <itemizedlist>
+	    <listitem>
+	       <para>Option to compile and install from git sources without generating the doc</para>
+	    </listitem>
+	    <listitem>
+	       <para>register in OS suspend/hibernate mechanism to stop fcron when going to sleep and start it again when resuming from sleep (see FAQ entry).</para>
+	    </listitem>
+	    <listitem>
+	       <para></para>
+	    </listitem>
+	 </itemizedlist>
+      </sect2>
+      <sect2>
+	 <title>Low priority</title>
+	 <itemizedlist>
+            <listitem>
+	       <para>Add unit tests using some unit-test framework (turn the tests/* code into unit tests)</para>
+	    </listitem>
+           <listitem>
+	       <para>For environment settings, make a var substitution.</para>
+	    </listitem>
+	    <listitem>
+	       <para>add a mailsubject option, for custom mail subjects (for instance, in case of a job containing something secret -- password, etc -- in the command line).</para>
+	    </listitem>
+	    <listitem>
+	       <para>Use directory notifications (FAM) / inotify, and support a fcrontab
+	       and a cron.d as Vixie cron does (directly included in fcron itself, not thanks to a script as now).
+               However the parsing work is done by fcrontab, and should probably keep on being done by fcrontab for
+               security and stability reasons: have fcron call fcrontab to do that job?</para>
+	    </listitem>
+	    <listitem>
+	       <para>could be worth checking fcron for memory leaks using specialized library (just in case...)</para>
+	    </listitem>
+	    <listitem>
+	       <para>option to put a maximum limit on the execution time of a task + terminate it if not finished yet + send email to let the user know</para>
+	    </listitem>
+	    <listitem>
+	       <para>setting to limit the number of jobs of a single user in the serialq/lavgq to X jobs + make sure root always has Y slots that it can use in those queues (i.e. number of slots used by root + number of free slots >= Y)</para>
+	    </listitem>
+	    <listitem>
+	       <para>Test (and use ?) docbook2x-man -- xlstproc ? cf http://antoine.ginies.free.fr/docbook/ch09.html</para>
+	    </listitem>
+	    <listitem>
+	       <para>find way to have the non translated pages of the French translation be updated automatically (changes, todo, etc -> copied from the English doc)</para>
+	    </listitem>
+	    <listitem>
+	       <para>add a return code for jobs which would mean that they
+		  should not be run again (in case of an error, etc...).</para>
+	    </listitem>
+	    <listitem>
+	       <para>PAM support (included in fcron, but needs more tests by
+		  people using PAM - not implemented in fcrondyn: is it needed
+		  in fcrondyn anyway?)</para>
+	    </listitem>
+	    <listitem>
+	       <para>support for per user serial queue (especially for root)</para>
+	    </listitem>
+	 </itemizedlist>
+      </sect2>
+      <sect2>
+	 <title>Ideas</title>
+	 <itemizedlist>
+	    <listitem>
+	       <para>add a system of modules: at startup, fcron loads some
+		  modules (.so files). Then, when fcron should run the job, it
+		  calls a function of the module, and let it manage the job
+		  (threads?). (do linux dlopen(), etc exist on other systems?
+		  - yes: thanks Harring ;) dlopen exists on all POSIX system -
+		  even windoze - abait it does not use the same insterface of
+		  function calls. But it can be easily implemented to port to
+		  another system.).</para>
+	    </listitem>
+	    <listitem>
+	       <para>(related to the system of modules? create a kind of
+		  dependencies?)  Add a way to run a job only if a command
+		  returns true. It would permit, for instance, to run some jobs
+		  on a laptop only if it is on AC power.</para>
+	       <para>and depending on the return value of the command, cancel
+		  the execution, or wait x seconds before trying again, etc. 
+	       In this case, needs change the way the jobs are queued?</para>
+	    </listitem>
+	    <listitem>
+	       <para>add an option/module to prevent fcron from running a job if the
+		  system is running on battery (anacron does it?)</para>
+	    </listitem>
+	    <listitem>
+	       <para>Add a way to stop a job (SIGSTOP) if the lavg gets to high,
+		  and restart it (SIGCONT) when the lavg has decreased.</para>
+	    </listitem>
+	    <listitem>
+	       <para>Add a timeout for task completion: if a task takes more
+		  than a specified timeout, then start another script with the
+		  initial task PID as argument.  That would allow a kill with
+		  different signals (-HUP, -TERM -STOP, .... or any other action
+		  like sending a mail to sysadmin to alert him/her that a task
+		  is taking too much time and that he has to have a look at it.)
+		  (add an option to specify the cmd, and combine w/ option until)
+	       </para>
+	    </listitem>
+	 </itemizedlist>
+      </sect2>
+   </sect1>
+
+
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-parent-document:("fcron-doc.sgml" "book" "chapter" "sect1" "")
+End:
+-->
