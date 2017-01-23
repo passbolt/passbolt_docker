@@ -115,7 +115,7 @@ fi
 # Install passbolt
 if [ $IS_PASSBOLT_INSTALLED == "0" ]; then
     echo "Installing"
-    su -s /bin/bash -c "/var/www/passbolt/app/Console/cake install --admin-username ${ADMIN_USERNAME} --admin-first-name=${ADMIN_FIRST_NAME} --admin-last-name=${ADMIN_LAST_NAME}" www-data
+    su -s /bin/bash -c "/var/www/passbolt/app/Console/cake install --admin-username ${ADMIN_USERNAME} --admin-first-name=${ADMIN_FIRST_NAME} --admin-last-name=${ADMIN_LAST_NAME} --send-anonymous-statistics=false" www-data
     echo "We are all set. Have fun with Passbolt !"
     echo "Reminder : THIS IS A DEMO CONTAINER. DO NOT USE IT IN PRODUCTION!!!!"
 fi
