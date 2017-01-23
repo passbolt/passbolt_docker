@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SRC=$(cd $(dirname "$0"); pwd)
-source "${SRC}/conf/conf.sh"
+. "${SRC}/conf/conf.sh"
 
 docker run -p 8081:8081 -p 80:80 -p 443:443 -d -it --hostname=passbolt.docker --name passbolt \
     -v $PASSBOLT_DIR:/var/www/passbolt \
