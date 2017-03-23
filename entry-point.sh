@@ -63,6 +63,8 @@ cp -a /var/www/passbolt/app/Config/core.php.default /var/www/passbolt/app/Config
 cp -a /var/www/passbolt/app/webroot/js/app/config/config.json.default /var/www/passbolt/app/webroot/js/app/config/config.json
 
 # gpg
+#Init gpg directory
+gpg --fingerprint
 GPG_SERVER_KEY_FINGERPRINT=`gpg -n --with-fingerprint /home/www-data/gpg_server_key_public.key | awk -v FS="=" '/Key fingerprint =/{print $2}' | sed 's/[ ]*//g'`
 /var/www/passbolt/app/Console/cake passbolt app_config write GPG.serverKey.fingerprint $GPG_SERVER_KEY_FINGERPRINT
 /var/www/passbolt/app/Console/cake passbolt app_config write GPG.serverKey.public /home/www-data/gpg_server_key_public.key
@@ -73,7 +75,7 @@ chown www-data:www-data /home/www-data/gpg_server_key_private.key
 # overwrite the core configuration
 /var/www/passbolt/app/Console/cake passbolt core_config gen-cipher-seed
 /var/www/passbolt/app/Console/cake passbolt core_config gen-security-salt
-/var/www/passbolt/app/Console/cake passbolt core_config write App.fullBaseUrl https://192.168.99.100
+/var/www/passbolt/app/Console/cake passbolt core_config write App.fullBaseUrl ${APP_URL}
 
 # overwrite the database configuration
 # @TODO based on the cake task DbConfigTask implement a task to manipulate the dabase configuration

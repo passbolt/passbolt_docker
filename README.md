@@ -44,6 +44,14 @@ If you don't configure a smtp server, emails notifications won't be sent. User w
 	docker build -t passbolt_debian .
 	./launch-container.sh
 ```
+
+6) To gain access to the application with the domain name passbolt.docker you must add an alias on your system targeting the passbolt container.
+
+```
+sudo sh -c 'echo "$(docker inspect --format='{{.NetworkSettings.Networks.bridge.IPAddress}}' passbolt) passbolt.docker" >> /etc/hosts'
+```
+
+7) Registration ending
 If a smtp server has been configured you will receive a registration email at the email you defined in the conf.sh file.
 
 If no smtp server has been configured, you can still finalize the registration process. Take a look at the end of the docker logs,
