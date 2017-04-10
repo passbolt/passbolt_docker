@@ -107,7 +107,7 @@ Once mysql container is running we should extract its ip address we assume 172.1
 
 `$ docker run -e db_host=172.17.0.2 passbolt:1.4.0-alpine`
 
-Point your browser to the passbolt container ip
+Point your browser to the passbolt container ip (https by default)
 
 ## Advanced configuration
 
