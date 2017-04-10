@@ -1,102 +1,74 @@
-FROM debian:jessie
+FROM alpine:latest
 
-# mysql before installation configuration
-RUN export DEBIAN_FRONTEND="noninteractive" \
-    && echo "mysql-server mysql-server/root_password password root" | debconf-set-selections \
-    && echo "mysql-server mysql-server/root_password_again password root" | debconf-set-selections
+MAINTAINER diego@passbolt.com
 
-# debian packages installation
-RUN apt-get clean && apt-get update && apt-get install -y \
-    # persistent &runtime deps. \
-    ca-certificates curl libpcre3 librecode0 libsqlite3-0 libxml2 --no-install-recommends \
-    # unix tools \
-    nano wget openssh-client cron sendmail \
-    # versioning & package manager \
-    git npm \
-    # phpize dependencies \
-    autoconf file g++ gcc libc-dev make pkg-config re2c \
-    # persistance
-    redis-server mysql-server-5.5 \
-    # php \
-    php5-json php5-cli php5-common \
-    php5-curl php5-dev php5-gd php5-mcrypt \
-    php5-mysql php5-xdebug php5-xsl php5-intl \
-    # memchached \
-    memcached php5-memcached \
-    # apache \
-    apache2 apache2-utils libapache2-mod-php5 \
-    # gnupg dependency \
-    libgpgme11-dev \
-    # pear \
-    php-pear \
-    # Commented until the following bug is fixed : https://github.com/docker/hub-feedback/issues/556 \
-    #&& apt-get clean \
-     && rm -rf /var/lib/apt/lists/*
+ENV PASSBOLT_VERSION 1.4.0
+ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
-# Configure the user www-data environment
-RUN mkdir /home/www-data/ \
-    && chown www-data:www-data /home/www-data/ \
-    && usermod -d /home/www-data www-data
+ARG BASE_PHP_DEPS="php5-curl \
+      php5-common \
+      php5-gd \
+      php5-intl \
+      php5-json \
+      php5-mcrypt \
+      php5-memcache \
+      php5-mysql \
+      php5-xsl \
+      php5-fpm \
+      php5-phar \
+      php5-xml \
+      php5-openssl \
+      php5-zlib \
+      php5-ctype \
+      php5-pdo \
+      php5-pdo_mysql \
+      php5-pear"
 
-# Configure node and install grunt
-# On debian they choose to rename node in nodejs, some tools try to access nodejs by using the commande noe.
-RUN ln -s /usr/bin/nodejs /usr/bin/node \
-    # install grunt
-    && npm install -g grunt-cli
+ARG PHP_GNUPG_DEPS="php5-dev \
+      make \
+      gcc \
+      g++ \
+      libc-dev \
+      pkgconfig \
+      re2c \
+      gpgme-dev \
+      autoconf \
+      file"
 
-# Apache2 SSL
-RUN mkdir /etc/apache2/ssl \
-	&& openssl req -x509 -nodes -days 365 -new -newkey rsa:2048 -subj "/C=US/ST=Denial/L=Goa/O=Dis/CN=www.passbolt.com" -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt \
-	&& chmod 600 /etc/apache2/ssl/* \
-	&& a2enmod ssl
+RUN apk update &&\
+    apk add $BASE_PHP_DEPS \
+      bash \
+      ca-certificates \
+      curl \
+      tar \
+      libpcre32 \
+      recode \
+      libxml2 \
+      gpgme \
+      gnupg1 \
+      mysql-client \
+      openssl \
+      nginx
 
-# Install and configure gnupg
-RUN pecl install gnupg \
-    && echo "extension=gnupg.so;" > /etc/php5/mods-available/gnupg.ini \
-    && ln -s /etc/php5/mods-available/gnupg.ini /etc/php5/apache2/conf.d/20-gnupg.ini \
-    && ln -s /etc/php5/mods-available/gnupg.ini /etc/php5/cli/conf.d/20-gnupg.ini \
-    # configure the user www-data env to work with gnupg \
-    && mkdir /home/www-data/.gnupg \
-    && chown www-data:www-data /home/www-data/.gnupg \
-    && chmod 0777 /home/www-data/.gnupg
+RUN apk add $PHP_GNUPG_DEPS && \
+    #https://bugs.alpinelinux.org/issues/5378
+    sed -i "s/ -n / /" $(which pecl) && \
+    pecl install gnupg && \
+    echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini && \
+    apk del $PHP_GNUPG_DEPS
 
-# Configure apache
-ADD /server-conf/apache/passbolt.conf /etc/apache2/sites-available/passbolt.conf
-ADD /server-conf/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
 
-RUN rm -f /etc/apache2/sites-enabled/* \
-    && rm -fr /var/www/html \
-    && a2enmod proxy \
-    && a2enmod proxy_http \
-    && a2enmod rewrite \
-    && a2ensite passbolt \
-    && a2ensite 000-default.conf
+RUN mkdir /var/www/passbolt && curl -sSL $PASSBOLT_URL | \
+  tar zxf - -C /var/www/passbolt --strip-components 1 && \
+  chown -R nginx:nginx /var/www/passbolt && \
+  chmod -R +w /var/www/passbolt/app/tmp && \
+  chmod +w /var/www/passbolt/app/webroot/img/public
 
-# Configure php
-RUN echo "memory_limit=256M" > /etc/php5/apache2/conf.d/20-memory-limit.ini \
-    && echo "memory_limit=256M" > /etc/php5/cli/conf.d/20-memory-limit.ini
+COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
+COPY bin/passbolt_start.sh /passbolt_start.sh
 
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer
+EXPOSE 80 443
 
-# Special hack for macosx, to let www-data able to write on mounted volumes.
-# See docker bug: https://github.com/boot2docker/boot2docker/issues/581.
-RUN usermod -u 1000 www-data \
-    && usermod -a -G staff www-data \
-    && chown -Rf www-data:www-data /var/www/
-
-# Generate the gpg server key
-ADD /conf/gpg_server_key_public.key /home/www-data/gpg_server_key_public.key
-ADD /conf/gpg_server_key_private.key /home/www-data/gpg_server_key_private.key
-
-# fcron
-ADD ./fcron-3.2.0 /usr/local/fcron
-RUN cd /usr/local/fcron; ./configure --with-editor=/usr/bin/nano \
-	&& cd /usr/local/fcron; make \
-	&& cd /usr/local/fcron; make install
-
-ADD /entry-point.sh /entry-point.sh
-RUN chmod 0755 /entry-point.sh
-
-CMD ["bash", "/entry-point.sh"]
+CMD ["/passbolt_start.sh"]
