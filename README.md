@@ -1,62 +1,144 @@
-# PASSBOLT DEBIAN DOCKER CONTAINER
+# Passbolt docker official image
+![ohyes](http://i.imgur.com/ZdqmDOp.gif)
 
-ATTENTION : THIS IS A DEMO CONTAINER. DO NOT USE IT IN PRODUCTION.
+# What is Passbolt?
 
-How to use it
--------------
-1) First, download passbolt source code from git.
-```
-	git clone https://github.com/passbolt/passbolt.git
-```
+Passbolt is a free and open source password manager that allows team members to
+store and share credentials securely.
 
-2) Then, configure the container.
-There is a configuration file located in /conf/conf.sh
+![passbolt](https://raw.githubusercontent.com/passbolt/passbolt_styleguide/master/src/img/logo/logo.png)
 
-It contains the following options :
+# Build this image
 
-- PASSBOLT_DIR : path to passbolt source code.
-- MYSQL_HOST : mysql host. Keep it as 'localhost' to let the container handle the database.
-- MYSQL_ROOT_PASSWORD : root password of mysql. It is only useful if MYSQL_HOST is set to localhost.
-- MYSQL_USERNAME : valid username for the database.
-- MYSQL_PASSWORD : valid password for the database.
-- MYSQL_DATABASE : name of the database to be used.
-- ADMIN_USERNAME : email of the admin user.
-- ADMIN_FIRST_NAME : first name of the admin user.
-- ADMIN_LAST_NAME : last name of the admin user.
+Inside the repo directory:
 
-Enter the values corresponding to your settings. The most important setting is PASSBOLT_DIR. You can keep the default values for the rest.
+`$ docker build . -t passbolt:1.4.0-alpine`
 
-3) Generate the gpg server key.
-```
-	cd /path/to/docker/files
-	./bin/generate_gpg_server_key.sh
+# How to use this image?
+
+## Start passbolt instance
+
+Passbolt requires mysql to be running. In this example we will be using mysql official docker image
+with the default passbolt credentials.
+
+```bash
+$ docker run -e MYSQL_ROOT_PASSWORD=<your_root_password> \
+             -e MYSQL_DATABASE=passbolt \
+             -e MYSQL_USER=passbolt \
+             -e MYSQL_PASSWORD=P4ssb0lt \
+             mysql
 ```
 
-4) (optional) Configure the smtp server.
+Then you can start passbolt just providing the database container ip in the `db_host` environment variable.
 
-In the PASSBOLT_DIR, edit the file app/Config/email.php.
+`$ docker run -e db_host=<mysql_container_ip> passbolt:1.4.0-alpine`
 
-If you don't configure a smtp server, emails notifications won't be sent. User won't be able to finalize their registration.
+Once the process is done you just need to point your browser to http://passbolt_container_ip
 
-5) Finally, you can build and run the container.
+# Configure passbolt
+
+## Environment variables
+
+Passbolt docker image provides several environment variables to configure different aspects:
+
+### GnuPG key creation related variables
+
+* key_length: gpg desired key length
+* subkey_length: gpg desired subkey length
+* key_name: key owner name
+* key_email: key owner email address
+* key_expiration: key expiration date
+
+### App file variables
+
+* fingerprint: GnuPG fingerprint
+* registration: defines if users can register
+* ssl
+
+### Core file variables
+
+* default_salt
+* default_seed
+* default_url: url of the passbolt installation
+
+### Database variables
+
+* db_host: database hostname This param has to be specified either using env var or in database.php
+* db_user: database username (defaults to passbolt)
+* db_pass: database password (defaults to P4ssb0lt)
+* db_name: database name     (defaults to passbolt)
+
+## Advanced configuration
+
+What it you have your gpg keys and you want to setup a more complex configuration for passbolt?
+It it possible to mount the desired configuration files as volumes.
+
+### Configuration files subject to be persisted:
+
+* /var/www/passbolt/app/Config/app.php
+* /var/www/passbolt/app/Config/core.php
+* /var/www/passbolt/app/Config/database.php
+* /var/www/passbolt/app/Config/email.php
+* /var/www/passbolt/app/Config/gpg/serverkey.asc
+* /var/www/passbolt/app/Config/gpg/serverkey.private.asc
+
+### SSL certificate files
+
+If you have your own ssl certificate you can mount it on the following paths
+
+* /etc/ssl/certs/certificate.crt
+* /etc/ssl/certs/certificate.key
+
+# Examples
+
+## Automated setup
+
+In the following example we launch passbolt with the defaults enabled usind mysql official docker container to store passbolt data.
+
+```bash
+$ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
+             -e MYSQL_DATABASE=passbolt \
+             -e MYSQL_USER=passbolt \
+             -e MYSQL_PASSWORD=P4ssb0lt \
+             mysql
 ```
-	cd /path/to/docker/files
-	docker build -t passbolt_debian .
-	./launch-container.sh
-```
-If a smtp server has been configured you will receive a registration email at the email you defined in the conf.sh file.
 
-If no smtp server has been configured, you can still finalize the registration process. Take a look at the end of the docker logs,
-you will find the admin user registration link.
-```
-docker logs passbolt | awk '/The user has been registered with success/{print $0}'
+Once mysql container is running we should extract its ip address we assume 172.17.0.2 for this example
+
+`$ docker run -e db_host=172.17.0.2 passbolt:1.4.0-alpine`
+
+Point your browser to the passbolt container ip (https by default)
+
+## Advanced configuration
+
+In the following example we launch passbolt with a customized setup mounting and persisting configuration files. We also make use of
+mysql official docker container to store passbolt data.
+
+```bash
+$ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
+             -e MYSQL_DATABASE=passbolt \
+             -e MYSQL_USER=passbolt \
+             -e MYSQL_PASSWORD=P4ssb0lt \
+             mysql
 ```
 
-Behavior
---------
-By default the container will create a new database and use it to install passbolt.
-However, in case an external database is provided in the settings, it will try to use it.
-A few consideration :
-- There should be a valid username, password and database on the mysql server.
-- If the database exists but without passbolt installed, then passbolt will be installed normally.
-- If the database exists and already has a passbolt installed, then no db installation will be done and the existing data will be kept.
+Using docker inspect or any other method you can get the ip address of the mysql container, we will use 172.17.0.2 in this example.
+
+Once this container is running and you have the mysql ip address we run passbolt container mounting all configuration files stored
+under a example conf directory in $PWD
+
+```bash
+$ docker run -v $PWD/conf/app.php:/var/www/passbolt/app/Config/app.php \
+             -v $PWD/conf/core.php:/var/www/passbolt/app/Config/core.php \
+             -v $PWD/conf/database.php:/var/www/passbolt/app/Config/database.php \
+             -v $PWD/conf/email.php:/var/www/passbolt/app/Config/email.php \
+             -v $PWD/conf/private.asc:/var/www/passbolt/app/Config/gpg/serverkey.private.asc \
+             -v $PWD/conf/public.asc:/var/www/passbolt/app/Config/gpg/serverkey.asc \
+             passbolt:1.4.0-alpine
+```
+
+Point your browser to the passbolt container ip
+
+# Requirements:
+
+* mysql >= 5.6
