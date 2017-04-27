@@ -67,8 +67,8 @@ RUN mkdir /var/www/passbolt && curl -sSL $PASSBOLT_URL | \
   chmod +w /var/www/passbolt/app/webroot/img/public
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
-COPY bin/passbolt_start.sh /passbolt_start.sh
+COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 80 443
 
-CMD ["/passbolt_start.sh"]
+CMD ["/docker-entrypoint.sh"]
