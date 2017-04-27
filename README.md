@@ -1,5 +1,4 @@
 # Passbolt docker official image
-![ohyes](http://i.imgur.com/ZdqmDOp.gif)
 
 # What is Passbolt?
 
