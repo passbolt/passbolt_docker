@@ -13,7 +13,6 @@ ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
 gpg_gen_key() {
-
   su -m -c "$gpg --batch --gen-key <<EOF
     Key-Type: 1
 		Key-Length: ${key_length:-2048}
@@ -27,14 +26,11 @@ EOF" -ls /bin/bash nginx
 
   su -m -c "$gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash nginx
   su -m -c "$gpg --armor --export $key_email > $gpg_public_key" -ls /bin/bash nginx
-
 }
 
 gpg_import_key() {
-
   su -m -c "$gpg --import $gpg_private_key" -ls /bin/bash nginx
   su -m -c "$gpg --import $gpg_public_key" -ls /bin/bash nginx
-
 }
 
 core_setup() {
@@ -51,7 +47,6 @@ core_setup() {
   sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
   sed -i s:$default_seed:${cipherseed:-$default_seed}:g $core_config
   sed -i s:$default_url:${url:-$default_url}:g $core_config
-
 }
 
 db_setup() {
@@ -71,7 +66,6 @@ db_setup() {
   sed -i s:$default_user:${db_user:-passbolt}:g $db_config
   sed -i s:$default_pass\',:${db_pass:-P4ssb0lt}\',:g $db_config
   sed -i s:$default_db:${db_name:-passbolt}:g $db_config
-
 }
 
 app_setup() {
@@ -95,15 +89,12 @@ app_setup() {
   sed -i s:$default_private_key:serverkey.private.asc:g $app_config
   sed -i s:$default_fingerprint:${fingerprint:-$auto_fingerprint}:g $app_config
   sed -i "/force/ s:true:${ssl:-true}:" $app_config
-
 }
 
 gen_ssl_cert() {
-
   openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
     -subj "/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.example.com" \
     -keyout $ssl_key -out $ssl_cert
-
 }
 
 install() {
