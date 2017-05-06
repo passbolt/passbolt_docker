@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM {PLATFORM}alpine:latest
 
 MAINTAINER diego@passbolt.com
 
