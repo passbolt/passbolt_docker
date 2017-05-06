@@ -29,10 +29,10 @@ function build_passbolt() {
 
     image_passbolt=`docker images -qa "$container_passbolt"`
     if [ "$image_passbolt" != "" ]; then
-	echo "Passbolt image already built: $image_passbolt"
+        echo "Passbolt image already built: $image_passbolt"
     else
-	# Generate Docker and mysql containers
-	cd .. && docker build . --file Dockerfile.raspberry -t $container_passbolt
+        # Generate Docker and mysql containers
+        cd .. && docker build . --file Dockerfile.raspberry -t $container_passbolt
     fi
 }
 
