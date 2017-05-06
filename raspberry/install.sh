@@ -8,11 +8,7 @@
 
 set -e
 
-# From https://hub.docker.com/
-image_alpine="armhf/alpine"
-image_mysql="hypriot/rpi-mysql"
-
-container_passbolt="passbolt:1.4.0-alpine"
+source ./pivars
 
 function required_software() {
 
@@ -28,27 +24,15 @@ function required_images() {
     docker image inspect $image_mysql | grep "Id"  || docker pull $image_mysql
 }
 
-function start_mysql() {
+function build_passbolt() {
 
-    docker run -e MYSQL_ROOT_PASSWORD="" \
-       -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
-       -e MYSQL_RANDOM_ROOT_PASSWORD=1 \
-       -e MYSQL_DATABASE=passbolt \
-       -e MYSQL_USER=passbolt \
-       -e MYSQL_PASSWORD=P4ssb0lt \
-       $image_mysql
-}
-
-function start_passbolt() {
-
-    id_passbolt=`docker ps -aq --filter ancestor=$container_passbolt --filter status=running`
-    if [ "$id_passbolt" != "" ]; then
-	echo "Passbolt container already running: $id_passbolt"
+    image_passbolt=`docker images -qa "$container_passbolt"`
+    if [ "$image_passbolt" != "b5bf3d67c085" ]; then
+	echo "Passbolt image already built: $image_passbolt"
     else
-	id_mysql=`docker ps -aq --filter ancestor=$image_mysql --filter status=running`
-	ip=`docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $id_mysql`
-	echo "id=$id_mysql ip=$ip"
-	#docker run -e db_host=??? $container_passbolt
+	# Generate Docker and mysql containers
+	# FIXME: pass platform name correctly
+	PLATFORM="armhf/" docker build .. -t $container_passbolt
     fi
 }
 
@@ -59,19 +43,11 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
-start_passbolt
-exit 0
-
 # Prepare the environment
 required_software
 required_images
+echo "Required software ready"
 
+build_passbolt
+echo "Passbolt container built"
 exit 0
-
-# Generate Docker and mysql containers
-PLATFORM="armhf/" docker .. -t $container_passbolt
-
-# Start the passbolt container
-# TODO: move below steps to an external script
-start_mysql
-start_passbolt
