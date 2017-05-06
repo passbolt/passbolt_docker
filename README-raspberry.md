@@ -8,7 +8,7 @@ $ sudo ./install.sh
 $ sudo ./startup.sh
 ```
 
-If all goes well, you should be able to access Passvolt by visiting `https://raspberrypi-ip-address`
+If all goes well, you should be able to access Passbolt by visiting `https://raspberrypi-ip-address`
 from any computer on the network.
 
 It should run fine on Raspbian, as well as derivative distributions.
