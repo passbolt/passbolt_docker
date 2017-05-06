@@ -2,7 +2,7 @@
 #
 #  This script will install Docker and the Passbolt containers on the RaspberryPI.
 #
-#  On termination you should be able to access Passbolt from your computer
+#  On termination you should be able to access Passbolt from your computer
 #  browser, which will be running on the networked Raspberry.
 #
 
@@ -28,7 +28,7 @@ function required_images() {
     docker image inspect $image_mysql | grep "Id"  || docker pull $image_mysql
 }
 
-function start_mysql() {
+function start_mysql() {
 
     docker run -e MYSQL_ROOT_PASSWORD="" \
        -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
@@ -41,12 +41,15 @@ function start_mysql() {
 
 function start_passbolt() {
 
-    # TODO: ??? find the mysql container ip address (docker inspect)
-    mysql_instance=`docker inspect --format="{{.Id}}" $image_mysql`
-    ip=`docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $mysql_instance`
-    echo "instance=$mysql_instance ip=$ip"
-
-    #docker run -e db_host=??? $container_passbolt
+    id_passbolt=`docker ps -aq --filter ancestor=$container_passbolt --filter status=running`
+    if [ "$id_passbolt" != "" ]; then
+	echo "Passbolt container already running: $id_passbolt"
+    else
+	id_mysql=`docker ps -aq --filter ancestor=$image_mysql --filter status=running`
+	ip=`docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $id_mysql`
+	echo "id=$id_mysql ip=$ip"
+	#docker run -e db_host=??? $container_passbolt
+    fi
 }
 
 
@@ -56,6 +59,9 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
+start_passbolt
+exit 0
+
 # Prepare the environment
 required_software
 required_images
@@ -64,7 +70,8 @@ exit 0
 
 # Generate Docker and mysql containers
 PLATFORM="armhf/" docker .. -t $container_passbolt
-start_mysql
 
 # Start the passbolt container
+# TODO: move below steps to an external script
+start_mysql
 start_passbolt
