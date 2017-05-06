@@ -1,50 +1,70 @@
 #!/bin/bash
 #
-#  This script will install passbolt Docker on the RaspberryPI
+#  This script will install Docker and the Passbolt containers on the RaspberryPI.
 #
-#  You must use Raspbian or a derivative distro.
-#  Tested on pipaos: http://pipaos.mitako.eu/
+#  On termination you should be able to access Passbolt from your computer
+#  browser, which will be running on the networked Raspberry.
 #
 
-function prerequisites() {
+set -e
+
+# From https://hub.docker.com/
+image_alpine="armhf/alpine"
+image_mysql="hypriot/rpi-mysql"
+
+container_passbolt="passbolt:1.4.0-alpine"
+
+function required_software() {
+
     # Install docker if needed
-    if [ `which docker` != 0 ]; then
-        curl -sSL https://get.docker.com | sh
-        if  [ $? != 0 ]; then
-            echo "Could not install Docker"
-            exit 1
-        fi
-    fi
-    
-    # Passbolt docker needs enthropy to generate ssh keys
-    if [ `which rng-tools` != 0 ]; then
-        sudo apt-get install -y rng-tools
-    fi
+    which docker || echo "curl -sSL https://get.docker.com | sh"
+
+    # Passbolt docker needs entropy to generate ssh keys
+    which rngd || sudo apt-get install -y rng-tools
 }
 
-function download_images() {
+function required_images() {
+    docker image inspect $image_alpine | grep "Id" || docker pull $image_alpine
+    docker image inspect $image_mysql | grep "Id"  || docker pull $image_mysql
+}
 
-    docker pull armhf/alpine
-    docker pull blabla/mysql-armhf
+function start_mysql() {
 
+    docker run -e MYSQL_ROOT_PASSWORD="" \
+       -e MYSQL_ALLOW_EMPTY_PASSWORD=1 \
+       -e MYSQL_RANDOM_ROOT_PASSWORD=1 \
+       -e MYSQL_DATABASE=passbolt \
+       -e MYSQL_USER=passbolt \
+       -e MYSQL_PASSWORD=P4ssb0lt \
+       $image_mysql
+}
+
+function start_passbolt() {
+
+    # TODO: ??? find the mysql container ip address (docker inspect)
+    mysql_instance=`docker inspect --format="{{.Id}}" $image_mysql`
+    ip=`docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $mysql_instance`
+    echo "instance=$mysql_instance ip=$ip"
+
+    #docker run -e db_host=??? $container_passbolt
 }
 
 
-if [ `uid` != 0 ]; then
+# sanity check
+if [ `id -u` != 0 ]; then
     echo "You must run this script as root"
     exit 1
 fi
 
+# Prepare the environment
 required_software
-download_images
+required_images
+
+exit 0
 
 # Generate Docker and mysql containers
-PLATFORM="armhf/" docker .. -t passbolt:1.4.0-alpine
+PLATFORM="armhf/" docker .. -t $container_passbolt
+start_mysql
 
-# bring up the mysql docker instance
-# TODO: start in the background
-run.sh
-
-# Start passbolt container
-# TODO: ??? find the mysql container ip address (docker inspect)
-docker run -e db_host=??? passbolt:1.4.0-alpine
+# Start the passbolt container
+start_passbolt
