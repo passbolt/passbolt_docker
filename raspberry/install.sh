@@ -13,13 +13,14 @@ source ./pivars
 function required_software() {
 
     # Install docker if needed
-    which docker || echo "curl -sSL https://get.docker.com | sh"
+    which docker || curl -sSL https://get.docker.com | sh
 
     # Passbolt docker needs entropy to generate ssh keys
     which rngd || sudo apt-get install -y rng-tools
 }
 
 function required_images() {
+
     docker image inspect $image_alpine | grep "Id" || docker pull $image_alpine
     docker image inspect $image_mysql | grep "Id"  || docker pull $image_mysql
 }
@@ -27,12 +28,11 @@ function required_images() {
 function build_passbolt() {
 
     image_passbolt=`docker images -qa "$container_passbolt"`
-    if [ "$image_passbolt" != "b5bf3d67c085" ]; then
+    if [ "$image_passbolt" != "" ]; then
 	echo "Passbolt image already built: $image_passbolt"
     else
 	# Generate Docker and mysql containers
-	# FIXME: pass platform name correctly
-	PLATFORM="armhf/" docker build .. -t $container_passbolt
+	cd .. && docker build . --file Dockerfile.raspberry -t $container_passbolt
     fi
 }
 

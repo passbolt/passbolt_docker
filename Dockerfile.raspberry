@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM armhf/alpine:latest
 
 MAINTAINER diego@passbolt.com
 
