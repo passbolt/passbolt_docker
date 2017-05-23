@@ -56,9 +56,9 @@ Passbolt docker image provides several environment variables to configure differ
 
 ### Core file variables
 
-* default_salt
-* default_seed
-* default_url: url of the passbolt installation
+* salt
+* cipherseed
+* url: url of the passbolt installation
 
 ### Database variables
 
