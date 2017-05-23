@@ -29,8 +29,8 @@ EOF" -ls /bin/bash nginx
 }
 
 gpg_import_key() {
-  su -m -c "$gpg --import $gpg_private_key" -ls /bin/bash nginx
-  su -m -c "$gpg --import $gpg_public_key" -ls /bin/bash nginx
+  su -m -c "$gpg --batch --import $gpg_private_key" -ls /bin/bash nginx
+  su -m -c "$gpg --batch --import $gpg_public_key" -ls /bin/bash nginx
 }
 
 core_setup() {
@@ -100,7 +100,7 @@ gen_ssl_cert() {
 install() {
   local database=${db_host:-$(grep -m1 -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' $db_config)}
   echo $database
-  tables=$(mysql -u passbolt -h $database -p -BN -e "SHOW TABLES FROM passbolt" -p${db_pass:-P4ssb0lt} |wc -l)
+  tables=$(mysql -u $db_user -h $database -p -BN -e "SHOW TABLES FROM passbolt" -p${db_pass:-P4ssb0lt} |wc -l)
 
   if [ $tables -eq 0 ]; then
     su -c "/var/www/passbolt/app/Console/cake install --send-anonymous-statistics true --no-admin" -ls /bin/bash nginx
