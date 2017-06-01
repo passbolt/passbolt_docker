@@ -29,8 +29,11 @@ EOF" -ls /bin/bash nginx
 }
 
 gpg_import_key() {
-  su -m -c "$gpg --batch --import $gpg_private_key" -ls /bin/bash nginx
+
+  local key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/bash nginx)
+
   su -m -c "$gpg --batch --import $gpg_public_key" -ls /bin/bash nginx
+  su -m -c "gpg -K $key_id" -ls /bin/bash nginx || su -m -c "$gpg --batch --import $gpg_private_key" -ls /bin/bash nginx
 }
 
 core_setup() {
