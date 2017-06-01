@@ -13,6 +13,9 @@ ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
 gpg_gen_key() {
+  # Need to increase entropy in order to generate the GPG key reliably
+  find / > /dev/null&
+  
   su -m -c "$gpg --batch --gen-key <<EOF
     Key-Type: 1
 		Key-Length: ${key_length:-2048}
