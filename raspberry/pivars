@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Common variables for the RaspberryPI
+#
+
+# From https://hub.docker.com/
+image_alpine="armhf/alpine"
+image_mysql="hypriot/rpi-mysql"
+
+container_passbolt="passbolt:1.4.0-alpine"
