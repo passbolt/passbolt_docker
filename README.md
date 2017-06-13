@@ -20,19 +20,40 @@ Inside the repo directory:
 Passbolt requires mysql to be running. In this example we will be using mysql official docker image
 with the default passbolt credentials.
 
+### Prepare Database Container
+
 ```bash
-$ docker run -e MYSQL_ROOT_PASSWORD=<your_root_password> \
+$ docker run -d \
+             -e MYSQL_ROOT_PASSWORD=<your_root_password> \
              -e MYSQL_DATABASE=passbolt \
              -e MYSQL_USER=passbolt \
              -e MYSQL_PASSWORD=P4ssb0lt \
              mysql
 ```
 
+### Create Passbolt Container
 Then you can start passbolt just providing the database container ip in the `db_host` environment variable.
 
-`$ docker run -e db_host=<mysql_container_ip> passbolt:1.4.0-alpine`
+**With your own Image**
 
-Once the process is done you just need to point your browser to http://passbolt_container_ip
+```bash
+$ docker run -d \
+             -e db_host=<mysql_container_ip> \
+             passbolt:1.4.0-alpine
+```
+
+**Using prebuilt Image**
+> From https://hub.docker.com/r/passbolt/passbolt/
+
+```bash
+$ docker run -d \
+             -e db_host=<mysql_container_ip> \
+             passbolt/passbolt:latest
+```
+
+Once the Passbolt Container is started, Passbolt is accessible via: http://<docker_host_ip>:<exposed_port>.
+> During first run of the passbolt container it's filling the database container with data that could delay the actual startup time.
+> Check with `docker logs <passbolt_container_id>` if the container is ready.
 
 # Configure passbolt
 
