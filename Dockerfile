@@ -62,7 +62,7 @@ RUN curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
 RUN mkdir /var/www/passbolt && curl -sSL $PASSBOLT_URL | \
-      tar zxf - -C /var/www/passbolt --strip-components 1 && \
+    tar zxf - -C /var/www/passbolt --strip-components 1 && \
     chown -R nginx:nginx /var/www/passbolt && \
     chmod -R +w /var/www/passbolt/app/tmp && \
     chmod +w /var/www/passbolt/app/webroot/img/public
