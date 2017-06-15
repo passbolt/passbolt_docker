@@ -38,6 +38,7 @@ ARG PHP_GNUPG_DEPS="php5-dev \
 RUN apk update &&\
     apk add $BASE_PHP_DEPS \
       bash \
+      sed \
       ca-certificates \
       curl \
       tar \
