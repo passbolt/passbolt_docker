@@ -151,13 +151,18 @@ email_cron_job() {
   local root_crontab='/etc/crontabs/root'
   local cron_task_dir='/etc/periodic/1min'
   local cron_task='/etc/periodic/1min/email_queue_processing'
-  local process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender > /var/log/passbolt.log"
+  local process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender"
 
   mkdir -p $cron_task_dir
 
   echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
-  echo "* * * * * su -c \"$process_email\" -ls /bin/bash nginx" > $cron_task
+  echo "#!/bin/sh" > $cron_task
+  chmod +x $cron_task
+  echo "su -c \"$process_email\" -ls /bin/bash nginx" >> $cron_task
+
+  crond -f -c /etc/crontabs
 }
+
 
 if [ ! -f $gpg_private_key ] || [ ! -f $gpg_public_key ]; then
   gpg_gen_key
@@ -185,11 +190,12 @@ if [ ! -f $ssl_key ] && [ ! -f $ssl_cert ]; then
   gen_ssl_cert
 fi
 
-email_cron_job
-
 php_fpm_setup
 
 install
 
 php-fpm5
-nginx -g "pid /tmp/nginx.pid; daemon off;"
+
+nginx -g "pid /tmp/nginx.pid; daemon off;" &
+
+email_cron_job
