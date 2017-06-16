@@ -7,6 +7,14 @@ store and share credentials securely.
 
 ![passbolt](https://raw.githubusercontent.com/passbolt/passbolt_styleguide/master/src/img/logo/logo.png)
 
+# Scope of this repository
+
+This repository will allow passbolt power users to customize their passbolt image to fit their needs on
+specific environments. It is also a community meeting point to exchange feedback, request for new features
+track issues and pull requests.
+We, at passbolt, encourage users that do not require any special modifications to `docker pull` our
+[official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
+
 # Build this image
 
 Inside the repo directory:
@@ -66,6 +74,16 @@ Passbolt docker image provides several environment variables to configure differ
 * db_user: database username (defaults to passbolt)
 * db_pass: database password (defaults to P4ssb0lt)
 * db_name: database name     (defaults to passbolt)
+
+### Email variables
+
+* email_tansport: transport protocol             ( defaults to Smtp)
+* email_from:     from email address             ( defaults to contact@mydomain.local)
+* email_host:     server hostname                ( defaults to localhost)
+* email_port:     server port                    ( defaults to 587)
+* email_timeout:  timeout                        ( defaults to 30s)
+* email_username: username for email server auth ( defaults to email_user)
+* email_password: password for email server auth ( defaults to email_password)
 
 ## Advanced configuration
 
@@ -140,4 +158,5 @@ Point your browser to the passbolt container ip
 
 # Requirements:
 
+* rng-tools are required on host machine to speed up entropy generation on containers. This way gpg key creation on passbolt container will be faster.
 * mysql >= 5.6
