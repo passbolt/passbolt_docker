@@ -19,7 +19,7 @@ We, at passbolt, encourage users that do not require any special modifications t
 
 Inside the repo directory:
 
-`$ docker build . -t passbolt:1.4.0-alpine`
+`$ docker build . -t passbolt:local`
 
 # How to use this image?
 
@@ -38,7 +38,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=<your_root_password> \
 
 Then you can start passbolt just providing the database container ip in the `db_host` environment variable.
 
-`$ docker run -e db_host=<mysql_container_ip> passbolt:1.4.0-alpine`
+`$ docker run -e db_host=<mysql_container_ip> passbolt:local`
 
 Once the process is done you just need to point your browser to http://passbolt_container_ip
 
@@ -122,7 +122,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
 
 Once mysql container is running we should extract its ip address we assume 172.17.0.2 for this example
 
-`$ docker run -e db_host=172.17.0.2 passbolt:1.4.0-alpine`
+`$ docker run -e db_host=172.17.0.2 passbolt:local`
 
 Point your browser to the passbolt container ip (https by default)
 
@@ -151,7 +151,7 @@ $ docker run -v $PWD/conf/app.php:/var/www/passbolt/app/Config/app.php \
              -v $PWD/conf/email.php:/var/www/passbolt/app/Config/email.php \
              -v $PWD/conf/private.asc:/var/www/passbolt/app/Config/gpg/serverkey.private.asc \
              -v $PWD/conf/public.asc:/var/www/passbolt/app/Config/gpg/serverkey.asc \
-             passbolt:1.4.0-alpine
+             passbolt:local
 ```
 
 Point your browser to the passbolt container ip
