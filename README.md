@@ -15,13 +15,13 @@ track issues and pull requests.
 We, at passbolt, encourage users that do not require any special modifications to `docker pull` our
 [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
 
-# Build this image
+# Build the image
 
 Inside the repo directory:
 
 `$ docker build . -t passbolt:local`
 
-# How to use this image?
+# How to use the local image?
 
 ## Start passbolt instance
 
@@ -40,7 +40,16 @@ Then you can start passbolt just providing the database container ip in the `db_
 
 `$ docker run -e db_host=<mysql_container_ip> passbolt:local`
 
-Once the process is done you just need to point your browser to http://passbolt_container_ip
+Once the process is done you just need to point your browser to https://passbolt_container_ip
+
+### Note on starting passbolt container on MacOS systems
+
+Due to the [limitations](https://docs.docker.com/docker-for-mac/networking/#known-limitations-use-cases-and-workarounds)
+of docker networking under MacOS users should start the container exposing a port on the host:
+
+`$ docker run -p host_port:443 -e db_host=<mysql_container_ip> passbolt:local`
+
+And access it using http://localhost:host_port
 
 # Configure passbolt
 
