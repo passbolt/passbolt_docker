@@ -9,6 +9,7 @@ gpg=$(which gpg)
 core_config='/var/www/passbolt/app/Config/core.php'
 db_config='/var/www/passbolt/app/Config/database.php'
 app_config='/var/www/passbolt/app/Config/app.php'
+email_config='/var/www/passbolt/app/Config/email.php'
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
@@ -94,6 +95,34 @@ app_setup() {
   sed -i "/force/ s:true:${ssl:-true}:" $app_config
 }
 
+email_setup() {
+  #Env vars:
+  # email_tansport
+  # email_from
+  # email_host
+  # email_port
+  # email_timeout
+  # email_username
+  # email_password
+
+  local default_transport='Smtp'
+  local default_from='contact@passbolt.com'
+  local default_host='smtp.mandrillapp.com'
+  local default_port='587'
+  local default_timeout='30'
+  local default_username="''"
+  local default_password="''"
+
+  cp $email_config{.default,}
+  sed -i s:$default_transport:${email_tansport:-Smtp}:g $email_config
+  sed -i s:$default_from:${email_from:-contact@mydomain.local}:g $email_config
+  sed -i s:$default_host:${email_host:-localhost}:g $email_config
+  sed -i s:$default_port:${email_port:-587}:g $email_config
+  sed -i s:$default_timeout:${email_timeout:-30}:g $email_config
+  sed -i "0,/"$default_username"/s:"$default_username":'${email_username:-email_user}':" $email_config
+  sed -i "0,/"$default_username"/s:"$default_password":'${email_password:-email_password}':" $email_config
+}
+
 gen_ssl_cert() {
   openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
     -subj "/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.example.com" \
@@ -118,6 +147,23 @@ php_fpm_setup() {
   sed -i '/^include\s/ s:^:#:' /etc/php5/fpm.d/www.conf
 }
 
+email_cron_job() {
+  local root_crontab='/etc/crontabs/root'
+  local cron_task_dir='/etc/periodic/1min'
+  local cron_task='/etc/periodic/1min/email_queue_processing'
+  local process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender"
+
+  mkdir -p $cron_task_dir
+
+  echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
+  echo "#!/bin/sh" > $cron_task
+  chmod +x $cron_task
+  echo "su -c \"$process_email\" -ls /bin/bash nginx" >> $cron_task
+
+  crond -f -c /etc/crontabs
+}
+
+
 if [ ! -f $gpg_private_key ] || [ ! -f $gpg_public_key ]; then
   gpg_gen_key
 else
@@ -136,6 +182,10 @@ if [ ! -f $app_config ]; then
   app_setup
 fi
 
+if [ ! -f $email_config ]; then
+  email_setup
+fi
+
 if [ ! -f $ssl_key ] && [ ! -f $ssl_cert ]; then
   gen_ssl_cert
 fi
@@ -145,4 +195,7 @@ php_fpm_setup
 install
 
 php-fpm5
-nginx -g "pid /tmp/nginx.pid; daemon off;"
+
+nginx -g "pid /tmp/nginx.pid; daemon off;" &
+
+email_cron_job
