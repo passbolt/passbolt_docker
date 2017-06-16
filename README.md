@@ -133,7 +133,7 @@ Once mysql container is running we should extract its ip address we assume 172.1
 
 `$ docker run -e db_host=172.17.0.2 passbolt:local`
 
-Point your browser to the passbolt container ip (https by default)
+Point your browser to the passbolt container ip or localhost:exposed_port
 
 ## Advanced configuration
 
@@ -163,7 +163,7 @@ $ docker run -v $PWD/conf/app.php:/var/www/passbolt/app/Config/app.php \
              passbolt:local
 ```
 
-Point your browser to the passbolt container ip
+Point your browser to the passbolt container ip or localhost:exposed_port
 
 # Requirements:
 
