@@ -151,7 +151,7 @@ email_cron_job() {
   local root_crontab='/etc/crontabs/root'
   local cron_task_dir='/etc/periodic/1min'
   local cron_task='/etc/periodic/1min/email_queue_processing'
-  local process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender"
+  local process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender --quiet"
 
   mkdir -p $cron_task_dir
 
