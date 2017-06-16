@@ -1,18 +1,17 @@
 # Passbolt docker official image
 
-# What is Passbolt?
+# What is passbolt?
 
 Passbolt is a free and open source password manager that allows team members to
 store and share credentials securely.
-
-![passbolt](https://raw.githubusercontent.com/passbolt/passbolt_styleguide/master/src/img/logo/logo.png)
 
 # Scope of this repository
 
 This repository will allow passbolt power users to customize their passbolt image to fit their needs on
 specific environments. It is also a community meeting point to exchange feedback, request for new features
 track issues and pull requests.
-We, at passbolt, encourage users that do not require any special modifications to `docker pull` our
+
+Users that do not require any special modifications are encouraged to `docker pull` the
 [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
 
 # Build the image
@@ -25,7 +24,7 @@ Inside the repo directory:
 
 ## Start passbolt instance
 
-Passbolt requires mysql to be running. In this example we will be using mysql official docker image
+Passbolt requires mysql to be running. The following example use mysql official docker image
 with the default passbolt credentials.
 
 ```bash
@@ -36,11 +35,11 @@ $ docker run -e MYSQL_ROOT_PASSWORD=<your_root_password> \
              mysql
 ```
 
-Then you can start passbolt just providing the database container ip in the `db_host` environment variable.
+Then you can start passbolt just by providing the database container ip in the `db_host` environment variable.
 
 `$ docker run -e db_host=<mysql_container_ip> passbolt:local`
 
-Once the process is done you just need to point your browser to https://passbolt_container_ip
+Once the process is done, just navigate to the following url in your browser: https://passbolt_container_ip
 
 ### Note on starting passbolt container on MacOS systems
 
@@ -96,7 +95,7 @@ Passbolt docker image provides several environment variables to configure differ
 
 ## Advanced configuration
 
-What it you have your gpg keys and you want to setup a more complex configuration for passbolt?
+What if you already have a set of gpg keys and custom configuration files for passbolt?
 It it possible to mount the desired configuration files as volumes.
 
 ### Configuration files subject to be persisted:
@@ -110,7 +109,7 @@ It it possible to mount the desired configuration files as volumes.
 
 ### SSL certificate files
 
-If you have your own ssl certificate you can mount it on the following paths
+It is also possible to mount a ssl certificate on the following paths:
 
 * /etc/ssl/certs/certificate.crt
 * /etc/ssl/certs/certificate.key
@@ -119,7 +118,7 @@ If you have your own ssl certificate you can mount it on the following paths
 
 ## Automated setup
 
-In the following example we launch passbolt with the defaults enabled usind mysql official docker container to store passbolt data.
+In the following example passbolt is launched with the defaults enabled usind mysql official docker container to store passbolt data:
 
 ```bash
 $ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
@@ -129,7 +128,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
              mysql
 ```
 
-Once mysql container is running we should extract its ip address we assume 172.17.0.2 for this example
+Once mysql container is running we should extract its ip address. Let's assume 172.17.0.2 for this example
 
 `$ docker run -e db_host=172.17.0.2 passbolt:local`
 
@@ -137,7 +136,7 @@ Point your browser to the passbolt container ip or localhost:exposed_port
 
 ## Advanced configuration
 
-In the following example we launch passbolt with a customized setup mounting and persisting configuration files. We also make use of
+In the following example passbolt is launched with a customized setup mounting and persisting configuration files. We also make use of
 mysql official docker container to store passbolt data.
 
 ```bash
@@ -148,7 +147,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
              mysql
 ```
 
-Using docker inspect or any other method you can get the ip address of the mysql container, we will use 172.17.0.2 in this example.
+Using docker inspect or any other method you can get the ip address of the mysql container. This example uses 172.17.0.2.
 
 Once this container is running and you have the mysql ip address we run passbolt container mounting all configuration files stored
 under a example conf directory in $PWD
@@ -163,7 +162,7 @@ $ docker run -v $PWD/conf/app.php:/var/www/passbolt/app/Config/app.php \
              passbolt:local
 ```
 
-Point your browser to the passbolt container ip or localhost:exposed_port
+Navigate with the browser to the passbolt container ip or localhost:exposed_port
 
 # Requirements:
 
