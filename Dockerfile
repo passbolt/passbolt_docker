@@ -2,7 +2,7 @@ FROM alpine:3.5
 
 MAINTAINER diego@passbolt.com
 
-ENV PASSBOLT_VERSION 1.5.1
+ENV PASSBOLT_VERSION 1.6.0
 ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
 ARG BASE_PHP_DEPS="php5-curl \
