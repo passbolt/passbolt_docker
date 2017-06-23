@@ -106,6 +106,7 @@ It it possible to mount the desired configuration files as volumes.
 * /var/www/passbolt/app/Config/email.php
 * /var/www/passbolt/app/Config/gpg/serverkey.asc
 * /var/www/passbolt/app/Config/gpg/serverkey.private.asc
+* /var/www/passbolt/app/webroot/img/public/images
 
 ### SSL certificate files
 
