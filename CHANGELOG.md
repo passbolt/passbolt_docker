@@ -1,0 +1,17 @@
+# Change Log
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [Unreleased]
+
+## [1.6.0] - 2017-06-23
+### Added
+- Added email set up support though environment variables
+- Added cronjob to send queued emails
+- Automated builds on the docker hub
+- Updated README documentation
+
+### Fixed
+- Image build fails when using alpine:latest. Switched to alpine:3.5
+- deletion of passwords on docker image
+- avoid importing already imported secret keys on the gpg keyring
