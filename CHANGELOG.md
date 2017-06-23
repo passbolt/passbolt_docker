@@ -13,5 +13,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Image build fails when using alpine:latest. Switched to alpine:3.5
-- deletion of passwords on docker image
-- avoid importing already imported secret keys on the gpg keyring
+- Deletion of passwords on docker image
+- Avoid importing already imported secret keys on the gpg keyring
