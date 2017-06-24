@@ -50,6 +50,7 @@ core_setup() {
   cp $core_config{.default,}
   sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
   sed -i s:$default_seed:${cipherseed:-$default_seed}:g $core_config
+  sed -i "/$default_url/ s:\/\/::" $core_config
   sed -i s:$default_url:${url:-$default_url}:g $core_config
 }
 
