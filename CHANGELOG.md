@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - PASSBOLT-2158: corrected management of fullbaseurl throug url env variable
 - PASSBOLT-2164: corrected typo on email_transport env variable
+- PASSBOLT-2166: http to https redirection fixed
 
 ### Added
 
