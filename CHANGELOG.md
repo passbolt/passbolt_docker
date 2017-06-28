@@ -4,6 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- PASSBOLT-2158: corrected management of fullbaseurl throug url env variable
+- PASSBOLT-2164: corrected typo on email_transport env variable
+
+### Added
+
+- PASSBOLT-2165: Added TLS support through email_tls env variable
+
 ## [1.6.0] - 2017-06-23
 ### Added
 - Added email set up support though environment variables
