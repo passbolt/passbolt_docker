@@ -107,6 +107,7 @@ email_setup() {
   # email_timeout
   # email_username
   # email_password
+  # email_tls
 
   local default_transport='Smtp'
   local default_from='contact@passbolt.com'
@@ -123,7 +124,8 @@ email_setup() {
   sed -i s:$default_port:${email_port:-587}:g $email_config
   sed -i s:$default_timeout:${email_timeout:-30}:g $email_config
   sed -i "0,/"$default_username"/s:"$default_username":'${email_username:-email_user}':" $email_config
-  sed -i "0,/"$default_username"/s:"$default_password":'${email_password:-email_password}':" $email_config
+  sed -i "0,/"$default_password"/s:"$default_password":'${email_password:-email_password}':" $email_config
+
 }
 
 gen_ssl_cert() {
