@@ -50,7 +50,11 @@ core_setup() {
   cp $core_config{.default,}
   sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
   sed -i s:$default_seed:${cipherseed:-$default_seed}:g $core_config
+  sed -i "/$default_url/ s:\/\/::" $core_config
   sed -i s:$default_url:${url:-$default_url}:g $core_config
+  if [ "$ssl" != false ]; then
+    sed -i s:http:https:g $core_config
+  fi
 }
 
 db_setup() {
@@ -82,7 +86,6 @@ app_setup() {
   local default_public_key='unsecure.key'
   local default_private_key='unsecure_private.key'
   local default_fingerprint='2FC8945833C51946E937F9FED47B0811573EE67E'
-  local default_ssl='force'
   local default_registration='public'
   local gpg_home='/var/lib/nginx/.gnupg'
   local auto_fingerprint=$(su -m -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash nginx)
