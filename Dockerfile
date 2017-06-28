@@ -16,6 +16,7 @@ ARG BASE_PHP_DEPS="php5-curl \
       php5-xsl \
       php5-fpm \
       php5-phar \
+      php5-posix \
       php5-xml \
       php5-openssl \
       php5-zlib \
