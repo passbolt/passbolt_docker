@@ -100,7 +100,7 @@ app_setup() {
 
 email_setup() {
   #Env vars:
-  # email_tansport
+  # email_transport
   # email_from
   # email_host
   # email_port
@@ -117,7 +117,7 @@ email_setup() {
   local default_password="''"
 
   cp $email_config{.default,}
-  sed -i s:$default_transport:${email_tansport:-Smtp}:g $email_config
+  sed -i s:$default_transport:${email_transport:-Smtp}:g $email_config
   sed -i s:$default_from:${email_from:-contact@mydomain.local}:g $email_config
   sed -i s:$default_host:${email_host:-localhost}:g $email_config
   sed -i s:$default_port:${email_port:-587}:g $email_config

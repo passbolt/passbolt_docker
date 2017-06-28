@@ -85,7 +85,7 @@ Passbolt docker image provides several environment variables to configure differ
 
 ### Email variables
 
-* email_tansport: transport protocol             ( defaults to Smtp)
+* email_transport: transport protocol             ( defaults to Smtp)
 * email_from:     from email address             ( defaults to contact@mydomain.local)
 * email_host:     server hostname                ( defaults to localhost)
 * email_port:     server port                    ( defaults to 587)
