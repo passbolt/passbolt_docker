@@ -5,13 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Fixed
-- PASSBOLT-2158: corrected management of fullbaseurl throug url env variable
-- PASSBOLT-2164: corrected typo on email_transport env variable
-- PASSBOLT-2166: http to https redirection fixed
+- PASSBOLT-2158: corrected management of fullbaseurl throug url env variable.
+- PASSBOLT-2164: corrected typo on email_transport env variable. #24
+- PASSBOLT-2166: http to https redirection fixed. #19
+- PASSBOLT-2167: healthcheck does not work on container. #26
 
 ### Added
 
-- PASSBOLT-2165: Added TLS support through email_tls env variable
+- PASSBOLT-2165: Added TLS support through email_tls env variable. #25
 
 ## [1.6.0] - 2017-06-23
 ### Added
