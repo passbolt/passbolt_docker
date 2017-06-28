@@ -125,6 +125,7 @@ email_setup() {
   sed -i s:$default_timeout:${email_timeout:-30}:g $email_config
   sed -i "0,/"$default_username"/s:"$default_username":'${email_username:-email_user}':" $email_config
   sed -i "0,/"$default_password"/s:"$default_password":'${email_password:-email_password}':" $email_config
+  sed -i "0,/tls/s:false:'${email_tls:-false}':" $email_config
 
 }
 
