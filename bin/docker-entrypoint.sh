@@ -51,7 +51,11 @@ core_setup() {
   sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
   sed -i s:$default_seed:${cipherseed:-$default_seed}:g $core_config
   sed -i "/$default_url/ s:\/\/::" $core_config
-  sed -i s:$default_url:${url:-$default_url}:g $core_config
+  if [ "$ssl" = false ]; then
+    sed -i s:$default_url:http://${url:-$default_url}:g $core_config
+  else
+    sed -i s:$default_url:https://${url:-$default_url}:g $core_config
+  fi
 }
 
 db_setup() {
