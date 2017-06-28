@@ -45,7 +45,7 @@ core_setup() {
 
   local default_salt='DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi'
   local default_seed='76859309657453542496749683645'
-  local default_url='example.com'
+  local default_url='http://example.com'
 
   cp $core_config{.default,}
   sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
@@ -83,7 +83,6 @@ app_setup() {
   local default_public_key='unsecure.key'
   local default_private_key='unsecure_private.key'
   local default_fingerprint='2FC8945833C51946E937F9FED47B0811573EE67E'
-  local default_ssl='force'
   local default_registration='public'
   local gpg_home='/var/lib/nginx/.gnupg'
   local auto_fingerprint=$(su -m -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash nginx)
