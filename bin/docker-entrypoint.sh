@@ -45,16 +45,15 @@ core_setup() {
 
   local default_salt='DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi'
   local default_seed='76859309657453542496749683645'
-  local default_url='http://example.com'
+  local default_url='example.com'
 
   cp $core_config{.default,}
   sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
   sed -i s:$default_seed:${cipherseed:-$default_seed}:g $core_config
   sed -i "/$default_url/ s:\/\/::" $core_config
-  if [ "$ssl" = false ]; then
-    sed -i s:$default_url:http://${url:-$default_url}:g $core_config
-  else
-    sed -i s:$default_url:https://${url:-$default_url}:g $core_config
+  sed -i s:$default_url:${url:-$default_url}:g $core_config
+  if [ "$ssl" != false ]; then
+    sed -i s:http:https:g $core_config
   fi
 }
 
