@@ -50,7 +50,11 @@ core_setup() {
   cp $core_config{.default,}
   sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
   sed -i s:$default_seed:${cipherseed:-$default_seed}:g $core_config
+  sed -i "/$default_url/ s:\/\/::" $core_config
   sed -i s:$default_url:${url:-$default_url}:g $core_config
+  if [ "$ssl" != false ]; then
+    sed -i s:http:https:g $core_config
+  fi
 }
 
 db_setup() {
@@ -82,7 +86,6 @@ app_setup() {
   local default_public_key='unsecure.key'
   local default_private_key='unsecure_private.key'
   local default_fingerprint='2FC8945833C51946E937F9FED47B0811573EE67E'
-  local default_ssl='force'
   local default_registration='public'
   local gpg_home='/var/lib/nginx/.gnupg'
   local auto_fingerprint=$(su -m -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash nginx)
@@ -97,13 +100,14 @@ app_setup() {
 
 email_setup() {
   #Env vars:
-  # email_tansport
+  # email_transport
   # email_from
   # email_host
   # email_port
   # email_timeout
   # email_username
   # email_password
+  # email_tls
 
   local default_transport='Smtp'
   local default_from='contact@passbolt.com'
@@ -114,13 +118,15 @@ email_setup() {
   local default_password="''"
 
   cp $email_config{.default,}
-  sed -i s:$default_transport:${email_tansport:-Smtp}:g $email_config
+  sed -i s:$default_transport:${email_transport:-Smtp}:g $email_config
   sed -i s:$default_from:${email_from:-contact@mydomain.local}:g $email_config
   sed -i s:$default_host:${email_host:-localhost}:g $email_config
   sed -i s:$default_port:${email_port:-587}:g $email_config
   sed -i s:$default_timeout:${email_timeout:-30}:g $email_config
   sed -i "0,/"$default_username"/s:"$default_username":'${email_username:-email_user}':" $email_config
-  sed -i "0,/"$default_username"/s:"$default_password":'${email_password:-email_password}':" $email_config
+  sed -i "0,/"$default_password"/s:"$default_password":'${email_password:-email_password}':" $email_config
+  sed -i "0,/tls/s:false:'${email_tls:-false}':" $email_config
+
 }
 
 gen_ssl_cert() {
