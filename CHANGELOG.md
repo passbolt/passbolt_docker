@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...HEAD)
 
+- Merged pull request PR[#20](https://github.com/passbolt/passbolt_docker/pull/20) Allow no db environment variable setting
+
 ## [1.6.1](https://github.com/passbolt/passbolt_docker/compare/v1.6.0...v1.6.1) - 2017-06-29
 ### Fixed
 - PASSBOLT-2158: corrected management of fullbaseurl throug url env variable.
