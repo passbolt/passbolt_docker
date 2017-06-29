@@ -132,7 +132,7 @@ gen_ssl_cert() {
 install() {
   local database_host=${db_host:-$(cat $db_config | grep -m1 "'host'" | sed -r "s/\s*'host' => '(.*)',/\1/")}
   local database_user=${db_user:-$(cat $db_config | grep -m1 "'login'" | sed -r "s/\s*'login' => '(.*)',/\1/")}
-  local database_pass=${db_user:-$(cat $db_config | grep -m1 "'password'" | sed -r "s/\s*'password' => '(.*)',/\1/")}
+  local database_pass=${db_pass:-$(cat $db_config | grep -m1 "'password'" | sed -r "s/\s*'password' => '(.*)',/\1/")}
   local database_name=${db_name:-$(cat $db_config | grep -m1 "'database'" | sed -r "s/\s*'database' => '(.*)',/\1/")}
   tables=$(mysql -u ${database_user:-passbolt} -h $database_host -p -BN -e "SHOW TABLES FROM ${database_name:-passbolt}" -p${database_pass:-P4ssb0lt} |wc -l)
 
