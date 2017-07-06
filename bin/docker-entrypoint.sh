@@ -173,29 +173,31 @@ email_cron_job() {
 }
 
 
-if [ ! -e $gpg_private_key ] || [ ! -e $gpg_public_key ]; then
+if [ ! -f $gpg_private_key ] && [ ! -L $gpg_private_key ] || \
+   [ ! -f $gpg_public_key ] && [ ! -L $gpg_public_key ]; then
   gpg_gen_key
 else
   gpg_import_key
 fi
 
-if [ ! -e $core_config ]; then
+if [ ! -f $core_config ] && [ ! -L $core_config ]; then
   core_setup
 fi
 
-if [ ! -e $db_config ]; then
+if [ ! -f $db_config ] && [ ! -L $db_config ]; then
   db_setup
 fi
 
-if [ ! -e $app_config ]; then
+if [ ! -f $app_config ] && [ ! -L $app_config ]; then
   app_setup
 fi
 
-if [ ! -e $email_config ]; then
+if [ ! -f $email_config ] && [ ! -L $email_config ]; then
   email_setup
 fi
 
-if [ ! -e $ssl_key ] && [ ! -e $ssl_cert ]; then
+if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
+   [ ! -f $ssl_cert ] && [ ! -L $ssl_cert ]; then
   gen_ssl_cert
 fi
 
