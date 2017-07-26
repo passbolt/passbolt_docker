@@ -86,7 +86,6 @@ app_setup() {
   local default_public_key='unsecure.key'
   local default_private_key='unsecure_private.key'
   local default_fingerprint='2FC8945833C51946E937F9FED47B0811573EE67E'
-  local default_registration='public'
   local gpg_home='/var/lib/nginx/.gnupg'
   local auto_fingerprint=$(su -m -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash nginx)
 
@@ -96,6 +95,7 @@ app_setup() {
   sed -i s:$default_private_key:serverkey.private.asc:g $app_config
   sed -i s:$default_fingerprint:${fingerprint:-$auto_fingerprint}:g $app_config
   sed -i "/force/ s:true:${ssl:-true}:" $app_config
+  sed -i "/'registration'/{n; s:false:${registration:-false}:}" $app_config
 }
 
 email_setup() {
