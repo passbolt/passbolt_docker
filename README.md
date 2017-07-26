@@ -48,7 +48,7 @@ of docker networking under MacOS users should start the container exposing a por
 
 `$ docker run -p host_port:443 -e db_host=<mysql_container_ip> passbolt:local`
 
-And access it using http://localhost:host_port
+And access it using https://localhost:host_port
 
 # Configure passbolt
 
