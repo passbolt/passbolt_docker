@@ -16,17 +16,17 @@ ssl_cert='/etc/ssl/certs/certificate.crt'
 gpg_gen_key() {
   su -m -c "$gpg --batch --gen-key <<EOF
     Key-Type: 1
-		Key-Length: ${key_length:-2048}
+		Key-Length: ${KEY_LENGTH:-2048}
 		Subkey-Type: 1
-		Subkey-Length: ${subkey_length:-2048}
-		Name-Real: ${key_name:-Passbolt default user}
-		Name-Email: ${key_email:-passbolt@yourdomain.com}
-		Expire-Date: ${key_expiration:-0}
+		Subkey-Length: ${SUBKEY_LENGTH:-2048}
+		Name-Real: ${KEY_NAME:-Passbolt default user}
+		Name-Email: ${KEY_EMAIL:-passbolt@yourdomain.com}
+		Expire-Date: ${KEY_EXPIRATION:-0}
 		%commit
 EOF" -ls /bin/bash nginx
 
-  su -m -c "$gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash nginx
-  su -m -c "$gpg --armor --export $key_email > $gpg_public_key" -ls /bin/bash nginx
+  su -m -c "$gpg --armor --export-secret-keys $KEY_EMAIL > $gpg_private_key" -ls /bin/bash nginx
+  su -m -c "$gpg --armor --export $KEY_EMAIL > $gpg_public_key" -ls /bin/bash nginx
 }
 
 gpg_import_key() {
@@ -39,19 +39,19 @@ gpg_import_key() {
 
 core_setup() {
   #Env vars:
-  # salt
-  # cipherseed
-  # url
+  # SALT
+  # CIPHERSEED
+  # URL
 
   local default_salt='DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi'
   local default_seed='76859309657453542496749683645'
   local default_url='example.com'
 
   cp $core_config{.default,}
-  sed -i s:$default_salt:${salt:-$default_salt}:g $core_config
-  sed -i s:$default_seed:${cipherseed:-$default_seed}:g $core_config
+  sed -i s:$default_salt:${SALT:-$default_salt}:g $core_config
+  sed -i s:$default_seed:${CIPHERSEED:-$default_seed}:g $core_config
   sed -i "/$default_url/ s:\/\/::" $core_config
-  sed -i s:$default_url:${url:-$default_url}:g $core_config
+  sed -i s:$default_url:${URL:-$default_url}:g $core_config
   if [ "$ssl" != false ]; then
     sed -i s:http:https:g $core_config
   fi
@@ -59,10 +59,10 @@ core_setup() {
 
 db_setup() {
   #Env vars:
-  # db_host
-  # db_user
-  # db_pass
-  # db_name
+  # DB_HOST
+  # DB_USER
+  # DB_PASS
+  # DB_NAME
 
   local default_host='localhost'
   local default_user='user'
@@ -70,17 +70,17 @@ db_setup() {
   local default_db='database_name'
 
   cp $db_config{.default,}
-  sed -i s:$default_host:${db_host:-db}:g $db_config
-  sed -i s:$default_user:${db_user:-passbolt}:g $db_config
-  sed -i s:$default_pass\',:${db_pass:-P4ssb0lt}\',:g $db_config
-  sed -i s:$default_db:${db_name:-passbolt}:g $db_config
+  sed -i s:$default_host:${DB_HOST:-db}:g $db_config
+  sed -i s:$default_user:${DB_USER:-passbolt}:g $db_config
+  sed -i s:$default_pass\',:${DB_PASS:-P4ssb0lt}\',:g $db_config
+  sed -i s:$default_db:${DB_NAME:-passbolt}:g $db_config
 }
 
 app_setup() {
   #Env vars:
-  # fingerprint
-  # registration
-  # ssl
+  # FINGERPRINT
+  # REGISTRATION
+  # SSL
 
   local default_home='/home/www-data/.gnupg'
   local default_public_key='unsecure.key'
@@ -94,20 +94,20 @@ app_setup() {
   sed -i s:$default_home:$gpg_home:g $app_config
   sed -i s:$default_public_key:serverkey.asc:g $app_config
   sed -i s:$default_private_key:serverkey.private.asc:g $app_config
-  sed -i s:$default_fingerprint:${fingerprint:-$auto_fingerprint}:g $app_config
-  sed -i "/force/ s:true:${ssl:-true}:" $app_config
+  sed -i s:$default_fingerprint:${FINGERPRINT:-$auto_fingerprint}:g $app_config
+  sed -i "/force/ s:true:${SSL:-true}:" $app_config
 }
 
 email_setup() {
   #Env vars:
-  # email_transport
-  # email_from
-  # email_host
-  # email_port
-  # email_timeout
-  # email_username
-  # email_password
-  # email_tls
+  # EMAIL_TRANSPORT
+  # EMAIL_FROM
+  # EMAIL_HOST
+  # EMAIL_PORT
+  # EMAIL_TIMEOUT
+  # EMAIL_USERNAME
+  # EMAIL_PASSWORD
+  # EMAIL_TLS
 
   local default_transport='Smtp'
   local default_from='contact@passbolt.com'
@@ -118,14 +118,14 @@ email_setup() {
   local default_password="''"
 
   cp $email_config{.default,}
-  sed -i s:$default_transport:${email_transport:-Smtp}:g $email_config
-  sed -i s:$default_from:${email_from:-contact@mydomain.local}:g $email_config
-  sed -i s:$default_host:${email_host:-localhost}:g $email_config
-  sed -i s:$default_port:${email_port:-587}:g $email_config
-  sed -i s:$default_timeout:${email_timeout:-30}:g $email_config
-  sed -i "0,/"$default_username"/s:"$default_username":'${email_username:-email_user}':" $email_config
-  sed -i "0,/"$default_password"/s:"$default_password":'${email_password:-email_password}':" $email_config
-  sed -i "0,/tls/s:false:'${email_tls:-false}':" $email_config
+  sed -i s:$default_transport:${EMAIL_TRANSPORT:-Smtp}:g $email_config
+  sed -i s:$default_from:${EMAIL_FROM:-contact@mydomain.local}:g $email_config
+  sed -i s:$default_host:${EMAIL_HOST:-localhost}:g $email_config
+  sed -i s:$default_port:${EMAIL_PORT:-587}:g $email_config
+  sed -i s:$default_timeout:${EMAIL_TIMEOUT:-30}:g $email_config
+  sed -i "0,/"$default_username"/s:"$default_username":'${EMAIL_USERNAME:-email_user}':" $email_config
+  sed -i "0,/"$default_password"/s:"$default_password":'${EMAIL_PASSWORD:-email_password}':" $email_config
+  sed -i "0,/tls/s:false:'${EMAIL_TLS:-false}':" $email_config
 
 }
 
