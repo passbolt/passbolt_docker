@@ -67,7 +67,7 @@ Passbolt docker image provides several environment variables to configure differ
 ### App file variables
 
 * FINGERPRINT:  GnuPG fingerprint
-* REGISTRATION: Defines if users can register
+* REGISTRATION: Defines if users can register (defaults to false)
 * SSL:          Forces passbolt to redirect to SSL any non-SSL request
 
 ### Core file variables
