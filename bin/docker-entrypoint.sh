@@ -45,7 +45,7 @@ core_setup() {
 
   local default_salt='DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi'
   local default_seed='76859309657453542496749683645'
-  local default_url='example.com'
+  local default_url='passbolt.local'
 
   cp $core_config{.default,}
   sed -i s:$default_salt:${SALT:-$default_salt}:g $core_config
@@ -131,7 +131,7 @@ email_setup() {
 
 gen_ssl_cert() {
   openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
-    -subj "/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.example.com" \
+    -subj "/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.passbolt.local" \
     -keyout $ssl_key -out $ssl_cert
 }
 
