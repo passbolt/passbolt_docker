@@ -58,23 +58,23 @@ Passbolt docker image provides several environment variables to configure differ
 
 ### GnuPG key creation related variables
 
-* KEY_LENGTH: gpg desired key length
-* SUBKEY_LENGTH: gpg desired subkey length
-* KEY_NAME: key owner name
-* KEY_EMAIL: key owner email address
+* KEY_LENGTH:     gpg desired key length
+* SUBKEY_LENGTH:  gpg desired subkey length
+* KEY_NAME:       key owner name
+* KEY_EMAIL:      key owner email address
 * KEY_EXPIRATION: key expiration date
 
 ### App file variables
 
-* FINGERPRINT: GnuPG fingerprint
-* REGISTRATION: defines if users can register
-* SSL
+* FINGERPRINT:  GnuPG fingerprint
+* REGISTRATION: Defines if users can register
+* SSL:          Forces passbolt to redirect to SSL any non-SSL request
 
 ### Core file variables
 
-* SALT
-* CIPHERSEED
-* URL: url of the passbolt installation
+* SALT:       a random string used by cakephp in security hashing methods
+* CIPHERSEED: a random string used by cakephp to encrypt/decrypt strings
+* URL:        URL of the passbolt installation (defaults to example.com)
 
 ### Database variables
 
@@ -86,13 +86,13 @@ Passbolt docker image provides several environment variables to configure differ
 ### Email variables
 
 * EMAIL_TRANSPORT: transport protocol             ( defaults to Smtp)
-* EMAIL_FROM:     from email address             ( defaults to contact@mydomain.local)
-* EMAIL_HOST:     server hostname                ( defaults to localhost)
-* EMAIL_PORT:     server port                    ( defaults to 587)
-* EMAIL_TIMEOUT:  timeout                        ( defaults to 30s)
-* EMAIL_USERNAME: username for email server auth ( defaults to email_user)
-* EMAIL_PASSWORD: password for email server auth ( defaults to email_password)
-* EMAIL_TLS:      set tls, boolean               ( defaults to false)
+* EMAIL_FROM:      from email address             ( defaults to contact@mydomain.local)
+* EMAIL_HOST:      server hostname                ( defaults to localhost)
+* EMAIL_PORT:      server port                    ( defaults to 587)
+* EMAIL_TIMEOUT:   timeout                        ( defaults to 30s)
+* EMAIL_USERNAME:  username for email server auth ( defaults to email_user)
+* EMAIL_PASSWORD:  password for email server auth ( defaults to email_password)
+* EMAIL_TLS:       set tls, boolean               ( defaults to false)
 
 ## Advanced configuration
 
