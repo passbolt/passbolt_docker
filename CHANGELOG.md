@@ -4,7 +4,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...HEAD)
 
-- Merged pull request PR[#20](https://github.com/passbolt/passbolt_docker/pull/20) Allow no db environment variable setting
+## [1.6.1-1](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...v1.6.1-1) - 2017-07-31
+
+### Notes
+This release aims to distribute passbolt-1.6.1 and include most relevant community contributions
+The most notable change from user perspective is the switch from lowercase to uppercase environment variables. Users will
+have to review their previous scripts and update any environment variable to match the new naming convention. Please refer to PR#39
+
+### Added
+- PASSBOLT-2276: ENV-Variable uppercase convention PR[#39](https://github.com/passbolt/passbolt_docker/pull/39)
+- PASSBOLT-2279: Allow Config files to be symbolic links PR[#32](https://github.com/passbolt/passbolt_docker/pull/32)
+- PASSBOLT-2278: Allow no db environment variable setting PR[#20](https://github.com/passbolt/passbolt_docker/pull/20)
+- PASSBOLT-2280: On MacOS systems note you should access it using https PR[#35](https://github.com/passbolt/passbolt_docker/pull/35)
+
+### Fixed
+- PASSBOLT-2159: Added registration env support PR[#37](https://github.com/passbolt/passbolt_docker/pull/37)
 
 ## [1.6.1](https://github.com/passbolt/passbolt_docker/compare/v1.6.0...v1.6.1) - 2017-06-29
 ### Fixed

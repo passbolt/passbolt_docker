@@ -67,14 +67,14 @@ Passbolt docker image provides several environment variables to configure differ
 ### App file variables
 
 * FINGERPRINT:  GnuPG fingerprint
-* REGISTRATION: Defines if users can register
+* REGISTRATION: Defines if users can register (defaults to false)
 * SSL:          Forces passbolt to redirect to SSL any non-SSL request
 
 ### Core file variables
 
 * SALT:       a random string used by cakephp in security hashing methods
 * CIPHERSEED: a random string used by cakephp to encrypt/decrypt strings
-* URL:        URL of the passbolt installation (defaults to example.com)
+* URL:        URL of the passbolt installation (defaults to passbolt.local)
 
 ### Database variables
 

@@ -45,7 +45,7 @@ core_setup() {
 
   local default_salt='DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi'
   local default_seed='76859309657453542496749683645'
-  local default_url='example.com'
+  local default_url='passbolt.local'
 
   cp $core_config{.default,}
   sed -i s:$default_salt:${SALT:-$default_salt}:g $core_config
@@ -86,7 +86,6 @@ app_setup() {
   local default_public_key='unsecure.key'
   local default_private_key='unsecure_private.key'
   local default_fingerprint='2FC8945833C51946E937F9FED47B0811573EE67E'
-  local default_registration='public'
   local gpg_home='/var/lib/nginx/.gnupg'
   local auto_fingerprint=$(su -m -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash nginx)
 
@@ -96,6 +95,7 @@ app_setup() {
   sed -i s:$default_private_key:serverkey.private.asc:g $app_config
   sed -i s:$default_fingerprint:${FINGERPRINT:-$auto_fingerprint}:g $app_config
   sed -i "/force/ s:true:${SSL:-true}:" $app_config
+  sed -i "/'registration'/{n; s:false:${REGISTRATION:-false}:}" $app_config
 }
 
 email_setup() {
@@ -131,7 +131,7 @@ email_setup() {
 
 gen_ssl_cert() {
   openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
-    -subj "/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.example.com" \
+    -subj "/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.passbolt.local" \
     -keyout $ssl_key -out $ssl_cert
 }
 
