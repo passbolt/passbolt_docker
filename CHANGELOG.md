@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...HEAD)
 
-## [1.6.1-1](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...v1.6.1-1) - 2017-07-31
+## [1.6.1+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...v1.6.1+1) - 2017-07-31
 
 ### Notes
 This release aims to distribute passbolt-1.6.1 and include most relevant community contributions
