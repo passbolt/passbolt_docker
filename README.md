@@ -119,7 +119,7 @@ It is also possible to mount a ssl certificate on the following paths:
 # Examples
 
 For the following examples it is assumed that passbolt container image has been built from this repo following the instructions
-described on the [Build](#Build-the-image) section.
+described on the [Build](#build-the-image) section.
 
 In the following example passbolt is launched with the defaults enabled usind mysql official docker container to store passbolt data:
 
