@@ -118,7 +118,8 @@ It is also possible to mount a ssl certificate on the following paths:
 
 # Examples
 
-## Automated setup
+For the following examples it is assumed that passbolt container image has been built from this repo following the instructions
+described on the [Build](#Build-the-image) section.
 
 In the following example passbolt is launched with the defaults enabled usind mysql official docker container to store passbolt data:
 
@@ -134,7 +135,7 @@ Once mysql container is running we should extract its ip address. Let's assume 1
 
 `$ docker run -e DB_HOST=172.17.0.2 passbolt:local`
 
-Point your browser to the passbolt container ip or localhost:exposed_port
+Point your browser to the passbolt container ip or localhost:exposed_port.
 
 ## Advanced configuration
 
