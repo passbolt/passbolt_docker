@@ -78,7 +78,7 @@ Passbolt docker image provides several environment variables to configure differ
 
 ### Database variables
 
-* DB_HOST: database hostname This param has to be specified either using env var or in database.php
+* DB_HOST: database hostname This param has to be specified either using env var or in database.php (defaults to passbolt.local)
 * DB_USER: database username (defaults to passbolt)
 * DB_PASS: database password (defaults to P4ssb0lt)
 * DB_NAME: database name     (defaults to passbolt)
