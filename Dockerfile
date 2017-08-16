@@ -58,7 +58,7 @@ RUN apk add $PHP_GNUPG_DEPS && \
     #https://bugs.alpinelinux.org/issues/5378
     sed -i "s/ -n / /" $(which pecl) && \
     pecl install gnupg memcache && \
-    echi "extension=memcache.so" > /etc/php5/conf.d/memcache.ini && \
+    echo "extension=memcache.so" > /etc/php5/conf.d/memcache.ini && \
     echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini && \
     apk del $PHP_GNUPG_DEPS
 
