@@ -70,6 +70,7 @@ db_setup() {
   local default_db='database_name'
 
   cp $db_config{.default,}
+  sed -i "/$default_host/a\ \t\t'port' => '${DB_PORT:-3306}'," $db_config
   sed -i s:$default_host:${DB_HOST:-db}:g $db_config
   sed -i s:$default_user:${DB_USER:-passbolt}:g $db_config
   sed -i s:$default_pass\',:${DB_PASS:-P4ssb0lt}\',:g $db_config
@@ -136,11 +137,12 @@ gen_ssl_cert() {
 }
 
 install() {
-  local database_host=${db_host:-$(cat $db_config | grep -m1 "'host'" | sed -r "s/\s*'host' => '(.*)',/\1/")}
-  local database_user=${db_user:-$(cat $db_config | grep -m1 "'login'" | sed -r "s/\s*'login' => '(.*)',/\1/")}
-  local database_pass=${db_pass:-$(cat $db_config | grep -m1 "'password'" | sed -r "s/\s*'password' => '(.*)',/\1/")}
-  local database_name=${db_name:-$(cat $db_config | grep -m1 "'database'" | sed -r "s/\s*'database' => '(.*)',/\1/")}
-  tables=$(mysql -u ${database_user:-passbolt} -h $database_host -p -BN -e "SHOW TABLES FROM ${database_name:-passbolt}" -p${database_pass:-P4ssb0lt} |wc -l)
+  local database_host=${DB_HOST:-$(cat $db_config | grep -m1 "'host'" | sed -r "s/\s*'host' => '(.*)',/\1/")}
+  local database_port=${DB_PORT:-$(cat $db_config | grep -m1 "'port' => \d" | sed -r "s/\s*'port' => '(.*)',/\1/")}
+  local database_user=${DB_USER:-$(cat $db_config | grep -m1 "'login'" | sed -r "s/\s*'login' => '(.*)',/\1/")}
+  local database_pass=${DB_PASS:-$(cat $db_config | grep -m1 "'password'" | sed -r "s/\s*'password' => '(.*)',/\1/")}
+  local database_name=${DB_NAME:-$(cat $db_config | grep -m1 "'database'" | sed -r "s/\s*'database' => '(.*)',/\1/")}
+  tables=$(mysql -u ${database_user:-passbolt} -h $database_host -P $database_port -p -BN -e "SHOW TABLES FROM ${database_name:-passbolt}" -p${database_pass:-P4ssb0lt} |wc -l)
 
   if [ $tables -eq 0 ]; then
     su -c "/var/www/passbolt/app/Console/cake install --send-anonymous-statistics true --no-admin" -ls /bin/bash nginx
