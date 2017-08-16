@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.2...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.2+1...HEAD)
+
+## [1.6.2+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.2...v1.6.2+1) - 2017-08-16
+
+### Fixed
+- PASSBOLT-2295: Added environment variable DB_PORT for non standard database ports (reopened) [#43](https://github.com/passbolt/passbolt_docker/issues/43)
 
 ## [1.6.2](https://github.com/passbolt/passbolt_docker/compare/v1.6.1+1...v1.6.2) - 2017-08-16
 
