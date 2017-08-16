@@ -11,7 +11,6 @@ ARG BASE_PHP_DEPS="php5-curl \
       php5-intl \
       php5-json \
       php5-mcrypt \
-      php5-memcache \
       php5-mysql \
       php5-xsl \
       php5-fpm \
@@ -34,6 +33,7 @@ ARG PHP_GNUPG_DEPS="php5-dev \
       re2c \
       gpgme-dev \
       autoconf \
+      zlib-dev \
       file"
 
 RUN apk update &&\
@@ -53,9 +53,12 @@ RUN apk update &&\
       nginx
 
 RUN apk add $PHP_GNUPG_DEPS && \
+    ln -s /usr/bin/php5 /usr/bin/php && \
+    ln -s /usr/bin/phpize5 /usr/bin/phpize && \
     #https://bugs.alpinelinux.org/issues/5378
     sed -i "s/ -n / /" $(which pecl) && \
-    pecl install gnupg && \
+    pecl install gnupg memcache && \
+    echi "extension=memcache.so" > /etc/php5/conf.d/memcache.ini && \
     echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini && \
     apk del $PHP_GNUPG_DEPS
 
