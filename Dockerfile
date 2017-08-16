@@ -1,8 +1,8 @@
-FROM alpine:3.5
+FROM alpine:3.6
 
 MAINTAINER diego@passbolt.com
 
-ENV PASSBOLT_VERSION 1.6.1
+ENV PASSBOLT_VERSION 1.6.2
 ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
 ARG BASE_PHP_DEPS="php5-curl \
@@ -11,7 +11,6 @@ ARG BASE_PHP_DEPS="php5-curl \
       php5-intl \
       php5-json \
       php5-mcrypt \
-      php5-memcache \
       php5-mysql \
       php5-xsl \
       php5-fpm \
@@ -34,39 +33,40 @@ ARG PHP_GNUPG_DEPS="php5-dev \
       re2c \
       gpgme-dev \
       autoconf \
+      zlib-dev \
       file"
 
-RUN apk update &&\
-    apk add $BASE_PHP_DEPS \
-      bash \
+RUN apk add --no-cache $BASE_PHP_DEPS \
       sed \
-      ca-certificates \
-      curl \
       tar \
-      libpcre32 \
-      recode \
-      libxml2 \
+      bash \
+      curl \
+      nginx \
       gpgme \
       gnupg1 \
-      mysql-client \
+      recode \
+      libxml2 \
       openssl \
-      nginx
+      libpcre32 \
+      mysql-client \
+      ca-certificates
 
-RUN apk add $PHP_GNUPG_DEPS && \
+RUN apk add --no-cache $PHP_GNUPG_DEPS  \
+    && ln -s /usr/bin/php5 /usr/bin/php \
+    && ln -s /usr/bin/phpize5 /usr/bin/phpize \
     #https://bugs.alpinelinux.org/issues/5378
-    sed -i "s/ -n / /" $(which pecl) && \
-    pecl install gnupg && \
-    echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini && \
-    apk del $PHP_GNUPG_DEPS
-
-RUN curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer
-
-RUN mkdir /var/www/passbolt && curl -sSL $PASSBOLT_URL | \
-    tar zxf - -C /var/www/passbolt --strip-components 1 && \
-    chown -R nginx:nginx /var/www/passbolt && \
-    chmod -R +w /var/www/passbolt/app/tmp && \
-    chmod +w /var/www/passbolt/app/webroot/img/public
+    && sed -i "s/ -n / /" $(which pecl) \
+    && pecl install gnupg memcache \
+    && echo "extension=memcache.so" > /etc/php5/conf.d/memcache.ini \
+    && echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini \
+    && apk del $PHP_GNUPG_DEPS \
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && mkdir /var/www/passbolt \
+    && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
+    && chown -R nginx:nginx /var/www/passbolt \
+    && chmod -R +w /var/www/passbolt/app/tmp \
+    && chmod +w /var/www/passbolt/app/webroot/img/public
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
