@@ -2,7 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.2...HEAD)
+
+## [1.6.2](https://github.com/passbolt/passbolt_docker/compare/v1.6.1+1...v1.6.2) - 2017-08-16
+
+### Added
+
+- PASSBOLT-2295: Added environment variable DB_PORT for non standard database ports. [#43](https://github.com/passbolt/passbolt_docker/issues/43)
+- PASSBOLT-2321: Upgraded passbolt container to latest stable alpine (3.6)
+
+### Fixed
+- PASSBOLT-2319: Fullbaseurl parameter was not changing when specifying URL [#50](https://github.com/passbolt/passbolt_docker/issues/50)
+- PASSBOLT-2320: TLS value on email.php should not be quoted PR[#53](https://github.com/passbolt/passbolt_docker/pull/53)
 
 ## [1.6.1+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...v1.6.1+1) - 2017-07-31
 
