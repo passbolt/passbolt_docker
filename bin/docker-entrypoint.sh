@@ -138,7 +138,7 @@ gen_ssl_cert() {
 
 install() {
   local database_host=${DB_HOST:-$(cat $db_config | grep -m1 "'host'" | sed -r "s/\s*'host' => '(.*)',/\1/")}
-  local database_port=${DB_PORT:-$(cat $db_config | grep -m1 "'port' => \d" | sed -r "s/\s*'port' => '(.*)',/\1/")}
+  local database_port=${DB_PORT:-$(cat $db_config | grep -m1 "'port' => '\d" | sed -r "s/\s*'port' => '(.*)',/\1/")}
   local database_user=${DB_USER:-$(cat $db_config | grep -m1 "'login'" | sed -r "s/\s*'login' => '(.*)',/\1/")}
   local database_pass=${DB_PASS:-$(cat $db_config | grep -m1 "'password'" | sed -r "s/\s*'password' => '(.*)',/\1/")}
   local database_name=${DB_NAME:-$(cat $db_config | grep -m1 "'database'" | sed -r "s/\s*'database' => '(.*)',/\1/")}
