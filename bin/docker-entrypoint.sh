@@ -50,8 +50,8 @@ core_setup() {
   cp $core_config{.default,}
   sed -i s:$default_salt:${SALT:-$default_salt}:g $core_config
   sed -i s:$default_seed:${CIPHERSEED:-$default_seed}:g $core_config
-  sed -i "/$default_url/ s:\/\/::" $core_config
-  sed -i s:$default_url:${URL:-$default_url}:g $core_config
+  sed -i "/example.com/ s:\/\/::" $core_config
+  sed -i s:example.com:${URL:-$default_url}:g $core_config
   if [ "$ssl" != false ]; then
     sed -i s:http:https:g $core_config
   fi
