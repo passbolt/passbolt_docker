@@ -2,7 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.2+1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.3...HEAD)
+
+## [1.6.3](https://github.com/passbolt/passbolt_docker/compare/v1.6.2+1...v1.6.3) - 2017-08-31
+
+- Refer to [passbolt_api CHANGELOG](https://github.com/passbolt/passbolt_api/blob/master/CHANGELOG.md) for a list of new features and fixes.
 
 ## [1.6.2+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.2...v1.6.2+1) - 2017-08-16
 
