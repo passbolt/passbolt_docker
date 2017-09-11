@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+   db:
+     image: mysql:5.7
+     container_name: db
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: "P4ssb0lt"
+       MYSQL_DATABASE: "passbolt"
+       MYSQL_USER: "passbolt"
+       MYSQL_PASSWORD: "P4ssb0lt"
+
+   passbolt:
+     depends_on:
+       - db
+     image: passbolt/passbolt
+     container_name: passbolt
+     ports:
+       - "443:443"
+     restart: always
+     environment:
+       DB_HOST: "db"
+       URL: passbolt.local
+       REGISTRATION: "true"
+volumes:
+    db_data:
