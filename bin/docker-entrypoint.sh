@@ -202,7 +202,7 @@ if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
   gen_ssl_cert
 fi
 
-if ! grep run-parts /etc/crontabs/root ; then
+if ! grep run-parts /etc/crontabs/root > /dev/null ; then
   email_cron_job
 fi
 
