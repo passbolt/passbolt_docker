@@ -171,7 +171,6 @@ email_cron_job() {
   chmod +x $cron_task
   echo "su -c \"$process_email\" -ls /bin/bash nginx" >> $cron_task
 
-  crond -f -c /etc/crontabs
 }
 
 
@@ -203,6 +202,10 @@ if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
   gen_ssl_cert
 fi
 
+if ! grep run-parts /etc/crontabs/root ; then
+  email_cron_job
+fi
+
 php_fpm_setup
 
 install
@@ -211,4 +214,4 @@ php-fpm5
 
 nginx -g "pid /tmp/nginx.pid; daemon off;" &
 
-email_cron_job
+crond -f -c /etc/crontabs
