@@ -54,7 +54,6 @@ RUN apk add --no-cache $BASE_PHP_DEPS \
 RUN apk add --no-cache $PHP_GNUPG_DEPS  \
     && ln -s /usr/bin/php5 /usr/bin/php \
     && ln -s /usr/bin/phpize5 /usr/bin/phpize \
-    #https://bugs.alpinelinux.org/issues/5378
     && sed -i "s/ -n / /" $(which pecl) \
     && pecl install gnupg \
     && pecl install redis \
