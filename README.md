@@ -14,6 +14,8 @@ track issues and pull requests.
 Users that do not require any special modifications are encouraged to `docker pull` the
 [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
 
+There is also a yet unofficial project to use [passbolt along with docker-compose](https://github.com/dlen/passbolt-compose) for easier the setup process.
+
 # Build the image
 
 Inside the repo directory:
