@@ -56,9 +56,10 @@ RUN apk add --no-cache $PHP_GNUPG_DEPS  \
     && ln -s /usr/bin/phpize5 /usr/bin/phpize \
     #https://bugs.alpinelinux.org/issues/5378
     && sed -i "s/ -n / /" $(which pecl) \
-    && pecl install gnupg memcache \
-    && echo "extension=memcache.so" > /etc/php5/conf.d/memcache.ini \
+    && pecl install gnupg \
+    && pecl install redis \
     && echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini \
+    && echo "extension=redis.so" > /etc/php5/conf.d/redis.ini \
     && apk del $PHP_GNUPG_DEPS \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
