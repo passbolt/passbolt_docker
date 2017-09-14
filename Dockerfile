@@ -1,8 +1,8 @@
 FROM alpine:3.6
 
-MAINTAINER diego@passbolt.com
+LABEL maintainer="diego@passbolt.com"
 
-ENV PASSBOLT_VERSION 1.6.3
+ENV PASSBOLT_VERSION 1.6.5
 ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
 ARG BASE_PHP_DEPS="php5-curl \
@@ -54,11 +54,11 @@ RUN apk add --no-cache $BASE_PHP_DEPS \
 RUN apk add --no-cache $PHP_GNUPG_DEPS  \
     && ln -s /usr/bin/php5 /usr/bin/php \
     && ln -s /usr/bin/phpize5 /usr/bin/phpize \
-    #https://bugs.alpinelinux.org/issues/5378
     && sed -i "s/ -n / /" $(which pecl) \
-    && pecl install gnupg memcache \
-    && echo "extension=memcache.so" > /etc/php5/conf.d/memcache.ini \
+    && pecl install gnupg \
+    && pecl install redis \
     && echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini \
+    && echo "extension=redis.so" > /etc/php5/conf.d/redis.ini \
     && apk del $PHP_GNUPG_DEPS \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \

@@ -2,7 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.3...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.5...HEAD)
+
+## [1.6.5](https://github.com/passbolt/passbolt_docker/compare/v1.6.3...v1.6.5) - 2017-09-14
+
+- Refer to [passbolt_api CHANGELOG](https://github.com/passbolt/passbolt_api/blob/master/CHANGELOG.md) for a list of new features and fixes.
+
+### Fixed
+- PASSBOLT-2406: change to LABEL, add docker-compose file for testing [#69](https://github.com/passbolt/passbolt_docker/pull/69)
+- PASSBOLT-2407: Check for email cron before setting it [#63](https://github.com/passbolt/passbolt_docker/issues/63)
+- PASSBOLT-2408: Strict Transport Security (HSTS)	Invalid Server provided more than one HSTS header [#65](https://github.com/passbolt/passbolt_docker/issues/65)
+- PASSBOLT-2410: nginx config sub optimal [#66](https://github.com/passbolt/passbolt_docker/issues/66)
 
 ## [1.6.3](https://github.com/passbolt/passbolt_docker/compare/v1.6.2+1...v1.6.3) - 2017-08-31
 

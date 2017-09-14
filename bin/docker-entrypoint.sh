@@ -166,12 +166,14 @@ email_cron_job() {
 
   mkdir -p $cron_task_dir
 
-  echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
+  if ! grep $cron_task_dir $root_crontab > /dev/null; then
+    echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
+  fi
   echo "#!/bin/sh" > $cron_task
   chmod +x $cron_task
   echo "su -c \"$process_email\" -ls /bin/bash nginx" >> $cron_task
 
-  crond -f -c /etc/crontabs
+  crond -f -c /etc/crontabs &
 }
 
 
@@ -209,6 +211,7 @@ install
 
 php-fpm5
 
-nginx -g "pid /tmp/nginx.pid; daemon off;" &
-
 email_cron_job
+
+nginx -g "pid /tmp/nginx.pid; daemon off;"
+
