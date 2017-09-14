@@ -1,6 +1,6 @@
 FROM alpine:3.6
 
-MAINTAINER diego@passbolt.com
+LABEL maintainer="diego@passbolt.com"
 
 ENV PASSBOLT_VERSION 1.6.3
 ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
