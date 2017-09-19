@@ -124,8 +124,14 @@ email_setup() {
   sed -i s:$default_host:${EMAIL_HOST:-localhost}:g $email_config
   sed -i s:$default_port:${EMAIL_PORT:-587}:g $email_config
   sed -i s:$default_timeout:${EMAIL_TIMEOUT:-30}:g $email_config
-  sed -i "0,/"$default_username"/s:"$default_username":'${EMAIL_USERNAME:-email_user}':" $email_config
-  sed -i "0,/"$default_password"/s:"$default_password":'${EMAIL_PASSWORD:-email_password}':" $email_config
+  if [ "$EMAIL_AUTH" = "false" ] ; then
+	sed -i "0,/"$default_username"/s:"$default_username":null:" $email_config
+	sed -i "0,/"$default_password"/s:"$default_password":null:" $email_config
+  else
+  	sed -i "0,/"$default_username"/s:"$default_username":'${EMAIL_USERNAME:-email_user}':" $email_config
+	sed -i "0,/"$default_password"/s:"$default_password":'${EMAIL_PASSWORD:-email_password}':" $email_config
+  fi
+  
   sed -i "0,/tls/s:false:${EMAIL_TLS:-false}:" $email_config
 
 }
