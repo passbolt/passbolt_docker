@@ -93,6 +93,7 @@ Passbolt docker image provides several environment variables to configure differ
 * EMAIL_HOST:      server hostname                ( defaults to localhost)
 * EMAIL_PORT:      server port                    ( defaults to 587)
 * EMAIL_TIMEOUT:   timeout                        ( defaults to 30s)
+* EMAIL_AUTH:      disable smtp auth              ( defaults to true)
 * EMAIL_USERNAME:  username for email server auth ( defaults to email_user)
 * EMAIL_PASSWORD:  password for email server auth ( defaults to email_password)
 * EMAIL_TLS:       set tls, boolean               ( defaults to false)
