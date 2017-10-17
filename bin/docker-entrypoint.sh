@@ -2,8 +2,8 @@
 
 set -eo pipefail
 
-gpg_private_key=/var/www/passbolt/app/Config/gpg/serverkey.private.asc
-gpg_public_key=/var/www/passbolt/app/Config/gpg/serverkey.asc
+gpg_private_key=/var/www/passbolt/config/gpg/serverkey.private.asc
+gpg_public_key=/var/www/passbolt/config/gpg/serverkey.asc
 gpg=$(which gpg)
 
 core_config='/var/www/passbolt/app/Config/core.php'
@@ -14,7 +14,7 @@ ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
 gpg_gen_key() {
-  su -m -c "$gpg --batch --gen-key <<EOF
+  $gpg --batch --gen-key <<EOF
     Key-Type: 1
 		Key-Length: ${KEY_LENGTH:-2048}
 		Subkey-Type: 1
@@ -23,14 +23,14 @@ gpg_gen_key() {
 		Name-Email: ${KEY_EMAIL:-passbolt@yourdomain.com}
 		Expire-Date: ${KEY_EXPIRATION:-0}
 		%commit
-EOF" -ls /bin/bash nginx
+EOF
 
-  su -m -c "$gpg --armor --export-secret-keys $KEY_EMAIL > $gpg_private_key" -ls /bin/bash nginx
-  su -m -c "$gpg --armor --export $KEY_EMAIL > $gpg_public_key" -ls /bin/bash nginx
+  $gpg --armor --export-secret-keys $KEY_EMAIL > $gpg_private_key
+  $gpg --armor --export $KEY_EMAIL > $gpg_public_key
+  gpg_auto_fingerprint=`$gpg --fingerprint $KEY_EMAIL | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}'`
 }
 
 gpg_import_key() {
-
   local key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/bash nginx)
 
   su -m -c "$gpg --batch --import $gpg_public_key" -ls /bin/bash nginx
@@ -83,18 +83,14 @@ app_setup() {
   # REGISTRATION
   # SSL
 
-  local default_home='/home/www-data/.gnupg'
   local default_public_key='unsecure.key'
   local default_private_key='unsecure_private.key'
   local default_fingerprint='2FC8945833C51946E937F9FED47B0811573EE67E'
-  local gpg_home='/var/lib/nginx/.gnupg'
-  local auto_fingerprint=$(su -m -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash nginx)
 
   cp $app_config{.default,}
-  sed -i s:$default_home:$gpg_home:g $app_config
   sed -i s:$default_public_key:serverkey.asc:g $app_config
   sed -i s:$default_private_key:serverkey.private.asc:g $app_config
-  sed -i s:$default_fingerprint:${FINGERPRINT:-$auto_fingerprint}:g $app_config
+  sed -i s:$default_fingerprint:${FINGERPRINT:-$gpg_auto_fingerprint}:g $app_config
   sed -i "/force/ s:true:${SSL:-true}:" $app_config
   sed -i "/'registration'/{n; s:false:${REGISTRATION:-false}:}" $app_config
 }
@@ -152,10 +148,8 @@ install() {
 }
 
 php_fpm_setup() {
-  sed -i '/^user\s/ s:nobody:nginx:g' /etc/php5/php-fpm.conf
-  sed -i '/^group\s/ s:nobody:nginx:g' /etc/php5/php-fpm.conf
-  cp /etc/php5/php-fpm.conf /etc/php5/fpm.d/www.conf
-  sed -i '/^include\s/ s:^:#:' /etc/php5/fpm.d/www.conf
+  sed -i '/^user\s/ s:nobody:nginx:g' /etc/php7/php-fpm.d/www.conf
+  sed -i '/^group\s/ s:nobody:nginx:g' /etc/php7/php-fpm.d/www.conf
 }
 
 email_cron_job() {
@@ -177,25 +171,33 @@ email_cron_job() {
 
 if [ ! -f $gpg_private_key ] && [ ! -L $gpg_private_key ] || \
    [ ! -f $gpg_public_key ] && [ ! -L $gpg_public_key ]; then
-  gpg_gen_key
+  echo 'not yet implemented'
+  #su -c "gpg --list-keys" -ls /bin/bash nginx
+  #gpg_gen_key
+  #gpg_import_key
 else
-  gpg_import_key
+  echo 'not yet implemented'
+  #gpg_import_key
 fi
 
 if [ ! -f $core_config ] && [ ! -L $core_config ]; then
-  core_setup
+  echo 'not yet implemented'
+  #core_setup
 fi
 
 if [ ! -f $db_config ] && [ ! -L $db_config ]; then
-  db_setup
+  echo 'not yet implemented'
+  #db_setup
 fi
 
 if [ ! -f $app_config ] && [ ! -L $app_config ]; then
-  app_setup
+  echo 'not yet implemented'
+  #app_setup
 fi
 
 if [ ! -f $email_config ] && [ ! -L $email_config ]; then
-  email_setup
+  echo 'not yet implemented'
+  #email_setup
 fi
 
 if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
@@ -205,10 +207,12 @@ fi
 
 php_fpm_setup
 
-install
+# not yet implemented
+#install
 
-php-fpm5
+php-fpm7
 
-nginx -g "pid /tmp/nginx.pid; daemon off;" &
+nginx -g "pid /tmp/nginx.pid; daemon off;"
 
-email_cron_job
+# not yet implemented
+#email_cron_job
