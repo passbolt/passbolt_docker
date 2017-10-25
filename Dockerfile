@@ -27,10 +27,8 @@ ARG BASE_PHP_DEPS="php7-curl \
       php7-iconv \
       php7-mbstring"
 
-ARG BASE_PHP_DEV_DEPS="php7-tokenizer \
-    php7-xmlwriter \
-    php7-simplexml \
-    php7-xdebug"
+ARG BASE_NODE_DEPS="nodejs \
+    nodejs-npm"
 
 ARG PHP_GNUPG_DEPS="php7-dev \
       make \
@@ -44,7 +42,15 @@ ARG PHP_GNUPG_DEPS="php7-dev \
       zlib-dev \
       file"
 
+ARG BASE_PHP_DEV_DEPS="php7-tokenizer \
+    php7-xmlwriter \
+    php7-simplexml \
+    php7-xdebug \
+    git \
+    openssh"
+
 RUN apk add --no-cache $BASE_PHP_DEPS \
+      $BASE_NODE_DEPS \
       $BASE_PHP_DEV_DEPS \
       sed \
       tar \
