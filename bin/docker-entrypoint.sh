@@ -52,7 +52,7 @@ core_setup() {
   sed -i s:$default_seed:${CIPHERSEED:-$default_seed}:g $core_config
   sed -i "/example.com/ s:\/\/::" $core_config
   sed -i s:example.com:${URL:-$default_url}:g $core_config
-  if [ "$ssl" != false ]; then
+  if [ "${SSL:-true}" != false ]; then
     sed -i s:http:https:g $core_config
   fi
 }
