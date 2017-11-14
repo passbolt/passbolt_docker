@@ -2,7 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.5...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.5+1...HEAD)
+
+## [1.6.5+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.5...v1.6.5+1) - 2017-11-14
+
+### Fixed
+
+- Introduce EMAIL_AUTH=false Environment variable [#71](https://github.com/passbolt/passbolt_docker/pull/71)
+- Fixed https in App.fullBaseUrl for SSL=false. [#73]( https://github.com/passbolt/passbolt_docker/pull/73)
 
 ## [1.6.5](https://github.com/passbolt/passbolt_docker/compare/v1.6.3...v1.6.5) - 2017-09-14
 
