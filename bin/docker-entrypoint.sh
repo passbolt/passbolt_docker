@@ -2,16 +2,29 @@
 
 set -eo pipefail
 
-gpg_private_key=/var/www/passbolt/app/Config/gpg/serverkey.private.asc
-gpg_public_key=/var/www/passbolt/app/Config/gpg/serverkey.asc
+config_prefix='/var/www/passbolt/app/Config/'
+secrets_prefix='/run/secrets/'
+
+gpg_private_key_file='serverkey.private.asc'
+gpg_public_key_file='serverkey.asc'
+
+core_config_file='core.php'
+db_config_file='database.php'
+app_config_file='app.php'
+email_config_file='email.php'
+ssl_key_file='certificate.key'
+ssl_cert_file='certificate.crt'
+
+gpg_private_key="${config_prefix}/gpg/${gpg_private_key_file}"
+gpg_public_key="${config_prefix}/gpg/${gpg_public_key_file}"
 gpg=$(which gpg)
 
-core_config='/var/www/passbolt/app/Config/core.php'
-db_config='/var/www/passbolt/app/Config/database.php'
-app_config='/var/www/passbolt/app/Config/app.php'
-email_config='/var/www/passbolt/app/Config/email.php'
-ssl_key='/etc/ssl/certs/certificate.key'
-ssl_cert='/etc/ssl/certs/certificate.crt'
+core_config="${config_prefix}/${core_config_file}"
+db_config="${config_prefix}/${db_config_file}"
+app_config="${config_prefix}/${app_config_file}"
+email_config="${config_prefix}/${email_config_file}"
+ssl_key="/etc/ssl/certs/${ssl_key_file}"
+ssl_cert="/etc/ssl/certs/${ssl_cert_file}"
 
 gpg_gen_key() {
   su -m -c "$gpg --batch --gen-key <<EOF
@@ -183,6 +196,37 @@ email_cron_job() {
   crond -f -c /etc/crontabs &
 }
 
+if [ -f "${secrets_prefix}/${gpg_private_key_file}" ]; then
+    ln -sf $secrets_prefix/$gpg_private_key_file $gpg_private_key
+fi
+
+if [ -f "${secrets_prefix}/${gpg_public_key_file}" ]; then
+    ln -sf $secrets_prefix/$gpg_public_key_file $gpg_public_key
+fi
+
+if [ -f "${secrets_prefix}/${core_config_file}" ]; then
+    ln -sf $secrets_prefix/$core_config_file $core_config
+fi
+
+if [ -f "${secrets_prefix}/${db_config_file}" ]; then
+    ln -sf $secrets_prefix/$db_config_file $db_config
+fi
+
+if [ -f "${secrets_prefix}/${app_config_file}" ]; then
+    ln -sf $secrets_prefix/$app_config_file $app_config
+fi
+
+if [ -f "${secrets_prefix}/${email_config_file}" ]; then
+    ln -sf $secrets_prefix/$email_config_file $email_config
+fi
+
+if [ -f "${secrets_prefix}/${ssl_key_config_file}" ]; then
+    ln -sf $secrets_prefix/$ssl_key_config_file $ssl_key_config
+fi
+
+if [ -f "${secrets_prefix}/${ssl_cert_config_file}" ]; then
+    ln -sf $secrets_prefix/$ssl_cert_config_file $ssl_cert_config
+fi
 
 if [ ! -f $gpg_private_key ] && [ ! -L $gpg_private_key ] || \
    [ ! -f $gpg_public_key ] && [ ! -L $gpg_public_key ]; then

@@ -101,7 +101,9 @@ Passbolt docker image provides several environment variables to configure differ
 ## Advanced configuration
 
 What if you already have a set of gpg keys and custom configuration files for passbolt?
-It it possible to mount the desired configuration files as volumes.
+It it possible to mount the desired configuration files as volumes, or to use
+Docker Swarm's secrets (e.g. just create a secret with the target `app.php` and
+it will be loaded automatically).
 
 ### Configuration files subject to be persisted:
 
