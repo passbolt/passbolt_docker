@@ -5,10 +5,7 @@ set -eo pipefail
 gpg_private_key=/var/www/passbolt/config/gpg/serverkey.private.asc
 gpg_public_key=/var/www/passbolt/config/gpg/serverkey.asc
 
-core_config='/var/www/passbolt/app/Config/core.php'
-db_config='/var/www/passbolt/app/Config/database.php'
 app_config='/var/www/passbolt/app/Config/app.php'
-email_config='/var/www/passbolt/app/Config/email.php'
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
@@ -72,33 +69,15 @@ email_cron_job() {
 
 if [ ! -f $gpg_private_key ] && [ ! -L $gpg_private_key ] || \
    [ ! -f $gpg_public_key ] && [ ! -L $gpg_public_key ]; then
-  echo 'not yet implemented'
   su -c "gpg --list-keys" -ls /bin/bash nginx
   gpg_gen_key
   gpg_import_key
 else
-  echo 'not yet implemented'
-  #gpg_import_key
-fi
-
-if [ ! -f $core_config ] && [ ! -L $core_config ]; then
-  echo 'not yet implemented'
-  #core_setup
-fi
-
-if [ ! -f $db_config ] && [ ! -L $db_config ]; then
-  echo 'not yet implemented'
-  #db_setup
+  gpg_import_key
 fi
 
 if [ ! -f $app_config ] && [ ! -L $app_config ]; then
-  echo 'not yet implemented'
-  #app_setup
-fi
-
-if [ ! -f $email_config ] && [ ! -L $email_config ]; then
-  echo 'not yet implemented'
-  #email_setup
+  app_setup
 fi
 
 if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
@@ -106,14 +85,6 @@ if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
   gen_ssl_cert
 fi
 
-php_fpm_setup
+install
 
-# not yet implemented
-#install
-
-php-fpm7
-
-nginx -g "pid /tmp/nginx.pid; daemon off;"
-
-# not yet implemented
-#email_cron_job
+email_cron_job
