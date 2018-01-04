@@ -96,6 +96,7 @@ Passbolt docker image provides several environment variables to configure differ
 * EMAIL_AUTH:      disable smtp auth              ( defaults to true)
 * EMAIL_USERNAME:  username for email server auth ( defaults to email_user)
 * EMAIL_PASSWORD:  password for email server auth ( defaults to email_password)
+* EMAIL_CLIENT:    hostname to send as smtp helo  ( defaults to null)
 * EMAIL_TLS:       set tls, boolean               ( defaults to false)
 
 ## Advanced configuration

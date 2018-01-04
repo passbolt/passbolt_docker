@@ -109,6 +109,7 @@ email_setup() {
   # EMAIL_AUTH
   # EMAIL_USERNAME
   # EMAIL_PASSWORD
+  # EMAIL_CLIENT
   # EMAIL_TLS
 
   local default_transport='Smtp'
@@ -118,6 +119,7 @@ email_setup() {
   local default_timeout='30'
   local default_username="''"
   local default_password="''"
+  local default_client=null
 
   cp $email_config{.default,}
   sed -i s:$default_transport:${EMAIL_TRANSPORT:-Smtp}:g $email_config
@@ -132,7 +134,9 @@ email_setup() {
   	sed -i "0,/"$default_username"/s:"$default_username":'${EMAIL_USERNAME:-email_user}':" $email_config
 	sed -i "0,/"$default_password"/s:"$default_password":'${EMAIL_PASSWORD:-email_password}':" $email_config
   fi
-  
+  if [ -n "$EMAIL_CLIENT" ] ; then
+    sed -i "0,/"$default_client"/s:"$default_client":'$EMAIL_CLIENT':" $email_config
+  fi
   sed -i "0,/tls/s:false:${EMAIL_TLS:-false}:" $email_config
 
 }
