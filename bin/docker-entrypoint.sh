@@ -2,34 +2,38 @@
 
 set -eo pipefail
 
-gpg_private_key=/var/www/passbolt/config/gpg/serverkey.private.asc
-gpg_public_key=/var/www/passbolt/config/gpg/serverkey.asc
-
-app_config='/var/www/passbolt/app/Config/app.php'
+base_path='/var/www/passbolt'
+gpg_private_key="$base_path/config/gpg/serverkey.private.asc"
+gpg_public_key="$base_path/config/gpg/serverkey.asc"
+app_config="$base_path/config/app.php"
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
 gpg_gen_key() {
-  gpg --batch --gen-key <<EOF
-    Key-Type: 1
-		Key-Length: ${KEY_LENGTH:-2048}
-		Subkey-Type: 1
-		Subkey-Length: ${SUBKEY_LENGTH:-2048}
-		Name-Real: ${KEY_NAME:-Passbolt default user}
-		Name-Email: ${KEY_EMAIL:-passbolt@yourdomain.com}
-		Expire-Date: ${KEY_EXPIRATION:-0}
-		%commit
-EOF
+  local key_email="${KEY_EMAIL:-passbolt@yourdomain.com}"
+  local key_name="${KEY_NAME:-Passbolt default user}"
+  local key_length="${KEY_LENGTH:-4096}"
+  local subkey_length="${SUBKEY_LENGTH:-4096}"
+  local expiration="${KEY_EXPIRATION:-0}"
 
-  gpg --armor --export-secret-keys "$KEY_EMAIL" > "$gpg_private_key"
-  gpg --armor --export "$KEY_EMAIL" > "$gpg_public_key"
-  gpg_auto_fingerprint=$(gpg --fingerprint "$KEY_EMAIL" | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}')
+  su -m -c "gpg --batch --gen-key <<EOF
+    Key-Type: 1
+		Key-Length: $key_length
+		Subkey-Type: 1
+		Subkey-Length: $subkey_length
+    Name-Real: $key_name
+    Name-Email: $key_email
+    Expire-Date: $expiration
+		%commit
+EOF" -ls /bin/bash nginx
+
+  su -m -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash nginx
+  su -m -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/bash nginx
 }
 
 gpg_import_key() {
   local key_id=""
   key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/bash nginx)
-
   su -m -c "gpg --batch --import $gpg_public_key" -ls /bin/bash nginx
   su -m -c "gpg -K $key_id" -ls /bin/bash nginx || su -m -c "gpg --batch --import $gpg_private_key" -ls /bin/bash nginx
 }
@@ -41,10 +45,12 @@ gen_ssl_cert() {
 }
 
 install() {
-  tables=$(mysql -u "$DATABASE_USER" -h "$DB_HOST" -P "$DB_HOST" -p -BN -e "SHOW TABLES FROM $DB_NAME" -p"$DB_PASS" |wc -l)
-
+  if [ ! -f $app_config ] && [ ! -L $app_config ]; then
+    cp $base_path/config/app.default.php $app_config
+  fi
+  tables=$(mysql -u "$DATABASE_USER" -h "$DB_HOST" -P "$DB_PORT" -p -BN -e "SHOW TABLES FROM $DB_NAME" -p"$DB_PASS" |wc -l)
   if [ "$tables" -eq 0 ]; then
-    su -c "/var/www/passbolt/app/Console/cake install --send-anonymous-statistics true --no-admin" -ls /bin/bash nginx
+    su -c "/var/www/passbolt/bin/cake passbolt install --no-admin" -ls /bin/bash nginx
   else
     echo "Enjoy! ☮"
   fi
@@ -57,27 +63,18 @@ email_cron_job() {
   local process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender --quiet"
 
   mkdir -p $cron_task_dir
-
   echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
   echo "#!/bin/sh" > $cron_task
   chmod +x $cron_task
   echo "su -c \"$process_email\" -ls /bin/bash nginx" >> $cron_task
-
-  crond -f -c /etc/crontabs
 }
-
 
 if [ ! -f $gpg_private_key ] && [ ! -L $gpg_private_key ] || \
    [ ! -f $gpg_public_key ] && [ ! -L $gpg_public_key ]; then
-  su -c "gpg --list-keys" -ls /bin/bash nginx
   gpg_gen_key
   gpg_import_key
 else
   gpg_import_key
-fi
-
-if [ ! -f $app_config ] && [ ! -L $app_config ]; then
-  app_setup
 fi
 
 if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
@@ -85,6 +82,7 @@ if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
   gen_ssl_cert
 fi
 
+#gpg_auto_fingerprint=$(gpg --fingerprint "$key_email" | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}')
 install
-
 email_cron_job
+/usr/bin/supervisord -n -c /etc/supervisord.conf

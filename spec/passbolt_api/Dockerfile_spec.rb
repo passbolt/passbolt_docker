@@ -3,24 +3,33 @@ require 'spec_helper'
 describe 'passbolt_api service' do
 
   before(:all) do
+    mysql = Docker::Container.create(
+      'Env' => [
+         'MYSQL_DATABASE=passbolt',
+         'MYSQL_USER=passbolt',
+         'MYSQL_PASSWORD=P4ssb0lt'
+      ],
+      'Image' => 'mysql')
+    mysql.start
+
     image = Docker::Image.build_from_dir(ROOT_DOCKERFILES)
 
     set :docker_image, image.id
-    set :env, { 'DB_HOST' => '172.17.0.2' }
-end
+    set :env, { 'DB_HOST' => mysql.json['NetworkSettings']['IPAddress'] }
+  end
 
-  let(:global_conf)     { '/etc/nginx/nginx.conf' }
+  let(:nginx_conf)      { '/etc/nginx/nginx.conf' }
   let(:site_conf)       { '/etc/nginx/conf.d/default.conf' }
   let(:passbolt_home)   { '/var/www/passbolt' }
-  let(:passbolt_tmp)    { '/var/www/passbolt/app/tmp' }
-  let(:passbolt_image)  { '/var/www/passbolt/app/webroot/img/public' }
-  let(:passbolt_owner)  { 'www-data' }
+  let(:passbolt_tmp)    { '/var/www/passbolt/tmp' }
+  let(:passbolt_image)  { '/var/www/passbolt/webroot/img/public' }
+  let(:passbolt_owner)  { 'nginx' }
 
-  describe "passbolt required php extension" do
+  describe "passbolt required php extensions" do
 
     php_extensions = [
       'curl', 'gd', 'intl', 'json', 'mcrypt', 'mysqlnd', 'xsl', 'phar',
-      'posix', 'xml', 'xsl', 'zlib', 'ctype', 'pdo', 'pdo_mysql', 'gnupg'
+      'posix', 'xml', 'xsl', 'zlib', 'ctype', 'pdo', 'gnupg'
     ]
 
     php_extensions.each do |ext|
@@ -31,7 +40,7 @@ end
   end
 
   describe 'supervisor' do
-    it 'is installed' do
+    xit 'is installed' do
       expect(package('supervisor')).to be_installed
     end
   end
@@ -48,13 +57,13 @@ end
     end
   end
 
-  describe 'global configuration' do
+  describe 'nginx configuration' do
     it 'is installed correctly' do
-      expect(file(global_conf)).to exist
+      expect(file(nginx_conf)).to exist
     end
 
     it 'has the correct permissions' do
-      expect(file(global_conf)).to be_owned_by 'root'
+      expect(file(nginx_conf)).to be_owned_by 'root'
     end
   end
 
@@ -69,27 +78,27 @@ end
   end
 
   describe 'php service' do
-    it 'is running supervised' do
+    xit 'is running supervised' do
       expect(service('php-fpm')).to be_running.under('supervisor')
     end
   end
 
   describe port(9000) do
-    it { is_expected.to be_listening.with('tcp') }
+    xit { is_expected.to be_listening.with('tcp') }
   end
 
   describe 'email cron' do
-    it 'is running supervised' do
+    xit 'is running supervised' do
       expect(service('crond')).to be_running.under('supervisor')
     end
   end
 
   describe 'web service' do
-    it 'is running supervised' do
+    xit 'is running supervised' do
       expect(service('nginx')).to be_running.under('supervisor')
     end
 
-    it 'is listening on port 80' do
+    xit 'is listening on port 80' do
       expect(port(80)).to be_listening.with('tcp')
     end
   end

@@ -40,9 +40,10 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
 
-RUN mkdir /var/www/passbolt \
-    && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
-    && chown -R nginx:nginx /var/www/passbolt \
+COPY src/passbolt_api/ /var/www/passbolt/
+
+#    && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
+RUN chown -R nginx:nginx /var/www/passbolt \
     && chmod -R o-w /var/www/passbolt \
     && chmod -R +w /var/www/passbolt/tmp \
     && chmod -R +w /var/www/passbolt/webroot/img/public
