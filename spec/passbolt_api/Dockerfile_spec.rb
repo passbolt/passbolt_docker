@@ -3,19 +3,24 @@ require 'spec_helper'
 describe 'passbolt_api service' do
 
   before(:all) do
-    mysql = Docker::Container.create(
+    @mysql = Docker::Container.create(
       'Env' => [
+         'MYSQL_ROOT_PASSWORD=test',
          'MYSQL_DATABASE=passbolt',
          'MYSQL_USER=passbolt',
          'MYSQL_PASSWORD=P4ssb0lt'
       ],
       'Image' => 'mysql')
-    mysql.start
+    @mysql.start
 
     image = Docker::Image.build_from_dir(ROOT_DOCKERFILES)
 
     set :docker_image, image.id
-    set :env, { 'DB_HOST' => mysql.json['NetworkSettings']['IPAddress'] }
+    set :env, { 'DB_HOST' => @mysql.json['NetworkSettings']['IPAddress'] }
+  end
+
+  after(:all) do
+    @mysql.kill
   end
 
   let(:nginx_conf)      { '/etc/nginx/nginx.conf' }
