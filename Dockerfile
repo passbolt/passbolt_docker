@@ -19,7 +19,6 @@ ARG PHP_GNUPG_BUILD_DEPS="php7-dev \
       gpgme-dev \
       autoconf \
       zlib-dev \
-      libmcrypt-dev \
       file"
 
 RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
