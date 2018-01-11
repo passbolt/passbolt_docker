@@ -2,7 +2,7 @@ FROM php:7-fpm-alpine3.7
 
 LABEL MAINTAINER diego@passbolt.com
 
-ENV PASSBOLT_VERSION 1.6.5
+ENV PASSBOLT_VERSION 2.0.0-rc1
 ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
 ARG PHP_EXTENSIONS="gd \
@@ -32,6 +32,7 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
       libxslt-dev \
       libmcrypt-dev \
       supervisor \
+      git \
     && pecl install gnupg redis mcrypt-snapshot \
     && docker-php-ext-install -j4 $PHP_EXTENSIONS \
     && docker-php-ext-enable $PHP_EXTENSIONS gnupg redis mcrypt \
@@ -45,10 +46,11 @@ COPY src/passbolt_api/ /var/www/passbolt/
 RUN cd /var/www/passbolt \
     && composer global require hirak/prestissimo \
     && composer install \
-    && chown -R nginx:nginx /var/www/passbolt \
-    && chmod -R o-w /var/www/passbolt \
-    && chmod -R +w /var/www/passbolt/tmp \
-    && chmod -R +w /var/www/passbolt/webroot/img/public
+    && chown -R www-data:www-data /var/www/passbolt \
+    && chmod 775 $(find /var/www/passbolt/tmp -type f) \
+    && chmod 664 $(find /var/www/passbolt/tmp -type d) \
+    && chmod 775 $(find /var/www/passbolt/webroot/img/public -type f) \
+    && chmod 664 $(find /var/www/passbolt/webroot/img/public -type d)
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisord.conf /etc/supervisord.conf

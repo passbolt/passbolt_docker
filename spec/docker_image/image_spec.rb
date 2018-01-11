@@ -21,7 +21,7 @@ describe 'Dockerfile' do
   let(:passbolt_home)   { '/var/www/passbolt' }
   let(:passbolt_tmp)    { '/var/www/passbolt/tmp' }
   let(:passbolt_image)  { '/var/www/passbolt/webroot/img/public' }
-  let(:passbolt_owner)  { 'nginx' }
+  let(:passbolt_owner)  { 'www-data' }
   let(:exposed_ports)   { [ '80', '443' ] }
   let(:composer)        { '/usr/local/bin/composer'}
   let(:php_extensions)  { [
