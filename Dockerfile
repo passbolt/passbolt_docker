@@ -7,6 +7,7 @@ ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VE
 
 ARG PHP_EXTENSIONS="gd \
       intl \
+      pdo_mysql \
       xsl"
 
 ARG PHP_GNUPG_BUILD_DEPS="php7-dev \
@@ -22,8 +23,6 @@ ARG PHP_GNUPG_BUILD_DEPS="php7-dev \
       file"
 
 RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
-      sed \
-      bash \
       nginx \
       gpgme \
       gnupg1 \
@@ -43,7 +42,10 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
 COPY src/passbolt_api/ /var/www/passbolt/
 
 #    && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
-RUN chown -R nginx:nginx /var/www/passbolt \
+RUN cd /var/www/passbolt \
+    && composer global require hirak/prestissimo \
+    && composer install \
+    && chown -R nginx:nginx /var/www/passbolt \
     && chmod -R o-w /var/www/passbolt \
     && chmod -R +w /var/www/passbolt/tmp \
     && chmod -R +w /var/www/passbolt/webroot/img/public
