@@ -61,6 +61,14 @@ describe 'Dockerfile' do
       expect(file(passbolt_tmp)).to be_owned_by(passbolt_owner)
       expect(file(passbolt_image)).to be_owned_by(passbolt_owner)
     end
+
+    it 'must have the correct permissions on tmp' do
+      expect(file(passbolt_tmp)).to be_mode('775')
+    end
+
+    it 'must have the correct permissions on img' do
+      expect(file(passbolt_image)).to be_mode('775')
+    end
   end
 
   describe 'nginx configuration' do

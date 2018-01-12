@@ -47,10 +47,10 @@ RUN cd /var/www/passbolt \
     && composer global require hirak/prestissimo \
     && composer install \
     && chown -R www-data:www-data /var/www/passbolt \
-    && chmod 775 $(find /var/www/passbolt/tmp -type f) \
-    && chmod 664 $(find /var/www/passbolt/tmp -type d) \
-    && chmod 775 $(find /var/www/passbolt/webroot/img/public -type f) \
-    && chmod 664 $(find /var/www/passbolt/webroot/img/public -type d)
+    && chmod 775 $(find /var/www/passbolt/tmp -type d) \
+    && chmod 664 $(find /var/www/passbolt/tmp -type f) \
+    && chmod 775 $(find /var/www/passbolt/webroot/img/public -type d) \
+    && chmod 664 $(find /var/www/passbolt/webroot/img/public -type f)
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisord.conf /etc/supervisord.conf
