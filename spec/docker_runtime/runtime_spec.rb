@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'rspec/wait'
 
 describe 'passbolt_api service' do
 
@@ -31,10 +30,6 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_PASSWORD=P4ssb0lt',
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
-        #'DATASOURCES_DEFAULT_PORT=3306',
-        #'PASSBOLT_GPG_KEYRING=/var/lib/nginx/.gnupg',
-        #'PASSBOLT_GPG_SERVER_KEY_PUBLIC=/var/www/passbolt/config/gpg/serverkey.asc',
-        #'PASSBOLT_GPG_SERVER_KEY_PRIVATE=/var/www/passbolt/config/gpg/serverkey_private.asc'
       ],
       'Image' => @image.id)
     @container.start
@@ -48,6 +43,9 @@ describe 'passbolt_api service' do
     @mysql.kill
     @container.kill
   end
+
+  let(:http_path) { "/healthcheck/status.json" }
+  let(:healthcheck) { 'curl -s -o /dev/null -w "%{http_code}" http://localhost/healthcheck/status.json' }
 
   describe 'php service' do
     it 'is running supervised' do
@@ -79,4 +77,9 @@ describe 'passbolt_api service' do
     end
   end
 
+  describe 'passbolt healthcheck' do
+    it 'returns 200' do
+      expect(command(healthcheck).stdout).to eq '200'
+    end
+  end
 end
