@@ -77,7 +77,7 @@ describe 'passbolt_api service' do
     end
   end
 
-  describe 'passbolt healthcheck' do
+  describe 'passbolt status' do
     it 'returns 200' do
       expect(command(healthcheck).stdout).to eq '200'
     end
