@@ -54,7 +54,7 @@ install() {
 
   if [ "$tables" -eq 0 ]; then
     su -c "cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php" -s /bin/sh www-data
-    su -c "PATH=$PATH:/usr/local/bin /var/www/passbolt/bin/cake passbolt install --no-admin --force" -s /bin/sh www-data
+    su -c "/var/www/passbolt/bin/cake passbolt install --no-admin --force" -s /bin/sh www-data
   else
     echo "Enjoy! ☮"
   fi
@@ -64,7 +64,7 @@ email_cron_job() {
   root_crontab='/etc/crontabs/root'
   cron_task_dir='/etc/periodic/1min'
   cron_task='/etc/periodic/1min/email_queue_processing'
-  process_email="PATH=$PATH:/usr/local/bin /var/www/passbolt/app/Console/cake EmailQueue.sender --quiet"
+  process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender --quiet"
 
   mkdir -p $cron_task_dir
   echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
