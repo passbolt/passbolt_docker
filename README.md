@@ -76,7 +76,7 @@ Passbolt docker image provides several environment variables to configure differ
 
 * SALT:       a random string used by cakephp in security hashing methods
 * CIPHERSEED: a random string used by cakephp to encrypt/decrypt strings
-* URL:        URL of the passbolt installation (defaults to passbolt.local)
+* URL:        URL of the passbolt installation (defaults to http://passbolt.local)
 
 ### Database variables
 
@@ -96,6 +96,7 @@ Passbolt docker image provides several environment variables to configure differ
 * EMAIL_AUTH:      disable smtp auth              ( defaults to true)
 * EMAIL_USERNAME:  username for email server auth ( defaults to email_user)
 * EMAIL_PASSWORD:  password for email server auth ( defaults to email_password)
+* EMAIL_CLIENT:    hostname to send as smtp helo  ( defaults to null)
 * EMAIL_TLS:       set tls, boolean               ( defaults to false)
 
 ## Advanced configuration
