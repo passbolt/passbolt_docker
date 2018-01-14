@@ -2,7 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.5+1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.9...HEAD)
+
+## [1.6.9](https://github.com/passbolt/passbolt_docker/compare/v1.6.5+1...v1.6.9) - 2018-01-14
+
+This release provides the last passbolt_api 1.x series release along with several pull requests
+and fixes.
+
+### Fixed
+
+- Unable to access default installation with http [#59](https://github.com/passbolt/passbolt_docker/issues/59)
+- Check and correct the permissions and ownership of /var/www/passbolt [#67](https://github.com/passbolt/passbolt_docker/issues/67)
+- cp: Unrecognized option -T [#75](https://github.com/passbolt/passbolt_docker/issues/75)
+- turn URL config independent from SSL var [#76](https://github.com/passbolt/passbolt_docker/pull/76)
+- Set the default MySQL port to 3306 [#77](https://github.com/passbolt/passbolt_docker/pull/77)
+- Add environment variable to set email client [#81](https://github.com/passbolt/passbolt_docker/pull/81)
+
 
 ## [1.6.5+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.5...v1.6.5+1) - 2017-11-14
 
