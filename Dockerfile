@@ -2,7 +2,7 @@ FROM alpine:3.6
 
 LABEL maintainer="diego@passbolt.com"
 
-ENV PASSBOLT_VERSION 1.6.5
+ENV PASSBOLT_VERSION 1.6.9
 ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
 ARG BASE_PHP_DEPS="php5-curl \
@@ -38,6 +38,7 @@ ARG PHP_GNUPG_DEPS="php5-dev \
 
 RUN apk add --no-cache $BASE_PHP_DEPS \
       sed \
+      coreutils \
       tar \
       bash \
       curl \
