@@ -2,8 +2,7 @@ FROM php:7-fpm-alpine3.7
 
 LABEL MAINTAINER diego@passbolt.com
 
-ENV PASSBOLT_VERSION 2.0.0-rc1
-ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
+ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/develop.tar.gz
 
 ARG PHP_EXTENSIONS="gd \
       intl \
@@ -42,8 +41,8 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
 
 COPY src/passbolt_api/ /var/www/passbolt/
 
-#    && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
-RUN cd /var/www/passbolt \
+RUN curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
+    && cd /var/www/passbolt \
     && composer global require hirak/prestissimo \
     && composer install \
     && chown -R www-data:www-data /var/www/passbolt \
