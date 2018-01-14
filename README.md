@@ -46,7 +46,8 @@ $ docker run -e DATASOURCES_DEFAULT_HOST=<mysql_container_host> \
              -e DATASOURCES_DEFAULT_PASSWORD=<mysql_password> \
              -e DATASOURCES_DEFAULT_USERNAME=<mysql_user> \
              -e DATASOURCES_DEFAULT_DATABASE=<mysql_database> \
-             passbolt:local```
+             passbolt:local
+```
 
 Once the process is done, just navigate to the following url in your browser: https://passbolt_container_ip
 
@@ -94,7 +95,6 @@ Passbolt docker image provides several environment variables to configure differ
 * PASSBOLT_SSL_FORCE:                  Forces passbolt to redirect to SSL any non-SSL request
 * PASSBOLT_SECURITY_SET_HEADERS:       Forces passbolt to send CSP Headers (defaults to true)
 * SECURITY_SALT:                       A random number user in security hashing methods.
-
 
 ## Advanced configuration
 
