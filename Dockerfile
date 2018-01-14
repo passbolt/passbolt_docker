@@ -38,6 +38,7 @@ ARG PHP_GNUPG_DEPS="php5-dev \
 
 RUN apk add --no-cache $BASE_PHP_DEPS \
       sed \
+      coreutils \
       tar \
       bash \
       curl \
