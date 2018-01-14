@@ -45,16 +45,13 @@ core_setup() {
 
   local default_salt='DYhG93b0qyJfIxfs2guVoUubWwvniR2G0FgaC9mi'
   local default_seed='76859309657453542496749683645'
-  local default_url='passbolt.local'
+  local default_url='http://passbolt.local'
 
   cp $core_config{.default,}
   sed -i s:$default_salt:${SALT:-$default_salt}:g $core_config
   sed -i s:$default_seed:${CIPHERSEED:-$default_seed}:g $core_config
   sed -i "/example.com/ s:\/\/::" $core_config
-  sed -i s:example.com:${URL:-$default_url}:g $core_config
-  if [ "${SSL:-true}" != false ]; then
-    sed -i s:http:https:g $core_config
-  fi
+  sed -i "s|http://example.com|${URL:-$default_url}|g" $core_config
 }
 
 db_setup() {
@@ -109,6 +106,7 @@ email_setup() {
   # EMAIL_AUTH
   # EMAIL_USERNAME
   # EMAIL_PASSWORD
+  # EMAIL_CLIENT
   # EMAIL_TLS
 
   local default_transport='Smtp'
@@ -118,6 +116,7 @@ email_setup() {
   local default_timeout='30'
   local default_username="''"
   local default_password="''"
+  local default_client=null
 
   cp $email_config{.default,}
   sed -i s:$default_transport:${EMAIL_TRANSPORT:-Smtp}:g $email_config
@@ -132,7 +131,9 @@ email_setup() {
   	sed -i "0,/"$default_username"/s:"$default_username":'${EMAIL_USERNAME:-email_user}':" $email_config
 	sed -i "0,/"$default_password"/s:"$default_password":'${EMAIL_PASSWORD:-email_password}':" $email_config
   fi
-  
+  if [ -n "$EMAIL_CLIENT" ] ; then
+    sed -i "0,/"$default_client"/s:"$default_client":'$EMAIL_CLIENT':" $email_config
+  fi
   sed -i "0,/tls/s:false:${EMAIL_TLS:-false}:" $email_config
 
 }
@@ -149,7 +150,7 @@ install() {
   local database_user=${DB_USER:-$(cat $db_config | grep -m1 "'login'" | sed -r "s/\s*'login' => '(.*)',/\1/")}
   local database_pass=${DB_PASS:-$(cat $db_config | grep -m1 "'password'" | sed -r "s/\s*'password' => '(.*)',/\1/")}
   local database_name=${DB_NAME:-$(cat $db_config | grep -m1 "'database'" | sed -r "s/\s*'database' => '(.*)',/\1/")}
-  tables=$(mysql -u ${database_user:-passbolt} -h $database_host -P $database_port -p -BN -e "SHOW TABLES FROM ${database_name:-passbolt}" -p${database_pass:-P4ssb0lt} |wc -l)
+  tables=$(mysql -u ${database_user:-passbolt} -h $database_host -P ${database_port:-3306} -p -BN -e "SHOW TABLES FROM ${database_name:-passbolt}" -p${database_pass:-P4ssb0lt} |wc -l)
 
   if [ $tables -eq 0 ]; then
     su -c "/var/www/passbolt/app/Console/cake install --send-anonymous-statistics true --no-admin" -ls /bin/bash nginx
