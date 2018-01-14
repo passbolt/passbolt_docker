@@ -166,6 +166,12 @@ php_fpm_setup() {
   sed -i '/^include\s/ s:^:#:' /etc/php5/fpm.d/www.conf
 }
 
+check_permissions() {
+  chown -R nginx:nginx /var/www/passbolt
+  chmod -R +w /var/www/passbolt/app/tmp
+  chmod +w /var/www/passbolt/app/webroot/img/public
+}
+
 email_cron_job() {
   local root_crontab='/etc/crontabs/root'
   local cron_task_dir='/etc/periodic/1min'
@@ -183,7 +189,6 @@ email_cron_job() {
 
   crond -f -c /etc/crontabs &
 }
-
 
 if [ ! -f $gpg_private_key ] && [ ! -L $gpg_private_key ] || \
    [ ! -f $gpg_public_key ] && [ ! -L $gpg_public_key ]; then
@@ -212,6 +217,8 @@ if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
    [ ! -f $ssl_cert ] && [ ! -L $ssl_cert ]; then
   gen_ssl_cert
 fi
+
+check_permissions
 
 php_fpm_setup
 
