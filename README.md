@@ -76,7 +76,7 @@ Passbolt docker image provides several environment variables to configure differ
 
 * SALT:       a random string used by cakephp in security hashing methods
 * CIPHERSEED: a random string used by cakephp to encrypt/decrypt strings
-* URL:        URL of the passbolt installation (defaults to passbolt.local)
+* URL:        URL of the passbolt installation (defaults to http://passbolt.local)
 
 ### Database variables
 
