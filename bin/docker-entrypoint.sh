@@ -73,15 +73,6 @@ email_cron_job() {
   echo "su -c \"$process_email\" -s /bin/sh www-data" >> $cron_task
 }
 
-if [ -z "$DATASOURCES_DEFAULT_HOST" ] \
-  && [ -z "$DATASOURCES_DEFAULT_USERNAME" ] \
-  && [ -z "$DATASOURCES_DEFAULT_PASSWORD" ] \
-  && [ -z "$DATASOURCES_DEFAULT_DATABASE" ]; then
-  echo >&2 'Error: database credentials not provided'
-  echo >&2 'You must provide database details: hostname, username and password'
-  exit 1
-fi
-
 if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
    [ ! -f "$gpg_public_key" ] && [ ! -L "$gpg_public_key" ]; then
   gpg_gen_key
