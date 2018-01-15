@@ -39,8 +39,6 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
 
-COPY src/passbolt_api/ /var/www/passbolt/
-
 RUN curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
     && cd /var/www/passbolt \
     && composer global require hirak/prestissimo \
