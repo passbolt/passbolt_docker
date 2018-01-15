@@ -31,7 +31,6 @@ EOF" -ls /bin/sh www-data
 }
 
 gpg_import_key() {
-  key_id=""
   key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/sh www-data)
   su -c "gpg --batch --import $gpg_public_key" -ls /bin/sh www-data
   su -c "gpg -K $key_id" -ls /bin/sh www-data || su -m -c "gpg --batch --import $gpg_private_key" -ls /bin/sh www-data
@@ -44,7 +43,6 @@ gen_ssl_cert() {
 }
 
 install() {
-  tables=""
   tables=$(mysql \
     -u "$DATASOURCES_DEFAULT_USERNAME" \
     -h "$DATASOURCES_DEFAULT_HOST" \
@@ -86,8 +84,11 @@ if [ ! -f "$ssl_key" ] && [ ! -L "$ssl_key" ] && \
   gen_ssl_cert
 fi
 
-gpg_auto_fingerprint="$(su -c "gpg --with-fingerprint $gpg_public_key | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/sh www-data)"
-export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
+if [ -z "$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT" ]; then
+  gpg_auto_fingerprint="$(su -c "gpg --with-fingerprint $gpg_public_key | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/sh www-data)"
+  export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
+fi
+
 install
 email_cron_job
 
