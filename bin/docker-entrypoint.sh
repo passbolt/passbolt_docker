@@ -132,7 +132,7 @@ email_setup() {
 	sed -i "0,/"$default_password"/s:"$default_password":'${EMAIL_PASSWORD:-email_password}':" $email_config
   fi
   if [ -n "$EMAIL_CLIENT" ] ; then
-    sed -i "0,/"$default_client"/s:"$default_client":'$EMAIL_CLIENT':" $email_config
+    sed -i "0,/'client'/s:'client' => $default_client:'client' => '$EMAIL_CLIENT':" $email_config
   fi
   sed -i "0,/tls/s:false:${EMAIL_TLS:-false}:" $email_config
 
