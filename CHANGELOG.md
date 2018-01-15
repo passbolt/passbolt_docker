@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.9...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...HEAD)
+
+## [1.6.9-1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9...v1.6.9-1) - 2018-01-15
+
+### Fixed
+
+- Fix bug in how the email 'client' is edited. [#84](https://github.com/passbolt/passbolt_docker/pull/84)
 
 ## [1.6.9](https://github.com/passbolt/passbolt_docker/compare/v1.6.5+1...v1.6.9) - 2018-01-14
 
