@@ -31,7 +31,6 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
       libxslt-dev \
       libmcrypt-dev \
       supervisor \
-      git \
     && pecl install gnupg redis mcrypt-snapshot \
     && docker-php-ext-install -j4 $PHP_EXTENSIONS \
     && docker-php-ext-enable $PHP_EXTENSIONS gnupg redis mcrypt \
@@ -42,7 +41,6 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
 RUN mkdir -p /var/www/passbolt \
     && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
     && cd /var/www/passbolt \
-    && composer global require hirak/prestissimo \
     && composer install \
     && chown -R www-data:www-data /var/www/passbolt \
     && chmod 775 $(find /var/www/passbolt/tmp -type d) \
