@@ -27,3 +27,6 @@ fabric.properties
 
 # Generated docker files
 conf/*.key
+
+# src directory used for local development
+src
