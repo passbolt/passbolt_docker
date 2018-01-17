@@ -4,6 +4,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...HEAD)
 
+## [2.0.0-rc1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...v2.0.0-rc1) - 2018-01-17
+
+### Changed
+
+- Moved away from plain alpine to php:7-fpm-alpine series
+- Environment variables interface has been revamped and moved to application domain [default.php](https://github.com/passbolt/passbolt_api/blob/develop/config/default.php) and [app.default.php](https://github.com/passbolt/passbolt_api/blob/develop/config/app.default.php)
+- PHP extensions management no longer using alpine packages
+- Introduced [supervisord](http://supervisord.org/) for process monitoring
+- Introduced testing framework for development purposes based on [rspec](http://rspec.info/)
+- Reduced the dependencies installed in Dockerfile
+- Default user moved from nginx to www-data
+- Slightly changed paths of gpg serverkeys (<PASSBOLT_ROOT>/app/Config/gpg/serverkey.private.asc -> <PASSBOLT_ROOT>/config/gpg/serverkey_private.asc)
+- Refactor or docker-entrypoint.sh:
+  - Moved away from bash to sh
+  - Make it compliant with [shellcheck](https://github.com/koalaman/shellcheck)
+  - Removed search and replace commands
+
 ## [1.6.9-1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9...v1.6.9-1) - 2018-01-15
 
 ### Fixed
