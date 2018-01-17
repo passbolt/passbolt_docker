@@ -2,7 +2,8 @@ FROM php:7-fpm-alpine3.7
 
 LABEL MAINTAINER diego@passbolt.com
 
-ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/develop.tar.gz
+ENV PASSBOLT_VERSION 2.0.0-rc1
+ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
 ARG PHP_EXTENSIONS="gd \
       intl \
@@ -31,6 +32,7 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
       libxslt-dev \
       libmcrypt-dev \
       supervisor \
+      git \
     && pecl install gnupg redis mcrypt-snapshot \
     && docker-php-ext-install -j4 $PHP_EXTENSIONS \
     && docker-php-ext-enable $PHP_EXTENSIONS gnupg redis mcrypt \
@@ -41,7 +43,7 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
 RUN mkdir -p /var/www/passbolt \
     && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
     && cd /var/www/passbolt \
-    && composer install \
+    && composer install --no-dev --optimize-autoloader \
     && chown -R www-data:www-data /var/www/passbolt \
     && chmod 775 $(find /var/www/passbolt/tmp -type d) \
     && chmod 664 $(find /var/www/passbolt/tmp -type f) \
