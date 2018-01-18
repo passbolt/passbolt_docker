@@ -1,4 +1,19 @@
-# Passbolt docker official image
+```
+       ____                  __          ____          .-.
+      / __ \____  _____ ____/ /_  ____  / / /_    .--./ /      _.---.,
+     / /_/ / __ `/ ___/ ___/ __ \/ __ \/ / __/     '-,  (__..-`       \
+    / ____/ /_/ (__  |__  ) /_/ / /_/ / / /_          \                |
+   /_/    \__,_/____/____/_,___/\____/_/\__/           `,.__.   ^___.-/
+                                                         `-./ .'...--`
+  The open-source password management solution for teams    `'
+  (c) 2018 Passbolt SARL
+  https://www.passbolt.com
+```
+
+[![license](https://img.shields.io/github/license/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/LICENSE)
+[![Docker Pulls](https://img.shields.io/docker/pulls/passbolt/passbolt.svg?style=flat-square)](https://hub.docker.com/r/passbolt/passbolt/tags/)
+[![GitHub release](https://img.shields.io/github/release/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/releases)
+[![Twitter Follow](https://img.shields.io/twitter/follow/passbolt.svg?style=social&label=Follow)](https://twitter.com/passbolt)
 
 # Warning
 
