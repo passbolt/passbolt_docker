@@ -5,7 +5,7 @@
     / ____/ /_/ (__  |__  ) /_/ / /_/ / / /_          \                |
    /_/    \__,_/____/____/_,___/\____/_/\__/           `,.__.   ^___.-/
                                                          `-./ .'...--`
-  The open-source password management solution for teams    `'
+  The open source password manager for teams                `'
   (c) 2018 Passbolt SARL
   https://www.passbolt.com
 ```
