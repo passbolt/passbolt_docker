@@ -31,7 +31,7 @@ Then you can start passbolt just by providing the database container ip in the
 
 ```bash
 $ docker run --name passbolt \
-              -e DATASOURCES_DEFAULT_HOST=<mysql_container_host> \
+             -e DATASOURCES_DEFAULT_HOST=<mysql_container_host> \
              -e DATASOURCES_DEFAULT_PASSWORD=<mysql_password> \
              -e DATASOURCES_DEFAULT_USERNAME=<mysql_user> \
              -e DATASOURCES_DEFAULT_DATABASE=<mysql_database> \
@@ -55,6 +55,7 @@ available browsing `https://yourdomain.com`
 
 Passbolt docker image provides several environment variables to configure different aspects:
 
+```
 * APP_FULL_BASE_URL:                   Passbolt base url                     (Example https://yourdomain.com)
 * DATASOURCES_DEFAULT_HOST:            database hostname                     (default: localhost)
 * DATASOURCES_DEFAULT_PORT:            database port                         (default: 3306)
@@ -84,6 +85,7 @@ Passbolt docker image provides several environment variables to configure differ
 * PASSBOLT_SSL_FORCE:                  Redirects http to https from passbolt (defaults to true)
 * PASSBOLT_SECURITY_SET_HEADERS:       Send CSP Headers from passbolt        (defaults to true)
 * SECURITY_SALT:                       A random number user in security hashing methods.
+```
 
 ### Configuration files
 
@@ -102,6 +104,14 @@ It is also possible to mount a ssl certificate on the following paths:
 
 * /etc/ssl/certs/certificate.crt
 * /etc/ssl/certs/certificate.key
+
+### docker-compose
+
+Usage:
+
+```
+$ docker-compose up
+```
 
 # Requirements:
 
