@@ -77,6 +77,7 @@ Passbolt docker image provides several environment variables to configure differ
 * DATASOURCES_DEFAULT_USERNAME:        database username                     (default: my_app)
 * DATASOURCES_DEFAULT_PASSWORD:        database password                     (default: secret)
 * DATASOURCES_DEFAULT_DATABASE:        database name                         (default: my_app)
+* EMAIL_TRANSPORT_DEFAULT_CLASS_NAME:  Email classname                       (default: Smtp)
 * EMAIL_DEFAULT_FROM:                  from email address                    (default: contact@mydomain.local)
 * EMAIL_DEFAULT_TRANSPORT:             sets transport method                 (default: default)
 * EMAIL_TRANSPORT_DEFAULT_HOST:        server hostname                       (default: localhost)
@@ -94,13 +95,15 @@ Passbolt docker image provides several environment variables to configure differ
 * PASSBOLT_KEY_EMAIL:                  key owner email address               (default: passbolt@yourdomain.com)
 * PASSBOLT_KEY_EXPIRATION:             key expiration date                   (default: 0, never expires)
 * PASSBOLT_GPG_SERVER_KEY_FINGERPRINT: GnuPG fingerprint
-* PASSBOLT_GPG_SERVER_KEY_PUBLIC:      Path to GnuPG public server key       (defaults to /var/www/passbolt/config/gpg/serverkey.asc)
-* PASSBOLT_GPG_SERVER_KEY_PRIVATE:     Path to GnuPG private server key      (defaults to /var/www/passbolt/config/gpg/serverkey_private.asc)
-* PASSBOLT_REGISTRATION_PUBLIC:        Defines if users can register         (defaults to false)
-* PASSBOLT_SSL_FORCE:                  Redirects http to https from passbolt (defaults to true)
-* PASSBOLT_SECURITY_SET_HEADERS:       Send CSP Headers from passbolt        (defaults to true)
+* PASSBOLT_GPG_SERVER_KEY_PUBLIC:      Path to GnuPG public server key       (default: to /var/www/passbolt/config/gpg/serverkey.asc)
+* PASSBOLT_GPG_SERVER_KEY_PRIVATE:     Path to GnuPG private server key      (default: to /var/www/passbolt/config/gpg/serverkey_private.asc)
+* PASSBOLT_REGISTRATION_PUBLIC:        Defines if users can register         (default: to false)
+* PASSBOLT_SSL_FORCE:                  Redirects http to https from passbolt (default: to true)
+* PASSBOLT_SECURITY_SET_HEADERS:       Send CSP Headers from passbolt        (default: to true)
 * SECURITY_SALT:                       A random number user in security hashing methods.
 ```
+
+For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/develop/config/default.php)
 
 ### Configuration files
 
