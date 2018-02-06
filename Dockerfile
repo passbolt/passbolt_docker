@@ -22,6 +22,9 @@ ARG PHP_GNUPG_BUILD_DEPS="php7-dev \
       zlib-dev \
       file"
 
+ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
+      redis"
+
 RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
       nginx \
       gpgme \
@@ -33,9 +36,9 @@ RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
       libmcrypt-dev \
       supervisor \
       git \
-    && pecl install gnupg redis mcrypt-snapshot \
+    && pecl install $PECL_PASSBOLT_EXTENSIONS mcrypt-snapshot \
     && docker-php-ext-install -j4 $PHP_EXTENSIONS \
-    && docker-php-ext-enable $PHP_EXTENSIONS gnupg redis mcrypt \
+    && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS mcrypt \
     && apk del $PHP_GNUPG_BUILD_DEPS \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
