@@ -2,8 +2,8 @@ FROM php:7-fpm-alpine3.7
 
 LABEL maintainer="diego@passbolt.com"
 
-ENV PASSBOLT_VERSION 2.0.0-rc1
-ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
+ARG PASSBOLT_VERSION="2.0.0-rc1"
+ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
       intl \
