@@ -30,3 +30,5 @@ conf/*.key
 
 # src directory used for local development
 src
+
+.ruby-version
