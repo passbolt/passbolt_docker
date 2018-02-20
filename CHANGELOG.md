@@ -2,7 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...HEAD)
+
+## [2.0.0-rc2](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc1...v2.0.0-rc2) - 2018-02-20
+
+### Changed
+
+- README documentation updated
+- PECL_PASSBOLT_EXTENSIONS, PASSBOLT_VERSION and PASSBOLT_URL are now a docker build arg
+
+### Added
+
+- Docker composer files to run passbolt_docker in different environments
+- Codacy badges and reports
+
+### Fixed
+
+- Minor issues regarding bash syntax shellcheck SC2034 and SC2166
+- Hadolint DL3003 fixed
 
 ## [2.0.0-rc1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...v2.0.0-rc1) - 2018-01-17
 
