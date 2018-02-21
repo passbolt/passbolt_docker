@@ -10,7 +10,7 @@ services:
       - 3306
 
   passbolt:
-    image: passbolt/passbolt:2.0.0-rc1-alpine
+    image: passbolt/passbolt:2.0.0-rc2-alpine
     depends_on:
       - db
     env_file:
