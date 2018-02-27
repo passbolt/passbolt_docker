@@ -21,12 +21,12 @@ describe 'Dockerfile' do
   let(:passbolt_home)   { '/var/www/passbolt' }
   let(:passbolt_tmp)    { '/var/www/passbolt/tmp' }
   let(:passbolt_image)  { '/var/www/passbolt/webroot/img/public' }
-  let(:passbolt_owner)  { 'www-data' }
+  let(:passbolt_owner)  { 'nginx' }
   let(:exposed_ports)   { [ '80', '443' ] }
   let(:composer)        { '/usr/local/bin/composer'}
   let(:php_extensions)  { [
-    'curl', 'gd', 'intl', 'json', 'mcrypt', 'mysqlnd', 'xsl', 'phar',
-    'posix', 'xml', 'xsl', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
+    'gd', 'intl', 'json', 'mcrypt', 'mysqlnd', 'phar',
+    'posix', 'libxml', 'xsl', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
     ] }
 
   describe 'passbolt required php extensions' do
@@ -40,6 +40,18 @@ describe 'Dockerfile' do
   describe 'php composer' do
     it 'is installed' do
       expect(file(composer)).to be_executable
+    end
+  end
+
+  describe 'openssl' do
+    it 'is installed' do
+      expect(package('openssl')).to be_installed
+    end
+  end
+
+  describe 'php7-fpm' do
+    it 'is installed' do
+      expect(package('php7-fpm')).to be_installed
     end
   end
 
