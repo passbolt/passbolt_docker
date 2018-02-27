@@ -1,12 +1,14 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-set -eo pipefail
+set -eu
 
 gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-/var/www/passbolt/config/gpg/serverkey_private.asc}"
 gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-/var/www/passbolt/config/gpg/serverkey.asc}"
 
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
+
+export GNUPGHOME="/home/www-data/.gnupg"
 
 gpg_gen_key() {
   key_email="${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com}"
@@ -15,7 +17,7 @@ gpg_gen_key() {
   subkey_length="${PASSBOLT_SUBKEY_LENGTH:-2048}"
   expiration="${PASSBOLT_KEY_EXPIRATION:-0}"
 
-  su -m -c "gpg --batch --gen-key <<EOF
+  su -m -c "gpg --batch --no-tty --gen-key <<EOF
     Key-Type: 1
 		Key-Length: $key_length
 		Subkey-Type: 1
@@ -55,7 +57,7 @@ install() {
     su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/sh www-data
   fi
 
-  if [ -z "$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT" ]; then
+  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ]; then
     gpg_auto_fingerprint="$(su -c "gpg --with-fingerprint $gpg_public_key | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/sh www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
@@ -68,16 +70,11 @@ install() {
 }
 
 email_cron_job() {
-  root_crontab='/etc/crontabs/root'
-  cron_task_dir='/etc/periodic/1min'
-  cron_task='/etc/periodic/1min/email_queue_processing'
+  cron_task='/etc/cron.d/passbolt_email'
   process_email="/var/www/passbolt/bin/cake EmailQueue.sender --quiet"
+  echo "* * * * * su -c \"$process_email\" -s /bin/sh www-data" >> $cron_task
 
-  mkdir -p $cron_task_dir
-  echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
-  echo "#!/bin/sh" > $cron_task
-  chmod +x $cron_task
-  echo "su -c \"$process_email\" -s /bin/sh www-data" >> $cron_task
+  crontab /etc/cron.d/passbolt_email
 }
 
 if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \

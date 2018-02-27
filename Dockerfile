@@ -1,4 +1,4 @@
-FROM php:7-fpm-alpine3.7
+FROM php:7-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
@@ -10,47 +10,51 @@ ARG PHP_EXTENSIONS="gd \
       pdo_mysql \
       xsl"
 
-ARG PHP_GNUPG_BUILD_DEPS="php7-dev \
-      make \
-      gcc \
-      g++ \
-      libc-dev \
-      pkgconfig \
-      re2c \
-      gpgme-dev \
-      autoconf \
-      zlib-dev \
-      file"
-
 ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
-      redis"
+      redis \
+      mcrypt"
 
-RUN apk add --no-cache $PHP_GNUPG_BUILD_DEPS \
+ENV PECL_BASE_URL="https://pecl.php.net/get"
+ENV PHP_EXT_DIR="/usr/src/php/ext"
+
+WORKDIR /var/www/passbolt
+RUN apt-get update && apt-get -y install \
+      --no-install-recommends \
       nginx \
-      gpgme \
+      libgpgme11-dev \
       gnupg1 \
       mysql-client \
       libpng-dev \
-      icu-dev \
-      libxslt-dev \
+      libicu-dev \
+      libxslt1-dev \
       libmcrypt-dev \
       supervisor \
       git \
-    && pecl install $PECL_PASSBOLT_EXTENSIONS mcrypt-snapshot \
-    && docker-php-ext-install -j4 $PHP_EXTENSIONS \
-    && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS mcrypt \
-    && apk del $PHP_GNUPG_BUILD_DEPS \
+      netcat \
+      procps \
+      cron \
+    && mv /usr/bin/gpg /usr/bin/gpg2 \
+    && update-alternatives --verbose --install /usr/bin/gpg gnupg /usr/bin/gpg1 50 \
+    && mkdir /home/www-data \
+    && chown -R www-data:www-data /home/www-data \
+    && usermod -d /home/www-data www-data \
+    && docker-php-source extract \
+    && for i in $PECL_PASSBOLT_EXTENSIONS; do \
+         mkdir $PHP_EXT_DIR/$i; \
+         curl -sSL $PECL_BASE_URL/$i | tar zxf - -C $PHP_EXT_DIR/$i --strip-components 1; \
+       done \
+    && docker-php-ext-install -j4 $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
+    && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer
-
-WORKDIR /var/www/passbolt
-RUN curl -sSL $PASSBOLT_URL | tar zxf - -C . --strip-components 1 \
+    && mv composer.phar /usr/local/bin/composer \
+    && curl -sSL $PASSBOLT_URL | tar zxf - -C . --strip-components 1 \
     && composer install --no-dev --optimize-autoloader \
     && chown -R www-data:www-data . \
     && chmod 775 $(find /var/www/passbolt/tmp -type d) \
     && chmod 664 $(find /var/www/passbolt/tmp -type f) \
     && chmod 775 $(find /var/www/passbolt/webroot/img/public -type d) \
-    && chmod 664 $(find /var/www/passbolt/webroot/img/public -type f)
+    && chmod 664 $(find /var/www/passbolt/webroot/img/public -type f) \
+    && rm /etc/nginx/sites-enabled/default
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisord.conf /etc/supervisord.conf
