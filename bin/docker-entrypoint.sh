@@ -24,16 +24,16 @@ gpg_gen_key() {
     Name-Email: $key_email
     Expire-Date: $expiration
 		%commit
-EOF" -ls /bin/sh nginx
+EOF" -ls /bin/sh www-data
 
-  su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/sh nginx
-  su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/sh nginx
+  su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/sh www-data
+  su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/sh www-data
 }
 
 gpg_import_key() {
-  key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/sh nginx)
-  su -c "gpg --batch --import $gpg_public_key" -ls /bin/sh nginx
-  su -c "gpg -K $key_id" -ls /bin/sh nginx || su -m -c "gpg --batch --import $gpg_private_key" -ls /bin/sh nginx
+  key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/sh www-data)
+  su -c "gpg --batch --import $gpg_public_key" -ls /bin/sh www-data
+  su -c "gpg -K $key_id" -ls /bin/sh www-data || su -m -c "gpg --batch --import $gpg_private_key" -ls /bin/sh www-data
 }
 
 gen_ssl_cert() {
@@ -52,16 +52,16 @@ install() {
   app_config="/var/www/passbolt/config/app.php"
 
   if [ ! -f "$app_config" ]; then
-    su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/sh nginx
+    su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/sh www-data
   fi
 
   if [ -z "$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT" ]; then
-    gpg_auto_fingerprint="$(su -c "gpg --with-fingerprint $gpg_public_key | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/sh nginx)"
+    gpg_auto_fingerprint="$(su -c "gpg --with-fingerprint $gpg_public_key | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/sh www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
   if [ "$tables" -eq 0 ]; then
-    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin --force' -s /bin/sh nginx
+    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin --force' -s /bin/sh www-data
   else
     echo "Enjoy! ☮"
   fi
@@ -77,7 +77,7 @@ email_cron_job() {
   echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
   echo "#!/bin/sh" > $cron_task
   chmod +x $cron_task
-  echo "su -c \"$process_email\" -s /bin/sh nginx" >> $cron_task
+  echo "su -c \"$process_email\" -s /bin/sh www-data" >> $cron_task
 }
 
 if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
