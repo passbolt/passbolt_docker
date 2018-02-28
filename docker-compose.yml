@@ -10,7 +10,8 @@ services:
       - 3306
 
   passbolt:
-    image: gcr.io/passbolt-production/passbolt-api:2.0.0-rc2-debian
+    image: passbolt/passbolt:develop-debian
+    tty: true
     depends_on:
       - db
     env_file:

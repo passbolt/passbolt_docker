@@ -49,17 +49,17 @@ describe 'passbolt_api service' do
 
   describe 'php service' do
     it 'is running supervised' do
-      expect(process('php-fpm')).to be_running.under('supervisor')
+      expect(service('php-fpm')).to be_running.under('supervisor')
     end
 
     it 'has its port open' do
-      expect(port(9000)).to be_listening.with('tcp')
+      expect(@container.json['Config']['ExposedPorts']).to have_key('9000/tcp')
     end
   end
 
   describe 'email cron' do
     it 'is running supervised' do
-      expect(service('crond')).to be_running.under('supervisor')
+      expect(service('cron')).to be_running.under('supervisor')
     end
   end
 
@@ -69,11 +69,11 @@ describe 'passbolt_api service' do
     end
 
     it 'is listening on port 80' do
-      expect(port(80)).to be_listening.with('tcp')
+      expect(@container.json['Config']['ExposedPorts']).to have_key('80/tcp')
     end
 
     it 'is listening on port 443' do
-      expect(port(443)).to be_listening.with('tcp')
+      expect(@container.json['Config']['ExposedPorts']).to have_key('443/tcp')
     end
   end
 

@@ -18,24 +18,26 @@ gpg_gen_key() {
   expiration="${PASSBOLT_KEY_EXPIRATION:-0}"
 
   su -m -c "gpg --batch --no-tty --gen-key <<EOF
-    Key-Type: 1
+    Key-Type: default
 		Key-Length: $key_length
-		Subkey-Type: 1
+		Subkey-Type: default
 		Subkey-Length: $subkey_length
     Name-Real: $key_name
     Name-Email: $key_email
     Expire-Date: $expiration
+    %no-protection
 		%commit
 EOF" -ls /bin/sh www-data
+
+  su -c "gpg --batch --yes --pinentry-mode loopback --quick-gen-key --passphrase '' $key_email" -ls /bin/sh www-data
 
   su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/sh www-data
   su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/sh www-data
 }
 
 gpg_import_key() {
-  key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/sh www-data)
-  su -c "gpg --batch --import $gpg_public_key" -ls /bin/sh www-data
-  su -c "gpg -K $key_id" -ls /bin/sh www-data || su -m -c "gpg --batch --import $gpg_private_key" -ls /bin/sh www-data
+  su -c "gpg --batch --import $gpg_public_key" -ls /bin/bash www-data
+  su -c "gpg --batch --import $gpg_private_key" -ls /bin/bash www-data
 }
 
 gen_ssl_cert() {
@@ -46,11 +48,11 @@ gen_ssl_cert() {
 
 install() {
   tables=$(mysql \
-    -u "$DATASOURCES_DEFAULT_USERNAME" \
-    -h "$DATASOURCES_DEFAULT_HOST" \
-    -P "$DATASOURCES_DEFAULT_PORT" \
-    -BN -e "SHOW TABLES FROM $DATASOURCES_DEFAULT_DATABASE" \
-    -p"$DATASOURCES_DEFAULT_PASSWORD" |wc -l)
+    -u "${DATASOURCES_DEFAULT_USERNAME:-passbolt}" \
+    -h "${DATASOURCES_DEFAULT_HOST:-localhost}" \
+    -P "${DATASOURCES_DEFAULT_PORT:-3306}" \
+    -BN -e "SHOW TABLES FROM ${DATASOURCES_DEFAULT_DATABASE:-passbolt}" \
+    -p"${DATASOURCES_DEFAULT_PASSWORD:-P4ssb0lt}" |wc -l)
   app_config="/var/www/passbolt/config/app.php"
 
   if [ ! -f "$app_config" ]; then
@@ -58,21 +60,23 @@ install() {
   fi
 
   if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ]; then
-    gpg_auto_fingerprint="$(su -c "gpg --with-fingerprint $gpg_public_key | grep fingerprint | awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/sh www-data)"
+    gpg_auto_fingerprint="$(su -c "gpg --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/sh www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
   if [ "$tables" -eq 0 ]; then
     su -c '/var/www/passbolt/bin/cake passbolt install --no-admin --force' -s /bin/sh www-data
   else
+    su -c '/var/www/passbolt/bin/cake migrations migrate' -s /bin/sh www-data
     echo "Enjoy! ☮"
   fi
 }
 
 email_cron_job() {
+  printenv > /etc/environment
+  sed -i 's/=\(.*\)/="\1"/g' /etc/environment
   cron_task='/etc/cron.d/passbolt_email'
-  process_email="/var/www/passbolt/bin/cake EmailQueue.sender --quiet"
-  echo "* * * * * su -c \"$process_email\" -s /bin/sh www-data" >> $cron_task
+  echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> $cron_task
 
   crontab /etc/cron.d/passbolt_email
 }
@@ -93,4 +97,4 @@ fi
 install
 email_cron_job
 
-/usr/bin/supervisord -n -c /etc/supervisord.conf
+/usr/bin/supervisord -n
