@@ -27,12 +27,12 @@ gpg_gen_key() {
     Expire-Date: $expiration
     %no-protection
 		%commit
-EOF" -ls /bin/sh www-data
+EOF" -ls /bin/bash www-data
 
-  su -c "gpg --batch --yes --pinentry-mode loopback --quick-gen-key --passphrase '' $key_email" -ls /bin/sh www-data
+  su -c "gpg --batch --yes --pinentry-mode loopback --quick-gen-key --passphrase '' $key_email" -ls /bin/bash www-data
 
-  su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/sh www-data
-  su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/sh www-data
+  su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash www-data
+  su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/bash www-data
 }
 
 gpg_import_key() {
@@ -56,18 +56,18 @@ install() {
   app_config="/var/www/passbolt/config/app.php"
 
   if [ ! -f "$app_config" ]; then
-    su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/sh www-data
+    su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/bash www-data
   fi
 
   if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ]; then
-    gpg_auto_fingerprint="$(su -c "gpg --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/sh www-data)"
+    gpg_auto_fingerprint="$(su -c "gpg --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
   if [ "$tables" -eq 0 ]; then
-    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin --force' -s /bin/sh www-data
+    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin --force' -s /bin/bash www-data
   else
-    su -c '/var/www/passbolt/bin/cake migrations migrate' -s /bin/sh www-data
+    su -c '/var/www/passbolt/bin/cake migrations migrate' -s /bin/bash www-data
     echo "Enjoy! ☮"
   fi
 }
