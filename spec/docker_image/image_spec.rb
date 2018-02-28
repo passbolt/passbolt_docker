@@ -26,7 +26,7 @@ describe 'Dockerfile' do
   let(:composer)        { '/usr/local/bin/composer'}
   let(:php_extensions)  { [
     'curl', 'gd', 'intl', 'json', 'mcrypt', 'mysqlnd', 'xsl', 'phar',
-    'posix', 'xml', 'xsl', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
+    'posix', 'xml', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
     ] }
 
   describe 'passbolt required php extensions' do

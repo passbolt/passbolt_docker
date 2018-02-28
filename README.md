@@ -51,7 +51,7 @@ $ docker run --name passbolt \
              -e DATASOURCES_DEFAULT_USERNAME=<mysql_user> \
              -e DATASOURCES_DEFAULT_DATABASE=<mysql_database> \
              -e APP_FULL_BASE_URL=https://mydomain.com \
-             passbolt/passbolt:2.0.0-rc1
+             passbolt/passbolt:develop-debian
 ```
 
 Once the container is running create your first admin user:
@@ -133,6 +133,6 @@ $ docker-compose up
 
 # Requirements:
 
-* rng-tools are required on host machine to speed up entropy generation on containers.
+* rng-tools or haveged are required on host machine to speed up entropy generation on containers.
 This way gpg key creation on passbolt container will be faster.
 * mysql >= 5.6
