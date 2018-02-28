@@ -17,7 +17,7 @@ gpg_gen_key() {
   subkey_length="${PASSBOLT_SUBKEY_LENGTH:-2048}"
   expiration="${PASSBOLT_KEY_EXPIRATION:-0}"
 
-  su -m -c "gpg --batch --no-tty --gen-key <<EOF
+  su -c "gpg --batch --no-tty --gen-key <<EOF
     Key-Type: default
 		Key-Length: $key_length
 		Subkey-Type: default
