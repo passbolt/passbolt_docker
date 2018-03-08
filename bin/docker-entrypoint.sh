@@ -29,8 +29,6 @@ gpg_gen_key() {
 		%commit
 EOF" -ls /bin/bash www-data
 
-  su -c "gpg --batch --yes --pinentry-mode loopback --quick-gen-key --passphrase '' $key_email" -ls /bin/bash www-data
-
   su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash www-data
   su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/bash www-data
 }
