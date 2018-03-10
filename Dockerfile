@@ -47,7 +47,15 @@ RUN apt-get update \
     && docker-php-ext-install -j4 $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && docker-php-source delete \
-    && curl -sS https://getcomposer.org/installer | php \
+    && EXPECTED_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
+    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && ACTUAL_SIGNATURE=$(php -r "echo hash_file('SHA384', 'composer-setup.php');") \
+    && if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]; then \
+         >&2 echo 'ERROR: Invalid installer signature'; \
+         rm composer-setup.php; \
+         exit 1; \
+       fi \
+    && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
     && curl -sSL $PASSBOLT_URL | tar zxf - -C . --strip-components 1 \
     && composer install -n --no-dev --optimize-autoloader \
