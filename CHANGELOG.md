@@ -2,7 +2,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.10...HEAD)
+
+## [1.6.10](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...v1.6.10) - 2018-03-28
+
+### Fixed
+
+- chown fails with Docker Secrets, can't start container [#89](https://github.com/passbolt/passbolt_docker/pull/89)
+
+### Changed
+
+The container base image has been migrated from alpine to debian. The reason behind this change
+is that we have detected slower performance in alpine based images. Changing the image introduced a few changes
+in the structure of the container:
+- Bigger images
+- www user is now www-data user
+- cron jobs are managed as crontabs in /var/spool/cron/crontabs/root
+- Permissions check on the passbolt base dir has been removed as it was a big performance penalty on startup times.
 
 ## [1.6.9-1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9...v1.6.9-1) - 2018-01-15
 
