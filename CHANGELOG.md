@@ -19,6 +19,7 @@ in the structure of the container:
 - www user is now www-data user
 - cron jobs are managed as crontabs in /var/spool/cron/crontabs/root
 - Permissions check on the passbolt base dir has been removed as it was a big performance penalty on startup times.
+- Docker hub tags will now follow the PASSBOLT_VERSION-debian pattern
 
 ## [1.6.9-1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9...v1.6.9-1) - 2018-01-15
 
