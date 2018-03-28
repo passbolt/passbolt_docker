@@ -1,73 +1,72 @@
-FROM alpine:3.6
+FROM php:5-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ENV PASSBOLT_VERSION 1.6.9
+ENV PASSBOLT_VERSION 1.6.10
 ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
 
-ARG BASE_PHP_DEPS="php5-curl \
-      php5-common \
-      php5-gd \
-      php5-intl \
-      php5-json \
-      php5-mcrypt \
-      php5-mysql \
-      php5-xsl \
-      php5-fpm \
-      php5-phar \
-      php5-posix \
-      php5-xml \
-      php5-openssl \
-      php5-zlib \
-      php5-ctype \
-      php5-pdo \
-      php5-pdo_mysql \
-      php5-pear"
+ARG PHP_EXTENSIONS="gd \
+      intl \
+      pdo_mysql \
+      mcrypt \
+      xsl"
 
-ARG PHP_GNUPG_DEPS="php5-dev \
-      make \
-      gcc \
-      g++ \
-      libc-dev \
-      pkgconfig \
-      re2c \
-      gpgme-dev \
-      autoconf \
-      zlib-dev \
-      file"
+ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
+      redis"
 
-RUN apk add --no-cache $BASE_PHP_DEPS \
-      sed \
-      coreutils \
-      tar \
-      bash \
-      curl \
-      nginx \
-      gpgme \
-      gnupg1 \
-      recode \
-      libxml2 \
-      openssl \
-      libpcre32 \
-      mysql-client \
-      ca-certificates
+ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
+      libpng-dev \
+      libxslt1-dev \
+      libmcrypt-dev \
+      unzip \
+      git"
 
-RUN apk add --no-cache $PHP_GNUPG_DEPS  \
-    && ln -s /usr/bin/php5 /usr/bin/php \
-    && ln -s /usr/bin/phpize5 /usr/bin/phpize \
-    && sed -i "s/ -n / /" $(which pecl) \
-    && pecl install gnupg \
-    && pecl install redis \
-    && echo "extension=gnupg.so" > /etc/php5/conf.d/gnupg.ini \
-    && echo "extension=redis.so" > /etc/php5/conf.d/redis.ini \
-    && apk del $PHP_GNUPG_DEPS \
-    && curl -sS https://getcomposer.org/installer | php \
+ENV PECL_BASE_URL="https://pecl.php.net/get"
+ENV PHP_EXT_DIR="/usr/src/php/ext"
+
+WORKDIR /var/www/passbolt
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends $PASSBOLT_DEV_PACKAGES \
+         nginx \
+         gnupg \
+         libgpgme11 \
+         libmcrypt4 \
+         libicu-dev \
+         mysql-client \
+         supervisor \
+         netcat \
+         cron \
+    && mkdir /home/www-data \
+    && chown -R www-data:www-data /home/www-data \
+    && usermod -d /home/www-data www-data \
+    && docker-php-source extract \
+    && for i in $PECL_PASSBOLT_EXTENSIONS; do \
+         mkdir $PHP_EXT_DIR/$i; \
+         curl -sSL $PECL_BASE_URL/$i | tar zxf - -C $PHP_EXT_DIR/$i --strip-components 1; \
+       done \
+    && docker-php-ext-install -j4 $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
+    && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
+    && docker-php-source delete \
+    && EXPECTED_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
+    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && ACTUAL_SIGNATURE=$(php -r "echo hash_file('SHA384', 'composer-setup.php');") \
+    && if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]; then \
+         >&2 echo 'ERROR: Invalid installer signature'; \
+         rm composer-setup.php; \
+         exit 1; \
+       fi \
+    && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
-    && mkdir /var/www/passbolt \
-    && curl -sSL $PASSBOLT_URL | tar zxf - -C /var/www/passbolt --strip-components 1 \
-    && chown -R nginx:nginx /var/www/passbolt \
-    && chmod -R +w /var/www/passbolt/app/tmp \
-    && chmod +w /var/www/passbolt/app/webroot/img/public
+    && curl -sSL $PASSBOLT_URL | tar zxf - -C . --strip-components 1 \
+    && composer install -n --no-dev --optimize-autoloader \
+    && chown -R www-data:www-data . \
+    && chmod 775 $(find /var/www/passbolt/app/tmp -type d) \
+    && chmod 664 $(find /var/www/passbolt/app/tmp -type f) \
+    && chmod 775 $(find /var/www/passbolt/app/webroot/img/public -type d) \
+    && chmod 664 $(find /var/www/passbolt/app/webroot/img/public -type f) \
+    && rm /etc/nginx/sites-enabled/default \
+    && apt-get purge -y --auto-remove $PASSBOLT_DEV_PACKAGES \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
