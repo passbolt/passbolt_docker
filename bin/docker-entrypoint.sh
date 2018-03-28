@@ -14,7 +14,7 @@ ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
 gpg_gen_key() {
-  su -m -c "$gpg --batch --gen-key <<EOF
+  su -c "$gpg --batch --gen-key <<EOF
     Key-Type: 1
 		Key-Length: ${KEY_LENGTH:-2048}
 		Subkey-Type: 1
@@ -22,19 +22,20 @@ gpg_gen_key() {
 		Name-Real: ${KEY_NAME:-Passbolt default user}
 		Name-Email: ${KEY_EMAIL:-passbolt@yourdomain.com}
 		Expire-Date: ${KEY_EXPIRATION:-0}
+    %no-protection
 		%commit
-EOF" -ls /bin/bash nginx
+EOF" -ls /bin/bash www-data
 
-  su -m -c "$gpg --armor --export-secret-keys $KEY_EMAIL > $gpg_private_key" -ls /bin/bash nginx
-  su -m -c "$gpg --armor --export $KEY_EMAIL > $gpg_public_key" -ls /bin/bash nginx
+  su -c "$gpg --armor --export-secret-keys $KEY_EMAIL > $gpg_private_key" -ls /bin/bash www-data
+  su -c "$gpg --armor --export $KEY_EMAIL > $gpg_public_key" -ls /bin/bash www-data
 }
 
 gpg_import_key() {
 
-  local key_id=$(su -m -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/bash nginx)
+  local key_id=$(su -c "gpg --with-colons $gpg_private_key | grep sec |cut -f5 -d:" -ls /bin/bash www-data)
 
-  su -m -c "$gpg --batch --import $gpg_public_key" -ls /bin/bash nginx
-  su -m -c "gpg -K $key_id" -ls /bin/bash nginx || su -m -c "$gpg --batch --import $gpg_private_key" -ls /bin/bash nginx
+  su -c "$gpg --batch --import $gpg_public_key" -ls /bin/bash www-data
+  su -c "gpg -K $key_id" -ls /bin/bash www-data || su -c "$gpg --batch --import $gpg_private_key" -ls /bin/bash www-data
 }
 
 core_setup() {
@@ -84,11 +85,9 @@ app_setup() {
   local default_public_key='unsecure.key'
   local default_private_key='unsecure_private.key'
   local default_fingerprint='2FC8945833C51946E937F9FED47B0811573EE67E'
-  local gpg_home='/var/lib/nginx/.gnupg'
-  local auto_fingerprint=$(su -m -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash nginx)
+  local auto_fingerprint=$(su -c "$gpg --fingerprint |grep fingerprint| awk '{for(i=4;i<=NF;++i)printf \$i}'" -ls /bin/bash www-data)
 
   cp $app_config{.default,}
-  sed -i s:$default_home:$gpg_home:g $app_config
   sed -i s:$default_public_key:serverkey.asc:g $app_config
   sed -i s:$default_private_key:serverkey.private.asc:g $app_config
   sed -i s:$default_fingerprint:${FINGERPRINT:-$auto_fingerprint}:g $app_config
@@ -153,41 +152,19 @@ install() {
   tables=$(mysql -u ${database_user:-passbolt} -h $database_host -P ${database_port:-3306} -p -BN -e "SHOW TABLES FROM ${database_name:-passbolt}" -p${database_pass:-P4ssb0lt} |wc -l)
 
   if [ $tables -eq 0 ]; then
-    su -c "/var/www/passbolt/app/Console/cake install --send-anonymous-statistics true --no-admin" -ls /bin/bash nginx
+    su -c "/var/www/passbolt/app/Console/cake install --send-anonymous-statistics true --no-admin" -ls /bin/bash www-data
   else
     echo "Enjoy! ☮"
   fi
 }
 
-php_fpm_setup() {
-  sed -i '/^user\s/ s:nobody:nginx:g' /etc/php5/php-fpm.conf
-  sed -i '/^group\s/ s:nobody:nginx:g' /etc/php5/php-fpm.conf
-  cp /etc/php5/php-fpm.conf /etc/php5/fpm.d/www.conf
-  sed -i '/^include\s/ s:^:#:' /etc/php5/fpm.d/www.conf
-}
-
-check_permissions() {
-  chown -R nginx:nginx /var/www/passbolt
-  chmod -R +w /var/www/passbolt/app/tmp
-  chmod +w /var/www/passbolt/app/webroot/img/public
-}
-
 email_cron_job() {
-  local root_crontab='/etc/crontabs/root'
-  local cron_task_dir='/etc/periodic/1min'
-  local cron_task='/etc/periodic/1min/email_queue_processing'
-  local process_email="/var/www/passbolt/app/Console/cake EmailQueue.sender --quiet"
+  cron_task='/etc/cron.d/passbolt_email'
+  echo "* * * * * su -c \"/var/www/passbolt/app/Console/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> $cron_task
 
-  mkdir -p $cron_task_dir
+  crontab /etc/cron.d/passbolt_email
 
-  if ! grep $cron_task_dir $root_crontab > /dev/null; then
-    echo "* * * * * run-parts $cron_task_dir" >> $root_crontab
-  fi
-  echo "#!/bin/sh" > $cron_task
-  chmod +x $cron_task
-  echo "su -c \"$process_email\" -ls /bin/bash nginx" >> $cron_task
-
-  crond -f -c /etc/crontabs &
+  cron -f -l &
 }
 
 if [ ! -f $gpg_private_key ] && [ ! -L $gpg_private_key ] || \
@@ -218,15 +195,10 @@ if [ ! -f $ssl_key ] && [ ! -L $ssl_key ] && \
   gen_ssl_cert
 fi
 
-check_permissions
-
-php_fpm_setup
-
 install
 
-php-fpm5
+php-fpm &
 
 email_cron_job
 
-nginx -g "pid /tmp/nginx.pid; daemon off;"
-
+nginx -g "daemon off;"
