@@ -2,7 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...HEAD)
+
+## [2.0.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...v2.0.0) - 2018-04-09
+
+### Changed
+
+- Base image switched to php:7-fpm (debian based) due performance issues with passbolt and alpine based images
+- Web user is now www-data
+- Supervisor provides better logging to stdout
+- Upload max filesize increased to 5M for avatar uploads
+- README documentation updated
+- Composer file loads images directory in passbolt container as a docker volume
+
+### Added
+
+- Added composer installer signature check according to official composer docs [#91](https://github.com/passbolt/passbolt_docker/pull/91)
 
 ## [2.0.0-rc2](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc1...v2.0.0-rc2) - 2018-02-20
 
