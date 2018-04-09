@@ -1,0 +1,12 @@
+spec
+.git
+.github
+.editorconfig
+.gitignore
+Gemfile
+Gemfile.lock
+Rakefile
+*.md
+*.yml
+scripts
+env

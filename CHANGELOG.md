@@ -2,7 +2,41 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...HEAD)
+
+## [2.0.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...v2.0.0) - 2018-04-09
+
+### Changed
+
+- Base image switched to php:7-fpm (debian based) due performance issues with passbolt and alpine based images
+- Web user is now www-data
+- Supervisor provides better logging to stdout
+- Upload max filesize increased to 5M for avatar uploads
+- README documentation updated
+- Composer file loads images directory in passbolt container as a docker volume
+
+### Added
+
+- Added composer installer signature check according to official composer docs [#91](https://github.com/passbolt/passbolt_docker/pull/91)
+
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.10...HEAD)
+
+## [1.6.10](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...v1.6.10) - 2018-03-28
+
+### Fixed
+
+- chown fails with Docker Secrets, can't start container [#89](https://github.com/passbolt/passbolt_docker/pull/89)
+
+### Changed
+
+The container base image has been migrated from alpine to debian. The reason behind this change
+is that we have detected slower performance in alpine based images. Changing the image introduced a few changes
+in the structure of the container:
+- Bigger images
+- www user is now www-data user
+- cron jobs are managed as crontabs in /var/spool/cron/crontabs/root
+- Permissions check on the passbolt base dir has been removed as it was a big performance penalty on startup times.
+- Docker hub tags will now follow the PASSBOLT_VERSION-debian pattern
 
 ## [2.0.0-rc2](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc1...v2.0.0-rc2) - 2018-02-20
 

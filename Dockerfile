@@ -2,8 +2,14 @@ FROM php:7-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.0.0-rc2"
+ARG PASSBOLT_VERSION="2.0.0"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
+
+ARG PHP_EXTENSIONS="gd \
+      intl \
+      pdo_mysql \
+      xsl"
+
 
 ARG PHP_EXTENSIONS="gd \
       intl \
