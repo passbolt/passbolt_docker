@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...HEAD)
 
+## [2.0.1](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...v2.0.1) - 2018-04-09
+
+- Decrypt bug fix. Check https://github.com/passbolt/passbolt_api
+
 ## [2.0.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...v2.0.0) - 2018-04-09
 
 ### Changed
@@ -18,8 +22,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - Added composer installer signature check according to official composer docs [#91](https://github.com/passbolt/passbolt_docker/pull/91)
-
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.10...HEAD)
 
 ## [1.6.10](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...v1.6.10) - 2018-03-28
 
