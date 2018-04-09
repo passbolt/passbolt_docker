@@ -2,6 +2,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...HEAD)
+
+## [2.0.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...v2.0.0) - 2018-04-09
+
+### Changed
+
+- Base image switched to php:7-fpm (debian based) due performance issues with passbolt and alpine based images
+- Web user is now www-data
+- Supervisor provides better logging to stdout
+- Upload max filesize increased to 5M for avatar uploads
+- README documentation updated
+- Composer file loads images directory in passbolt container as a docker volume
+
+### Added
+
+- Added composer installer signature check according to official composer docs [#91](https://github.com/passbolt/passbolt_docker/pull/91)
+
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v1.6.10...HEAD)
 
 ## [1.6.10](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...v1.6.10) - 2018-03-28
@@ -20,6 +37,40 @@ in the structure of the container:
 - cron jobs are managed as crontabs in /var/spool/cron/crontabs/root
 - Permissions check on the passbolt base dir has been removed as it was a big performance penalty on startup times.
 - Docker hub tags will now follow the PASSBOLT_VERSION-debian pattern
+
+## [2.0.0-rc2](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc1...v2.0.0-rc2) - 2018-02-20
+
+### Changed
+
+- README documentation updated
+- PECL_PASSBOLT_EXTENSIONS, PASSBOLT_VERSION and PASSBOLT_URL are now a docker build arg
+
+### Added
+
+- Docker composer files to run passbolt_docker in different environments
+- Codacy badges and reports
+
+### Fixed
+
+- Minor issues regarding bash syntax shellcheck SC2034 and SC2166
+- Hadolint DL3003 fixed
+
+## [2.0.0-rc1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9-1...v2.0.0-rc1) - 2018-01-17
+
+### Changed
+
+- Moved away from plain alpine to php:7-fpm-alpine series
+- Environment variables interface has been revamped and moved to application domain [default.php](https://github.com/passbolt/passbolt_api/blob/develop/config/default.php) and [app.default.php](https://github.com/passbolt/passbolt_api/blob/develop/config/app.default.php)
+- PHP extensions management no longer using alpine packages
+- Introduced [supervisord](http://supervisord.org/) for process monitoring
+- Introduced testing framework for development purposes based on [rspec](http://rspec.info/)
+- Reduced the dependencies installed in Dockerfile
+- Default user moved from nginx to www-data
+- Slightly changed paths of gpg serverkeys (<PASSBOLT_ROOT>/app/Config/gpg/serverkey.private.asc -> <PASSBOLT_ROOT>/config/gpg/serverkey_private.asc)
+- Refactor or docker-entrypoint.sh:
+  - Moved away from bash to sh
+  - Make it compliant with [shellcheck](https://github.com/koalaman/shellcheck)
+  - Removed search and replace commands
 
 ## [1.6.9-1](https://github.com/passbolt/passbolt_docker/compare/v1.6.9...v1.6.9-1) - 2018-01-15
 

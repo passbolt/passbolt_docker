@@ -1,117 +1,116 @@
-# Passbolt docker official image
+```
+       ____                  __          ____          .-.
+      / __ \____  _____ ____/ /_  ____  / / /_    .--./ /      _.---.,
+     / /_/ / __ `/ ___/ ___/ __ \/ __ \/ / __/     '-,  (__..-`       \
+    / ____/ /_/ (__  |__  ) /_/ / /_/ / / /_          \                |
+   /_/    \__,_/____/____/_,___/\____/_/\__/           `,.__.   ^___.-/
+                                                         `-./ .'...--`
+  The open source password manager for teams                `'
+  (c) 2018 Passbolt SARL
+  https://www.passbolt.com
+```
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0de4eaf7426944769a70a2d727a9012b)](https://www.codacy.com/app/passbolt/passbolt_docker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=passbolt/passbolt_docker&amp;utm_campaign=Badge_Grade)
+[![Docker Pulls](https://img.shields.io/docker/pulls/passbolt/passbolt.svg?style=flat-square)](https://hub.docker.com/r/passbolt/passbolt/tags/)
+[![GitHub release](https://img.shields.io/github/release/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/releases)
+[![license](https://img.shields.io/github/license/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/LICENSE)
+[![Twitter Follow](https://img.shields.io/twitter/follow/passbolt.svg?style=social&label=Follow)](https://twitter.com/passbolt)
 
 # What is passbolt?
 
 Passbolt is a free and open source password manager that allows team members to
 store and share credentials securely.
 
-# Scope of this repository
+# Usage
 
-This repository will allow passbolt power users to customize their passbolt image to fit their needs on
-specific environments. It is also a community meeting point to exchange feedback, request for new features
-track issues and pull requests.
-
-Users that do not require any special modifications are encouraged to `docker pull` the
-[official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
-
-There is also a yet unofficial project to use [passbolt along with docker-compose](https://github.com/dlen/passbolt-compose) for easier the setup process.
-
-# Build the image
-
-Inside the repo directory:
-
-`$ docker build . -t passbolt:local`
-
-# How to use the local image?
+Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
 
 ## Start passbolt instance
 
-Passbolt requires mysql to be running. The following example use mysql official docker image
-with the default passbolt credentials.
+Passbolt requires mysql to be running. The following example use mysql official
+docker image with the default passbolt credentials.
 
 ```bash
-$ docker run -e MYSQL_ROOT_PASSWORD=<your_root_password> \
-             -e MYSQL_DATABASE=passbolt \
-             -e MYSQL_USER=passbolt \
-             -e MYSQL_PASSWORD=P4ssb0lt \
+$ docker run -e MYSQL_ROOT_PASSWORD=<root_password> \
+             -e MYSQL_DATABASE=<mysql_database> \
+             -e MYSQL_USER=<mysql_user> \
+             -e MYSQL_PASSWORD=<mysql_password> \
              mysql
 ```
 
-Then you can start passbolt just by providing the database container ip in the `db_host` environment variable.
+Then you can start passbolt just by providing the database container ip in the
+`db_host` environment variable.
 
-`$ docker run -e DB_HOST=<mysql_container_ip> passbolt:local`
+```bash
+$ docker run --name passbolt \
+             -e DATASOURCES_DEFAULT_HOST=<mysql_container_host> \
+             -e DATASOURCES_DEFAULT_PASSWORD=<mysql_password> \
+             -e DATASOURCES_DEFAULT_USERNAME=<mysql_user> \
+             -e DATASOURCES_DEFAULT_DATABASE=<mysql_database> \
+             -e APP_FULL_BASE_URL=https://mydomain.com \
+             passbolt/passbolt:develop-debian
+```
 
-Once the process is done, just navigate to the following url in your browser: https://passbolt_container_ip
+Once the container is running create your first admin user:
 
-### Note on starting passbolt container on MacOS systems
+```bash
+$ docker exec passbolt su -m -c "/var/www/passbolt/bin/cake passbolt register_user -u your@email.com -f yourname -l surname -r admin" -s /bin/sh www-data
+```
 
-Due to the [limitations](https://docs.docker.com/docker-for-mac/networking/#known-limitations-use-cases-and-workarounds)
-of docker networking under MacOS users should start the container exposing a port on the host:
-
-`$ docker run -p host_port:443 -e DB_HOST=<mysql_container_ip> passbolt:local`
-
-And access it using https://localhost:host_port
+This registration command will return a single use url required to continue the
+web browser setup and finish the registration. Your passbolt instance should be
+available browsing `https://yourdomain.com`
 
 # Configure passbolt
 
-## Environment variables
+## Environment variables reference
 
 Passbolt docker image provides several environment variables to configure different aspects:
 
-### GnuPG key creation related variables
+| Variable name                       | Description                      | Default value       |
+| ----------------------------------- | -------------------------------- | ------------------- |
+| APP_FULL_BASE_URL                   | Passbolt base url                | false |
+| DATASOURCES_DEFAULT_HOST            | Database hostname                | localhost |
+| DATASOURCES_DEFAULT_PORT            | Database port                    | 3306 |
+| DATASOURCES_DEFAULT_USERNAME        | Database username                | '' |
+| DATASOURCES_DEFAULT_PASSWORD        | Database password                | '' |
+| DATASOURCES_DEFAULT_DATABASE        | Database name                    | '' |
+| EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                  | Smtp |
+| EMAIL_DEFAULT_FROM                  | From email address               | you@localhost |
+| EMAIL_DEFAULT_TRANSPORT             | Sets transport method            | default |
+| EMAIL_TRANSPORT_DEFAULT_HOST        | Server hostname                  | localhost |
+| EMAIL_TRANSPORT_DEFAULT_PORT        | Server port                      | 25 |
+| EMAIL_TRANSPORT_DEFAULT_TIMEOUT     | Timeout                          | 30 |
+| EMAIL_TRANSPORT_DEFAULT_USERNAME    | Username for email server auth   | null |
+| EMAIL_TRANSPORT_DEFAULT_PASSWORD    | Password for email server auth   | null |
+| EMAIL_TRANSPORT_DEFAULT_CLIENT      | Client                           | null |
+| EMAIL_TRANSPORT_DEFAULT_TLS         | Set tls                          | null |
+| EMAIL_TRANSPORT_DEFAULT_URL         | Set url                          | null |
+| GNUPGHOME                           | path to gnupghome directory      | /home/www-data/.gnupg |
+| PASSBOLT_KEY_LENGTH                 | Gpg desired key length           | 2048 |
+| PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length        | 2048 |
+| PASSBOLT_KEY_NAME                   | Key owner name                   | Passbolt default user |
+| PASSBOLT_KEY_EMAIL                  | Key owner email address          | passbolt@yourdomain.com |
+| PASSBOLT_KEY_EXPIRATION             | Key expiration date              | 0, never expires |
+| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                | null |
+| PASSBOLT_GPG_SERVER_KEY_PUBLIC      | Path to GnuPG public server key  | /var/www/passbolt/config/gpg/serverkey.asc |
+| PASSBOLT_GPG_SERVER_KEY_PRIVATE     | Path to GnuPG private server key | /var/www/passbolt/config/gpg/serverkey_private.asc |
+| PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register    | false |
+| PASSBOLT_SSL_FORCE                  | Redirects http to https          | true |
+| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true |
+| SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
 
-* KEY_LENGTH:     gpg desired key length
-* SUBKEY_LENGTH:  gpg desired subkey length
-* KEY_NAME:       key owner name
-* KEY_EMAIL:      key owner email address
-* KEY_EXPIRATION: key expiration date
+For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
+For more env variables supported please check [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
 
-### App file variables
-
-* FINGERPRINT:  GnuPG fingerprint
-* REGISTRATION: Defines if users can register (defaults to false)
-* SSL:          Forces passbolt to redirect to SSL any non-SSL request
-
-### Core file variables
-
-* SALT:       a random string used by cakephp in security hashing methods
-* CIPHERSEED: a random string used by cakephp to encrypt/decrypt strings
-* URL:        URL of the passbolt installation (defaults to http://passbolt.local)
-
-### Database variables
-
-* DB_HOST: database hostname This param has to be specified either using env var or in database.php (defaults to passbolt.local)
-* DB_PORT: database port     (defaults to 3306)
-* DB_USER: database username (defaults to passbolt)
-* DB_PASS: database password (defaults to P4ssb0lt)
-* DB_NAME: database name     (defaults to passbolt)
-
-### Email variables
-
-* EMAIL_TRANSPORT: transport protocol             ( defaults to Smtp)
-* EMAIL_FROM:      from email address             ( defaults to contact@mydomain.local)
-* EMAIL_HOST:      server hostname                ( defaults to localhost)
-* EMAIL_PORT:      server port                    ( defaults to 587)
-* EMAIL_TIMEOUT:   timeout                        ( defaults to 30s)
-* EMAIL_AUTH:      disable smtp auth              ( defaults to true)
-* EMAIL_USERNAME:  username for email server auth ( defaults to email_user)
-* EMAIL_PASSWORD:  password for email server auth ( defaults to email_password)
-* EMAIL_CLIENT:    hostname to send as smtp helo  ( defaults to null)
-* EMAIL_TLS:       set tls, boolean               ( defaults to false)
-
-## Advanced configuration
+### Configuration files
 
 What if you already have a set of gpg keys and custom configuration files for passbolt?
 It it possible to mount the desired configuration files as volumes.
 
-### Configuration files subject to be persisted:
-
-* /var/www/passbolt/app/Config/app.php
-* /var/www/passbolt/app/Config/core.php
-* /var/www/passbolt/app/Config/database.php
-* /var/www/passbolt/app/Config/email.php
-* /var/www/passbolt/app/Config/gpg/serverkey.asc
-* /var/www/passbolt/app/Config/gpg/serverkey.private.asc
+* /var/www/passbolt/config/app.php
+* /var/www/passbolt/config/passbolt.php
+* /var/www/passbolt/config/gpg/serverkey.asc
+* /var/www/passbolt/config/gpg/serverkey_private.asc
 * /var/www/passbolt/app/webroot/img/public/images
 
 ### SSL certificate files
@@ -121,58 +120,16 @@ It is also possible to mount a ssl certificate on the following paths:
 * /etc/ssl/certs/certificate.crt
 * /etc/ssl/certs/certificate.key
 
-# Examples
+### docker-compose
 
-For the following examples it is assumed that passbolt container image has been built from this repo following the instructions
-described on the [Build](#build-the-image) section.
+Usage:
 
-In the following example passbolt is launched with the defaults enabled usind mysql official docker container to store passbolt data:
-
-```bash
-$ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
-             -e MYSQL_DATABASE=passbolt \
-             -e MYSQL_USER=passbolt \
-             -e MYSQL_PASSWORD=P4ssb0lt \
-             mysql
 ```
-
-Once mysql container is running we should extract its ip address. Let's assume 172.17.0.2 for this example
-
-`$ docker run -e DB_HOST=172.17.0.2 passbolt:local`
-
-Point your browser to the passbolt container ip or localhost:exposed_port.
-
-## Advanced configuration
-
-In the following example passbolt is launched with a customized setup mounting and persisting configuration files. We also make use of
-mysql official docker container to store passbolt data.
-
-```bash
-$ docker run -e MYSQL_ROOT_PASSWORD=c0mplexp4ss \
-             -e MYSQL_DATABASE=passbolt \
-             -e MYSQL_USER=passbolt \
-             -e MYSQL_PASSWORD=P4ssb0lt \
-             mysql
+$ docker-compose up
 ```
-
-Using docker inspect or any other method you can get the ip address of the mysql container. This example uses 172.17.0.2.
-
-Once this container is running and you have the mysql ip address we run passbolt container mounting all configuration files stored
-under a example conf directory in $PWD
-
-```bash
-$ docker run -v $PWD/conf/app.php:/var/www/passbolt/app/Config/app.php \
-             -v $PWD/conf/core.php:/var/www/passbolt/app/Config/core.php \
-             -v $PWD/conf/database.php:/var/www/passbolt/app/Config/database.php \
-             -v $PWD/conf/email.php:/var/www/passbolt/app/Config/email.php \
-             -v $PWD/conf/private.asc:/var/www/passbolt/app/Config/gpg/serverkey.private.asc \
-             -v $PWD/conf/public.asc:/var/www/passbolt/app/Config/gpg/serverkey.asc \
-             passbolt:local
-```
-
-Navigate with the browser to the passbolt container ip or localhost:exposed_port
 
 # Requirements:
 
-* rng-tools are required on host machine to speed up entropy generation on containers. This way gpg key creation on passbolt container will be faster.
+* rng-tools or haveged are required on host machine to speed up entropy generation on containers.
+This way gpg key creation on passbolt container will be faster.
 * mysql >= 5.6

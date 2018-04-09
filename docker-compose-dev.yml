@@ -1,0 +1,33 @@
+version: '3.4'
+services:
+  db:
+    image: mysql:latest
+    env_file:
+      - env/mysql.env
+    volumes:
+      - database_volume:/var/lib/mysql
+    ports:
+      - 3306
+
+  passbolt:
+    build:
+      context: .
+      args:
+        PECL_PASSBOLT_EXTENSIONS: "redis gnupg xdebug"
+    depends_on:
+      - db
+    env_file:
+      - env/passbolt.env
+    volumes:
+      - gpg_volume:/var/www/passbolt/config/gpg
+      - images_volume:/var/www/passbolt/webroot/img/public/images
+      - ./scripts/wait-for.sh:/usr/bin/wait-for.sh
+    command: ["/usr/bin/wait-for.sh", "db:3306", "--", "/docker-entrypoint.sh"]
+    ports:
+      - 80:80
+      - 443:443
+
+volumes:
+  database_volume:
+  gpg_volume:
+  images_volume:

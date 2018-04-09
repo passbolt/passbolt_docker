@@ -1,21 +1,28 @@
-FROM php:5-fpm
+FROM php:7-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ENV PASSBOLT_VERSION 1.6.10
-ENV PASSBOLT_URL https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz
+ARG PASSBOLT_VERSION="2.0.0"
+ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
       intl \
       pdo_mysql \
-      mcrypt \
+      xsl"
+
+
+ARG PHP_EXTENSIONS="gd \
+      intl \
+      pdo_mysql \
       xsl"
 
 ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
-      redis"
+      redis \
+      mcrypt"
 
 ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libpng-dev \
+      libicu-dev \
       libxslt1-dev \
       libmcrypt-dev \
       unzip \
@@ -31,7 +38,6 @@ RUN apt-get update \
          gnupg \
          libgpgme11 \
          libmcrypt4 \
-         libicu-dev \
          mysql-client \
          supervisor \
          netcat \
@@ -60,15 +66,16 @@ RUN apt-get update \
     && curl -sSL $PASSBOLT_URL | tar zxf - -C . --strip-components 1 \
     && composer install -n --no-dev --optimize-autoloader \
     && chown -R www-data:www-data . \
-    && chmod 775 $(find /var/www/passbolt/app/tmp -type d) \
-    && chmod 664 $(find /var/www/passbolt/app/tmp -type f) \
-    && chmod 775 $(find /var/www/passbolt/app/webroot/img/public -type d) \
-    && chmod 664 $(find /var/www/passbolt/app/webroot/img/public -type f) \
+    && chmod 775 $(find /var/www/passbolt/tmp -type d) \
+    && chmod 664 $(find /var/www/passbolt/tmp -type f) \
+    && chmod 775 $(find /var/www/passbolt/webroot/img/public -type d) \
+    && chmod 664 $(find /var/www/passbolt/webroot/img/public -type f) \
     && rm /etc/nginx/sites-enabled/default \
     && apt-get purge -y --auto-remove $PASSBOLT_DEV_PACKAGES \
     && rm -rf /var/lib/apt/lists/*
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
+COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 80 443
