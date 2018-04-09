@@ -15,10 +15,6 @@
 [![license](https://img.shields.io/github/license/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/LICENSE)
 [![Twitter Follow](https://img.shields.io/twitter/follow/passbolt.svg?style=social&label=Follow)](https://twitter.com/passbolt)
 
-# Warning
-
-This is a work in progress branch use at your own risk.
-
 # What is passbolt?
 
 Passbolt is a free and open source password manager that allows team members to
@@ -70,40 +66,41 @@ available browsing `https://yourdomain.com`
 
 Passbolt docker image provides several environment variables to configure different aspects:
 
-```
-* APP_FULL_BASE_URL:                   Passbolt base url                     (Example https://yourdomain.com)
-* DATASOURCES_DEFAULT_HOST:            database hostname                     (default: localhost)
-* DATASOURCES_DEFAULT_PORT:            database port                         (default: 3306)
-* DATASOURCES_DEFAULT_USERNAME:        database username                     (default: my_app)
-* DATASOURCES_DEFAULT_PASSWORD:        database password                     (default: secret)
-* DATASOURCES_DEFAULT_DATABASE:        database name                         (default: my_app)
-* EMAIL_TRANSPORT_DEFAULT_CLASS_NAME:  Email classname                       (default: Smtp)
-* EMAIL_DEFAULT_FROM:                  from email address                    (default: contact@mydomain.local)
-* EMAIL_DEFAULT_TRANSPORT:             sets transport method                 (default: default)
-* EMAIL_TRANSPORT_DEFAULT_HOST:        server hostname                       (default: localhost)
-* EMAIL_TRANSPORT_DEFAULT_PORT:        server port                           (default: 25)
-* EMAIL_TRANSPORT_DEFAULT_TIMEOUT:     timeout                               (default: 30)
-* EMAIL_TRANSPORT_DEFAULT_USERNAME:    username for email server auth        (default: null)
-* EMAIL_TRANSPORT_DEFAULT_PASSWORD:    password for email server auth        (default: null)
-* EMAIL_TRANSPORT_DEFAULT_CLIENT:      client                                (default: null)
-* EMAIL_TRANSPORT_DEFAULT_TLS:         set tls                               (default: null)
-* EMAIL_TRANSPORT_DEFAULT_URL:         set url                               (default: null)
-* GNUPGHOME:                           Path to gnupghome directory           (default: web_user_home_directory/.gnupg )
-* PASSBOLT_KEY_LENGTH:                 gpg desired key length                (default: 2048)
-* PASSBOLT_SUBKEY_LENGTH:              gpg desired subkey length             (default: 2048)
-* PASSBOLT_KEY_NAME:                   key owner name                        (default: Passbolt default user)
-* PASSBOLT_KEY_EMAIL:                  key owner email address               (default: passbolt@yourdomain.com)
-* PASSBOLT_KEY_EXPIRATION:             key expiration date                   (default: 0, never expires)
-* PASSBOLT_GPG_SERVER_KEY_FINGERPRINT: GnuPG fingerprint
-* PASSBOLT_GPG_SERVER_KEY_PUBLIC:      Path to GnuPG public server key       (default: to /var/www/passbolt/config/gpg/serverkey.asc)
-* PASSBOLT_GPG_SERVER_KEY_PRIVATE:     Path to GnuPG private server key      (default: to /var/www/passbolt/config/gpg/serverkey_private.asc)
-* PASSBOLT_REGISTRATION_PUBLIC:        Defines if users can register         (default: to false)
-* PASSBOLT_SSL_FORCE:                  Redirects http to https from passbolt (default: to true)
-* PASSBOLT_SECURITY_SET_HEADERS:       Send CSP Headers from passbolt        (default: to true)
-* SECURITY_SALT:                       A random number user in security hashing methods.
-```
+| Variable name                       | Description                      | Default value       |
+| ----------------------------------- | -------------------------------- | ------------------- |
+| APP_FULL_BASE_URL                   | Passbolt base url                | false |
+| DATASOURCES_DEFAULT_HOST            | Database hostname                | localhost |
+| DATASOURCES_DEFAULT_PORT            | Database port                    | 3306 |
+| DATASOURCES_DEFAULT_USERNAME        | Database username                | '' |
+| DATASOURCES_DEFAULT_PASSWORD        | Database password                | '' |
+| DATASOURCES_DEFAULT_DATABASE        | Database name                    | '' |
+| EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                  | Smtp |
+| EMAIL_DEFAULT_FROM                  | From email address               | you@localhost |
+| EMAIL_DEFAULT_TRANSPORT             | Sets transport method            | default |
+| EMAIL_TRANSPORT_DEFAULT_HOST        | Server hostname                  | localhost |
+| EMAIL_TRANSPORT_DEFAULT_PORT        | Server port                      | 25 |
+| EMAIL_TRANSPORT_DEFAULT_TIMEOUT     | Timeout                          | 30 |
+| EMAIL_TRANSPORT_DEFAULT_USERNAME    | Username for email server auth   | null |
+| EMAIL_TRANSPORT_DEFAULT_PASSWORD    | Password for email server auth   | null |
+| EMAIL_TRANSPORT_DEFAULT_CLIENT      | Client                           | null |
+| EMAIL_TRANSPORT_DEFAULT_TLS         | Set tls                          | null |
+| EMAIL_TRANSPORT_DEFAULT_URL         | Set url                          | null |
+| GNUPGHOME                           | path to gnupghome directory      | /home/www-data/.gnupg |
+| PASSBOLT_KEY_LENGTH                 | Gpg desired key length           | 2048 |
+| PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length        | 2048 |
+| PASSBOLT_KEY_NAME                   | Key owner name                   | Passbolt default user |
+| PASSBOLT_KEY_EMAIL                  | Key owner email address          | passbolt@yourdomain.com |
+| PASSBOLT_KEY_EXPIRATION             | Key expiration date              | 0, never expires |
+| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                | null |
+| PASSBOLT_GPG_SERVER_KEY_PUBLIC      | Path to GnuPG public server key  | /var/www/passbolt/config/gpg/serverkey.asc |
+| PASSBOLT_GPG_SERVER_KEY_PRIVATE     | Path to GnuPG private server key | /var/www/passbolt/config/gpg/serverkey_private.asc |
+| PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register    | false |
+| PASSBOLT_SSL_FORCE                  | Redirects http to https          | true |
+| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true |
+| SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
 
-For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/develop/config/default.php)
+For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
+For more env variables supported please check [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
 
 ### Configuration files
 
