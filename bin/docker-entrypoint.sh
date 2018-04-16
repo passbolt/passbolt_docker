@@ -74,9 +74,10 @@ email_cron_job() {
   printenv > /etc/environment
   sed -i 's/=\(.*\)/="\1"/g' /etc/environment
   cron_task='/etc/cron.d/passbolt_email'
-  echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> $cron_task
-
-  crontab /etc/cron.d/passbolt_email
+  if [ ! -f "$cron_task" ]; then
+    echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> $cron_task
+    crontab /etc/cron.d/passbolt_email
+  fi
 }
 
 if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
