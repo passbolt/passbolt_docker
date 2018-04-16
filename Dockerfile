@@ -22,6 +22,7 @@ ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
 
 ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libpng-dev \
+      libjpeg62-turbo-dev \
       libicu-dev \
       libxslt1-dev \
       libmcrypt-dev \
@@ -50,6 +51,7 @@ RUN apt-get update \
          mkdir $PHP_EXT_DIR/$i; \
          curl -sSL $PECL_BASE_URL/$i | tar zxf - -C $PHP_EXT_DIR/$i --strip-components 1; \
        done \
+    && docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j4 $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && docker-php-source delete \
