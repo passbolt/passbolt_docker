@@ -2,7 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.1...HEAD)
+
+## [2.0.2](https://github.com/passbolt/passbolt_docker/compare/v2.0.1...v2.0.2) - 2018-04-17
+
+## Fixed
+
+- Unable to load a jpeg image as avatar. [#100](https://github.com/passbolt/passbolt_docker/issues/100)
+- docker-entrypoint.sh adds email-sending-job everytime you restart the container. [#98](https://github.com/passbolt/passbolt_docker/issues/98)
 
 ## [2.0.1](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...v2.0.1) - 2018-04-09
 
