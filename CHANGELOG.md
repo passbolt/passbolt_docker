@@ -11,6 +11,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Unable to load a jpeg image as avatar. [#100](https://github.com/passbolt/passbolt_docker/issues/100)
 - docker-entrypoint.sh adds email-sending-job everytime you restart the container. [#98](https://github.com/passbolt/passbolt_docker/issues/98)
 
+## Changed
+
+- Removed composer binary after dependency installation.
+
 ## [2.0.1](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...v2.0.1) - 2018-04-09
 
 - Decrypt bug fix. Check https://github.com/passbolt/passbolt_api
