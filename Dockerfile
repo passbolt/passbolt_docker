@@ -74,7 +74,8 @@ RUN apt-get update \
     && chmod 664 $(find /var/www/passbolt/webroot/img/public -type f) \
     && rm /etc/nginx/sites-enabled/default \
     && apt-get purge -y --auto-remove $PASSBOLT_DEV_PACKAGES \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm /usr/local/bin/composer
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
