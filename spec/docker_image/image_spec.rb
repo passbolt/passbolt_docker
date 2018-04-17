@@ -38,8 +38,8 @@ describe 'Dockerfile' do
   end
 
   describe 'php composer' do
-    it 'is installed' do
-      expect(file(composer)).to be_executable
+    it 'is not installed' do
+      expect(file(composer)).to_not exist
     end
   end
 

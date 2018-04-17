@@ -2,7 +2,7 @@ FROM php:7-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.0.1"
+ARG PASSBOLT_VERSION="2.0.2"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
@@ -74,7 +74,8 @@ RUN apt-get update \
     && chmod 664 $(find /var/www/passbolt/webroot/img/public -type f) \
     && rm /etc/nginx/sites-enabled/default \
     && apt-get purge -y --auto-remove $PASSBOLT_DEV_PACKAGES \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && rm /usr/local/bin/composer
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
