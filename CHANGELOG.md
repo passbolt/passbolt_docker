@@ -10,6 +10,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Updated path for images volume. [#101](https://github.com/passbolt/passbolt_docker/pull/101)
 
+### Changed
+- Run passbolt migrate task instead of cake migrations migrate
+
 ## [2.0.2](https://github.com/passbolt/passbolt_docker/compare/v2.0.1...v2.0.2) - 2018-04-17
 
 ### Fixed
