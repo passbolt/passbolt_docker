@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   db:
-    image: mysql:latest
+    image: mariadb:latest
     env_file:
       - env/mysql.env
     volumes:
@@ -10,7 +10,7 @@ services:
       - 3306
 
   passbolt:
-    image: passbolt/passbolt:2.0.3-pro-debian
+    image: passbolt/passbolt:2.0.4-pro-debian
     tty: true
     depends_on:
       - db

@@ -2,7 +2,7 @@ FROM php:7-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.0.3"
+ARG PASSBOLT_VERSION="2.0.4"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
@@ -56,7 +56,7 @@ RUN apt-get update \
     && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && docker-php-source delete \
     && EXPECTED_SIGNATURE=$(curl -s https://composer.github.io/installer.sig) \
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && curl -o composer-setup.php https://getcomposer.org/installer \
     && ACTUAL_SIGNATURE=$(php -r "echo hash_file('SHA384', 'composer-setup.php');") \
     && if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]; then \
          >&2 echo 'ERROR: Invalid installer signature'; \
