@@ -20,6 +20,12 @@
 Passbolt is a free and open source password manager that allows team members to
 store and share credentials securely.
 
+# Requirements:
+
+* rng-tools or haveged are required on host machine to speed up entropy generation on containers.
+This way gpg key creation on passbolt container will be faster.
+* mariadb/mysql >= 5.0
+
 # Usage
 
 Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
