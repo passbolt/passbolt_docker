@@ -2,6 +2,7 @@ version: '3.4'
 services:
   db:
     image: mysql:latest
+    entrypoint: ['/entrypoint.sh', '--default-authentication-plugin=mysql_native_password']
     env_file:
       - env/mysql.env
     volumes:
