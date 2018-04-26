@@ -16,7 +16,7 @@ describe 'passbolt_api service' do
           "mysqladmin ping --silent"
         ]
       },
-      'Image' => 'mysql')
+      'Image' => 'mariadb')
     @mysql.start
 
     while @mysql.json['State']['Health']['Status'] != 'healthy'
