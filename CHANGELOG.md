@@ -2,7 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.3...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.4...HEAD)
+
+## [2.0.4](https://github.com/passbolt/passbolt_docker/compare/v2.0.2...v2.0.4) - 2018-04-26
+
+### Fixed
+
+- Authentication plugin 'caching_sha2_password' cannot be loaded [#103](https://github.com/passbolt/passbolt_docker/issues/103)
+
+### Changed
+
+- MariaDB as default SQL backend option in docker-compose files related with [#103](https://github.com/passbolt/passbolt_docker/issues/103)
+- Replace php copy with curl for use with proxy [#102](https://github.com/passbolt/passbolt_docker/pull/102)
+- Documentation requirements moved up in the README
 
 ## [2.0.3](https://github.com/passbolt/passbolt_docker/compare/v2.0.2...v2.0.3) - 2018-04-20
 
