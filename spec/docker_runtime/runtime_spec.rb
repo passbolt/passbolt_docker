@@ -30,6 +30,7 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_PASSWORD=P4ssb0lt',
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
+        'PASSBOLT_SSL_FORCE=true'
       ],
       'Image' => @image.id)
     @container.start
@@ -44,8 +45,12 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
-  let(:http_path) { "/healthcheck/status.json" }
-  let(:healthcheck) { 'curl -s -o /dev/null -w "%{http_code}" http://localhost/healthcheck/status.json' }
+  let(:healthcheck)       { 'curl -sk -o /dev/null -w "%{http_code}" -H "Host: passbolt.local" https://localhost/healthcheck/status.json' }
+  let(:serverkey)         { 'curl -sk -o /dev/null -w "%{http_code}" -H "Host: passbolt.local" https://localhost/config/gpg/serverkey.asc' }
+  let(:serverkey_private) { 'curl -sk -o /dev/null -w "%{http_code}" -H "Host: passbolt.local" https://localhost/config/gpg/serverkey_private.asc' }
+  let(:tmp)               { 'curl -sk -o /dev/null -w "%{http_code}" -H "Host: passbolt.local" https://localhost/tmp/cache/database/empty' }
+  let(:logs)              { 'curl -sk -o /dev/null -w "%{http_code}" -H "Host: passbolt.local" https://localhost/logs/error.log' }
+  let(:conf_app)          { 'curl -sk -o /dev/null -w "%{http_code}" -H "Host: passbolt.local" https://localhost/conf/app.php' }
 
   describe 'php service' do
     it 'is running supervised' do
@@ -82,4 +87,35 @@ describe 'passbolt_api service' do
       expect(command(healthcheck).stdout).to eq '200'
     end
   end
+
+  describe 'passbolt serverkey unaccessible' do
+    it 'returns 404' do
+      expect(command(serverkey).stdout).to eq '404'
+    end
+  end
+
+  describe 'passbolt serverkey private unaccessible' do
+    it 'returns 404' do
+      expect(command(serverkey_private).stdout).to eq '404'
+    end
+  end
+
+  describe 'passbolt tmp folder is unaccessible' do
+    it 'returns 404' do
+      expect(command(tmp).stdout).to eq '404'
+    end
+  end
+
+  describe 'passbolt conf files can not be retrieved' do
+    it 'returns 404' do
+      expect(command(conf_app).stdout).to eq '404'
+    end
+  end
+
+  describe 'passbolt error log folder is unaccessible' do
+    it 'returns 404' do
+      expect(command(logs).stdout).to eq '404'
+    end
+  end
+
 end
