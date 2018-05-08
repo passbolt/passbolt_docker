@@ -89,6 +89,10 @@ describe 'Dockerfile' do
     it 'has the correct permissions' do
       expect(file(site_conf)).to be_owned_by 'root'
     end
+
+    it 'points to the correct root folder' do
+      expect(file(site_conf).content).to match 'root /var/www/passbolt/webroot'
+    end
   end
 
   describe 'ports exposed' do

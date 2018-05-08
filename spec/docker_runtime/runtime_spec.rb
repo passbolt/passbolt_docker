@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'passbolt_api service' do
 
   before(:all) do
+    @mysql_image = Docker::Image.create('fromImage' => 'mariadb:latest')
     @mysql = Docker::Container.create(
       'Env' => [
         'MYSQL_ROOT_PASSWORD=test',
@@ -16,7 +17,7 @@ describe 'passbolt_api service' do
           "mysqladmin ping --silent"
         ]
       },
-      'Image' => 'mariadb')
+      'Image' => @mysql_image.id)
     @mysql.start
 
     while @mysql.json['State']['Health']['Status'] != 'healthy'
@@ -30,6 +31,7 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_PASSWORD=P4ssb0lt',
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
+        'PASSBOLT_SSL_FORCE=true'
       ],
       'Image' => @image.id)
     @container.start
@@ -44,8 +46,10 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
-  let(:http_path) { "/healthcheck/status.json" }
-  let(:healthcheck) { 'curl -s -o /dev/null -w "%{http_code}" http://localhost/healthcheck/status.json' }
+  let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
+  let(:uri)               { "/healthcheck/status.json" }
+  let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}/#{uri}" }
+  let(:conf_app)          { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}/conf/app.php" }
 
   describe 'php service' do
     it 'is running supervised' do
@@ -79,7 +83,35 @@ describe 'passbolt_api service' do
 
   describe 'passbolt status' do
     it 'returns 200' do
-      expect(command(healthcheck).stdout).to eq '200'
+      expect(command(curl).stdout).to eq '200'
     end
   end
+
+  describe 'passbolt serverkey unaccessible' do
+    let(:uri) { '/config/gpg/serverkey.asc' }
+    it "returns 404" do
+      expect(command(curl).stdout).to eq '404'
+    end
+  end
+
+  describe 'passbolt serverkey private unaccessible' do
+    let(:uri) { '/config/gpg/serverkey_private.asc' }
+    it 'returns 404' do
+      expect(command(curl).stdout).to eq '404'
+    end
+  end
+
+  describe 'passbolt conf unaccessible' do
+    let(:uri) { '/config/app.php' }
+    it 'returns 404' do
+      expect(command(curl).stdout).to eq '404'
+    end
+  end
+  describe 'passbolt tmp folder is unaccessible' do
+    let(:uri) { '/tmp/cache/database/empty' }
+    it 'returns 404' do
+      expect(command(curl).stdout).to eq '404'
+    end
+  end
+
 end

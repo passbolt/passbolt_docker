@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.4...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.0.5...HEAD)
+
+## [2.0.5](https://github.com/passbolt/passbolt_docker/compare/v2.0.4...v2.0.5) - 2018-05-08
+
+### Fixed
+
+- Nginx configuration file root directive for passbolt
 
 ## [2.0.4](https://github.com/passbolt/passbolt_docker/compare/v2.0.2...v2.0.4) - 2018-04-26
 
