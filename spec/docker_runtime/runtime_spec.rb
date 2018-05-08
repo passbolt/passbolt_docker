@@ -114,11 +114,4 @@ describe 'passbolt_api service' do
     end
   end
 
-  describe 'passbolt conf files can not be retrieved' do
-    let(:uri) { '/config/gpg/serverkey_private.asc' }
-    it 'returns 404' do
-      expect(command(curl).stdout).to eq '404'
-    end
-  end
-
 end
