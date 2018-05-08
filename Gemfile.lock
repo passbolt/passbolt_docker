@@ -3,12 +3,12 @@ GEM
   specs:
     coderay (1.1.2)
     diff-lcs (1.3)
-    docker-api (1.34.0)
+    docker-api (1.34.2)
       excon (>= 0.47.0)
       multi_json
-    excon (0.60.0)
+    excon (0.62.0)
     method_source (0.9.0)
-    multi_json (1.12.2)
+    multi_json (1.13.1)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (4.2.0)
@@ -16,7 +16,7 @@ GEM
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    rake (12.3.0)
+    rake (12.3.1)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
       rspec-expectations (~> 3.7.0)
@@ -32,14 +32,14 @@ GEM
     rspec-mocks (3.7.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
-    rspec-support (3.7.0)
+    rspec-support (3.7.1)
     serverspec (2.41.3)
       multi_json
       rspec (~> 3.0)
       rspec-its
       specinfra (~> 2.72)
     sfl (2.3)
-    specinfra (2.73.0)
+    specinfra (2.73.3)
       net-scp
       net-ssh (>= 2.7, < 5.0)
       net-telnet
