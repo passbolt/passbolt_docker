@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   db:
-    image: mariadb:latest
+    image: mariadb:10.3
     env_file:
       - env/mysql.env
     volumes:
