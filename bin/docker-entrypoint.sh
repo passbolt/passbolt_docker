@@ -63,7 +63,7 @@ install() {
   fi
 
   if [ "$tables" -eq 0 ]; then
-    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin --force' -s /bin/bash www-data
+    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data
   else
     su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data
     echo "Enjoy! ☮"
@@ -71,9 +71,8 @@ install() {
 }
 
 email_cron_job() {
-  printenv > /etc/environment
-  sed -i 's/=\(.*\)/="\1"/g' /etc/environment
   cron_task='/etc/cron.d/passbolt_email'
+  declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /etc/environment
   if [ ! -f "$cron_task" ]; then
     echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> $cron_task
     crontab /etc/cron.d/passbolt_email
