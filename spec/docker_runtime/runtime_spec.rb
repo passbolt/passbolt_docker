@@ -9,7 +9,7 @@ describe 'passbolt_api service' do
         'MYSQL_ROOT_PASSWORD=test',
         'MYSQL_DATABASE=passbolt',
         'MYSQL_USER=passbolt',
-        'MYSQL_PASSWORD=P4ssb0lt'
+        'MYSQL_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
       ],
       "Healthcheck" => {
         "Test": [
@@ -28,7 +28,7 @@ describe 'passbolt_api service' do
     @container = Docker::Container.create(
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
-        'DATASOURCES_DEFAULT_PASSWORD=P4ssb0lt',
+        'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
         'PASSBOLT_SSL_FORCE=true'
