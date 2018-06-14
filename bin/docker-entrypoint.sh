@@ -63,7 +63,7 @@ install() {
   fi
 
   if [ "$tables" -eq 0 ]; then
-    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin --force' -s /bin/bash www-data
+    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data
   else
     su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data
     echo "Enjoy! ☮"
