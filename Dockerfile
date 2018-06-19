@@ -75,7 +75,9 @@ RUN apt-get update \
     && rm /etc/nginx/sites-enabled/default \
     && apt-get purge -y --auto-remove $PASSBOLT_DEV_PACKAGES \
     && rm -rf /var/lib/apt/lists/* \
-    && rm /usr/local/bin/composer
+    && rm /usr/local/bin/composer \
+    && echo 'php_flag[expose_php] = off' > /usr/local/etc/php-fpm.d/expose.conf \
+    && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
