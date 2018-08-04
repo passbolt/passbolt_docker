@@ -80,6 +80,9 @@ Passbolt docker image provides several environment variables to configure differ
 | DATASOURCES_DEFAULT_USERNAME        | Database username                | '' |
 | DATASOURCES_DEFAULT_PASSWORD        | Database password                | '' |
 | DATASOURCES_DEFAULT_DATABASE        | Database name                    | '' |
+| DATASOURCES_SSL_KEY                 | Database SSL Key                 | '' |
+| DATASOURCES_SSL_CERT                | Database SSL Cert                | '' |
+| DATASOURCES_SSL_CA                  | Database SSL CA                  | '' |
 | EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                  | Smtp |
 | EMAIL_DEFAULT_FROM                  | From email address               | you@localhost |
 | EMAIL_DEFAULT_TRANSPORT             | Sets transport method            | default |
@@ -125,6 +128,20 @@ It is also possible to mount a ssl certificate on the following paths:
 
 * /etc/ssl/certs/certificate.crt
 * /etc/ssl/certs/certificate.key
+
+### Database SSL certificate files
+
+If Database SSL certs provided, you must mount mysql/mariadb specific conf on the following paths:
+* /etc/mysql/conf.d # if using mysql
+* /etc/mysql/mariadb.conf.d/ #if using mariadb
+
+Example:
+```
+[client]
+ssl-ca=/etc/mysql/ssl/ca-cert.pem
+ssl-cert=/etc/mysql/ssl/server-cert.pem
+ssl-key=/etc/mysql/ssl/server-key.pem
+```
 
 ### docker-compose
 
