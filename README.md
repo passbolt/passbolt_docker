@@ -80,9 +80,9 @@ Passbolt docker image provides several environment variables to configure differ
 | DATASOURCES_DEFAULT_USERNAME        | Database username                | '' |
 | DATASOURCES_DEFAULT_PASSWORD        | Database password                | '' |
 | DATASOURCES_DEFAULT_DATABASE        | Database name                    | '' |
-| DATASOURCES_SSL_KEY                 | Database SSL Key                 | '' |
-| DATASOURCES_SSL_CERT                | Database SSL Cert                | '' |
-| DATASOURCES_SSL_CA                  | Database SSL CA                  | '' |
+| DATASOURCES_DEFAULT_SSL_KEY         | Database SSL Key                 | '' |
+| DATASOURCES_DEFAULT_SSL_CERT        | Database SSL Cert                | '' |
+| DATASOURCES_DEFAULT_SSL_CA          | Database SSL CA                  | '' |
 | EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                  | Smtp |
 | EMAIL_DEFAULT_FROM                  | From email address               | you@localhost |
 | EMAIL_DEFAULT_TRANSPORT             | Sets transport method            | default |
