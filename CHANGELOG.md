@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.1.0...HEAD)
 
 - hide nginx and php version [#107](https://github.com/passbolt/passbolt_docker/pull/107)
+- Restrict MySQL port access [#109](https://github.com/passbolt/passbolt_docker/pull/109)
 
 ## [2.1.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.7...v2.1.0) - 2018-06-14
 
