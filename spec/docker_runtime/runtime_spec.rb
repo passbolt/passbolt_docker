@@ -49,7 +49,6 @@ describe 'passbolt_api service' do
   let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
   let(:uri)               { "/healthcheck/status.json" }
   let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}/#{uri}" }
-  let(:conf_app)          { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}/conf/app.php" }
 
   describe 'php service' do
     it 'is running supervised' do
@@ -111,6 +110,17 @@ describe 'passbolt_api service' do
     let(:uri) { '/tmp/cache/database/empty' }
     it 'returns 404' do
       expect(command(curl).stdout).to eq '404'
+    end
+  end
+
+  describe 'hide information' do
+    let(:curl) { "curl -Isk -H 'Host: passbolt.local' https://#{passbolt_host}/" }
+    it 'hides php version' do
+      expect(command("#{curl} | grep 'X-Powered-By: PHP'").stdout).to be_empty
+    end
+
+    it 'hides nginx version' do
+      expect(command("#{curl} | grep 'Server:'").stdout).to match /^Server: nginx$/
     end
   end
 
