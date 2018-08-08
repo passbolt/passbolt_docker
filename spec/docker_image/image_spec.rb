@@ -78,7 +78,7 @@ describe 'Dockerfile' do
     end
 
     it 'does not expose php version' do
-      expect(file(php_conf).content).to match '^php_flag\[expose_php\]\s+=\s+off$'
+      expect(file(php_conf).content).to match(/^php_flag\[expose_php\]\s+=\s+off$/)
     end
   end
 
