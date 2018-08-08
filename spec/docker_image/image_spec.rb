@@ -17,6 +17,7 @@ describe 'Dockerfile' do
   end
 
   let(:nginx_conf)      { '/etc/nginx/nginx.conf' }
+  let(:php_conf)        { '/usr/local/etc/php-fpm.d/expose.conf' }
   let(:site_conf)       { '/etc/nginx/conf.d/default.conf' }
   let(:passbolt_home)   { '/var/www/passbolt' }
   let(:passbolt_tmp)    { '/var/www/passbolt/tmp' }
@@ -71,6 +72,16 @@ describe 'Dockerfile' do
     end
   end
 
+  describe 'php config' do
+    it 'exists' do
+      expect(file(php_conf)).to exist
+    end
+
+    it 'does not expose php version' do
+      expect(file(php_conf).content).to match '^php_flag\[expose_php\]\s+=\s+off$'
+    end
+  end
+
   describe 'nginx configuration' do
     it 'is installed correctly' do
       expect(file(nginx_conf)).to exist
@@ -92,6 +103,10 @@ describe 'Dockerfile' do
 
     it 'points to the correct root folder' do
       expect(file(site_conf).content).to match 'root /var/www/passbolt/webroot'
+    end
+
+    it 'has server tokens off' do
+      expect(file(nginx_conf).content).to match(/^\s+server_tokens off;/)
     end
   end
 
