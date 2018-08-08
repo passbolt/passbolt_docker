@@ -7,7 +7,7 @@ services:
     volumes:
       - database_volume:/var/lib/mysql
     ports:
-      - 3306
+      - "127.0.0.1:3306:3306"
 
   passbolt:
     image: passbolt/passbolt:2.1.0-debian
