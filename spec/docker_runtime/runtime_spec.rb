@@ -120,7 +120,7 @@ describe 'passbolt_api service' do
     end
 
     it 'hides nginx version' do
-      expect(command("#{curl} | grep 'Server:'").stdout).to match /^Server: nginx$/
+      expect(command("#{curl} | grep 'Server:'").stdout.strip).to match(/^Server:\s+nginx$/)
     end
   end
 
