@@ -2,7 +2,7 @@ FROM php:7-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.1.0"
+ARG PASSBOLT_VERSION="2.2.0"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
@@ -41,7 +41,6 @@ RUN apt-get update \
          libmcrypt4 \
          mysql-client \
          supervisor \
-         netcat \
          cron \
     && mkdir /home/www-data \
     && chown -R www-data:www-data /home/www-data \
@@ -75,10 +74,12 @@ RUN apt-get update \
     && rm /etc/nginx/sites-enabled/default \
     && apt-get purge -y --auto-remove $PASSBOLT_DEV_PACKAGES \
     && rm -rf /var/lib/apt/lists/* \
-    && rm /usr/local/bin/composer
+    && rm /usr/local/bin/composer \
+    && echo 'php_flag[expose_php] = off' > /usr/local/etc/php-fpm.d/expose.conf \
+    && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
-COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
+COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 80 443

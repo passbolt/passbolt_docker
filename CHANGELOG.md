@@ -2,7 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.1.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.2.0...HEAD)
+
+## [2.2.0](https://github.com/passbolt/passbolt_docker/compare/v2.1.0...v2.2.0) - 2018-08-13
+
+### Added
+
+- Added [wait-for-it](https://github.com/vishnubob/wait-for-it) instead of wait for to eliminate netcat dependency
+
+### Changed
+
+- Merged: hide nginx and php version [#107](https://github.com/passbolt/passbolt_docker/pull/107)
+- Merged: restrict MySQL port access [#109](https://github.com/passbolt/passbolt_docker/pull/109)
+- Supervisor config files split into conf.d/{php.conf,nginx.conf,cron.conf}
+- Default stdout logging is more verbose now allowing users to see more details on the requests
 
 ## [2.1.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.7...v2.1.0) - 2018-06-14
 
