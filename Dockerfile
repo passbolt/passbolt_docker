@@ -2,7 +2,7 @@ FROM php:7-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.1.0"
+ARG PASSBOLT_VERSION="2.2.0"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
@@ -41,7 +41,6 @@ RUN apt-get update \
          libmcrypt4 \
          mysql-client \
          supervisor \
-         netcat \
          cron \
     && mkdir /home/www-data \
     && chown -R www-data:www-data /home/www-data \
