@@ -79,7 +79,7 @@ RUN apt-get update \
     && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
-COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
+COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
 
 EXPOSE 80 443
