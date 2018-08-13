@@ -19,6 +19,11 @@ describe 'Dockerfile' do
   let(:nginx_conf)      { '/etc/nginx/nginx.conf' }
   let(:php_conf)        { '/usr/local/etc/php-fpm.d/expose.conf' }
   let(:site_conf)       { '/etc/nginx/conf.d/default.conf' }
+  let(:supervisor_conf) do
+    [ '/etc/supervisor/conf.d/nginx.conf',
+    '/etc/supervisor/conf.d/php.conf',
+    '/etc/supervisor/conf.d/cron.conf' ]
+  end
   let(:passbolt_home)   { '/var/www/passbolt' }
   let(:passbolt_tmp)    { '/var/www/passbolt/tmp' }
   let(:passbolt_image)  { '/var/www/passbolt/webroot/img/public' }
@@ -47,6 +52,12 @@ describe 'Dockerfile' do
   describe 'supervisor' do
     it 'is installed' do
       expect(package('supervisor')).to be_installed
+    end
+
+    it 'has config files' do
+      supervisor_conf.each do |config|
+        expect(file(config)).to exist
+      end
     end
   end
 
