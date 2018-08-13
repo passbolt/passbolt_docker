@@ -2,10 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.1.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.2.0...HEAD)
 
+## [2.2.0](https://github.com/passbolt/passbolt_docker/compare/v2.1.0...v2.2.0) - 2018-08-13
+
+### Added
 - hide nginx and php version [#107](https://github.com/passbolt/passbolt_docker/pull/107)
 - Restrict MySQL port access [#109](https://github.com/passbolt/passbolt_docker/pull/109)
+
+### Changed
+
+- Added [wait-for-it](https://github.com/vishnubob/wait-for-it) instead of wait for to eliminate netcat dependency
 
 ## [2.1.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.7...v2.1.0) - 2018-06-14
 
