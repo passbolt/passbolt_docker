@@ -2,7 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.3.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.4.0...HEAD)
+
+## [2.4.0](https://github.com/passbolt/passbolt_docker/compare/v2.3.0...v2.4.0) - 2018-10-15
+
+### Added
+
+- Merged: Adding SSL configuration for mysql/mariadb [#111](https://github.com/passbolt/passbolt_docker/pull/111)
+
+### Fixed
+
+- Minor fix: Remove duplicate arg PHP_EXTENSIONS from Dockerfile
 
 ## [2.3.0](https://github.com/passbolt/passbolt_docker/compare/v2.2.0...v2.3.0) - 2018-09-03
 
