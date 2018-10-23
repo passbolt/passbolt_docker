@@ -48,8 +48,8 @@ Then you can start passbolt just by providing the database container ip in the
 
 ```bash
 $ docker run --name passbolt \
-             -p 80:80
-             -p 443:443
+             -p 80:80 \
+             -p 443:443 \
              -e DATASOURCES_DEFAULT_HOST=<mariadb_container_host> \
              -e DATASOURCES_DEFAULT_PASSWORD=<mariadb_password> \
              -e DATASOURCES_DEFAULT_USERNAME=<mariadb_user> \
