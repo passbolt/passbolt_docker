@@ -37,10 +37,10 @@ docker image with the default passbolt credentials.
 
 ```bash
 $ docker run -e MYSQL_ROOT_PASSWORD=<root_password> \
-             -e MYSQL_DATABASE=<mysql_database> \
-             -e MYSQL_USER=<mysql_user> \
-             -e MYSQL_PASSWORD=<mysql_password> \
-             mysql
+             -e MYSQL_DATABASE=<mariadb_database> \
+             -e MYSQL_USER=<mariadb_user> \
+             -e MYSQL_PASSWORD=<mariadb_password> \
+             mariadb
 ```
 
 Then you can start passbolt just by providing the database container ip in the
@@ -48,10 +48,12 @@ Then you can start passbolt just by providing the database container ip in the
 
 ```bash
 $ docker run --name passbolt \
-             -e DATASOURCES_DEFAULT_HOST=<mysql_container_host> \
-             -e DATASOURCES_DEFAULT_PASSWORD=<mysql_password> \
-             -e DATASOURCES_DEFAULT_USERNAME=<mysql_user> \
-             -e DATASOURCES_DEFAULT_DATABASE=<mysql_database> \
+             -p 80:80 \
+             -p 443:443 \
+             -e DATASOURCES_DEFAULT_HOST=<mariadb_container_host> \
+             -e DATASOURCES_DEFAULT_PASSWORD=<mariadb_password> \
+             -e DATASOURCES_DEFAULT_USERNAME=<mariadb_user> \
+             -e DATASOURCES_DEFAULT_DATABASE=<mariadb_database> \
              -e APP_FULL_BASE_URL=https://mydomain.com \
              passbolt/passbolt:develop-debian
 ```
@@ -155,4 +157,4 @@ $ docker-compose up
 
 * rng-tools or haveged are required on host machine to speed up entropy generation on containers.
 This way gpg key creation on passbolt container will be faster.
-* mysql >= 5.6
+* mariadb/mysql >= 5.6
