@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.4.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.5.0...HEAD)
+
+## [2.5.0](https://github.com/passbolt/passbolt_docker/compare/v2.4.0...v2.5.0) - 2018-11-15
+
+### Added
+
+- Enabled opcache extension to increase overall performance
 
 ## [2.4.0](https://github.com/passbolt/passbolt_docker/compare/v2.3.0...v2.4.0) - 2018-10-15
 
