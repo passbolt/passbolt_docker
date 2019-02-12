@@ -1,8 +1,8 @@
-FROM php:7-fpm
+FROM php:7.2-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.5.0"
+ARG PASSBOLT_VERSION="2.7.0"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
