@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.5.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.7.0...HEAD)
+
+## [2.7.0](https://github.com/passbolt/passbolt_docker/compare/v2.5.0...v2.7.0) - 2019-02-12
+
+### Fixed
+
+- Added small warning message when entropy is low at container startup [#121](https://github.com/passbolt/passbolt_docker/issues/121)
 
 ## [2.5.0](https://github.com/passbolt/passbolt_docker/compare/v2.4.0...v2.5.0) - 2018-11-15
 
