@@ -2,7 +2,7 @@ FROM php:7.2-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.7.0"
+ARG PASSBOLT_VERSION="2.7.1"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
@@ -71,7 +71,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && rm /usr/local/bin/composer \
     && echo 'php_flag[expose_php] = off' > /usr/local/etc/php-fpm.d/expose.conf \
-    && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf
+    && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
+    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
