@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.7.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.7.1...HEAD)
+
+## [2.7.1](https://github.com/passbolt/passbolt_docker/compare/v2.7.0...v2.7.1) - 2019-02-13
+
+### Added
+
+- Use php.ini-production for saner defaults in php
 
 ## [2.7.0](https://github.com/passbolt/passbolt_docker/compare/v2.5.0...v2.7.0) - 2019-02-12
 
