@@ -20,7 +20,6 @@ services:
       - gpg_volume:/var/www/passbolt/config/gpg
       - images_volume:/var/www/passbolt/webroot/img/public
       - ./license:/var/www/passbolt/config/license
-      - ./scripts/wait-for.sh:/usr/bin/wait-for.sh
     tmpfs:
       - /run
     command: ["/usr/bin/wait-for.sh", "db:3306", "--", "/docker-entrypoint.sh"]
