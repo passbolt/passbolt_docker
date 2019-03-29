@@ -34,6 +34,7 @@ describe 'Dockerfile' do
     'curl', 'gd', 'intl', 'json', 'mcrypt', 'mysqlnd', 'xsl', 'phar',
     'posix', 'xml', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
     ] }
+  let(:wait_for) { '/usr/bin/wait-for.sh' }
 
   describe 'passbolt required php extensions' do
     it 'has php extensions installed' do
@@ -58,6 +59,12 @@ describe 'Dockerfile' do
       supervisor_conf.each do |config|
         expect(file(config)).to exist
       end
+    end
+  end
+
+  describe 'wait-for' do
+    it 'is installed' do
+      expect(file(wait_for)).to exist and be_executable
     end
   end
 
