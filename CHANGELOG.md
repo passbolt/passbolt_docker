@@ -2,7 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.7.1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.8.1...HEAD)
+
+## [2.8.1](https://github.com/passbolt/passbolt_docker/compare/v2.7.1...v2.8.1) - 2019-04-01
+
+### Added
+
+- Documentation for new env variable APP_BASE to use passbolt in a subfolder
+- Added wait-for.sh to the docker image as part of [#123](https://github.com/passbolt/passbolt_docker/pull/123)
+
+### Fixed
+
+- Now passbolt checks for the mysql status outside of the docker image [#97](https://github.com/passbolt/passbolt_docker/issues/97)
 
 ## [2.7.1](https://github.com/passbolt/passbolt_docker/compare/v2.7.0...v2.7.1) - 2019-02-13
 
