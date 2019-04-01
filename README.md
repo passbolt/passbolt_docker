@@ -76,6 +76,7 @@ Passbolt docker image provides several environment variables to configure differ
 
 | Variable name                       | Description                      | Default value       |
 | ----------------------------------- | -------------------------------- | ------------------- |
+| APP_BASE                            | it allows people to specify the base subdir the application is running in | null |
 | APP_FULL_BASE_URL                   | Passbolt base url                | false |
 | DATASOURCES_DEFAULT_HOST            | Database hostname                | localhost |
 | DATASOURCES_DEFAULT_PORT            | Database port                    | 3306 |

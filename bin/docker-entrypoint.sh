@@ -70,29 +70,18 @@ gen_ssl_cert() {
 }
 
 install() {
-  tables=$(mysql \
-    -u "${DATASOURCES_DEFAULT_USERNAME:-passbolt}" \
-    -h "${DATASOURCES_DEFAULT_HOST:-localhost}" \
-    -P "${DATASOURCES_DEFAULT_PORT:-3306}" \
-    -BN -e "SHOW TABLES FROM ${DATASOURCES_DEFAULT_DATABASE:-passbolt}" \
-    -p"${DATASOURCES_DEFAULT_PASSWORD:-P4ssb0lt}" |wc -l)
-  app_config="/var/www/passbolt/config/app.php"
+  local app_config="/var/www/passbolt/config/app.php"
 
   if [ ! -f "$app_config" ]; then
     su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/bash www-data
   fi
 
-  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ]; then
+  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  '/var/www/passbolt/config/passbolt.php' ]; then
     gpg_auto_fingerprint="$(su -c "gpg --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
-  if [ "$tables" -eq 0 ]; then
-    su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data
-  else
-    su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data
-    echo "Enjoy! ☮"
-  fi
+  su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
 }
 
 email_cron_job() {

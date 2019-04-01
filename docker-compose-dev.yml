@@ -21,7 +21,6 @@ services:
     volumes:
       - gpg_volume:/var/www/passbolt/config/gpg
       - images_volume:/var/www/passbolt/webroot/img/public/images
-      - ./scripts/wait-for.sh:/usr/bin/wait-for.sh
     command: ["/usr/bin/wait-for.sh", "db:3306", "--", "/docker-entrypoint.sh"]
     ports:
       - 80:80

@@ -2,7 +2,7 @@ FROM php:7.2-fpm
 
 LABEL maintainer="diego@passbolt.com"
 
-ARG PASSBOLT_VERSION="2.7.1"
+ARG PASSBOLT_VERSION="2.8.1"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 
 ARG PHP_EXTENSIONS="gd \
@@ -78,6 +78,7 @@ RUN apt-get update \
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
+COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
 EXPOSE 80 443
 
