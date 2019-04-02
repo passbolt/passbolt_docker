@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.8.1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.8.3...HEAD)
+
+## [2.8.2](https://github.com/passbolt/passbolt_docker/compare/v2.8.2...v2.8.3) - 2019-04-02
+
+### Added
+
+- Documentation for PASSBOLT_PLUGINS_EXPORT_ENABLED and PASSBOLT_PLUGINS_IMPORT_ENABLED
 
 ## [2.8.2](https://github.com/passbolt/passbolt_docker/compare/v2.8.1...v2.8.2) - 2019-04-01
 
