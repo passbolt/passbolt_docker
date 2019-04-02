@@ -106,10 +106,11 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                | null |
 | PASSBOLT_GPG_SERVER_KEY_PUBLIC      | Path to GnuPG public server key  | /var/www/passbolt/config/gpg/serverkey.asc |
 | PASSBOLT_GPG_SERVER_KEY_PRIVATE     | Path to GnuPG private server key | /var/www/passbolt/config/gpg/serverkey_private.asc |
+| PASSBOLT_PLUGINS_EXPORT_ENABLED     | Enable export plugin             | true |
+| PASSBOLT_PLUGINS_IMPORT_ENABLED     | Enable import plugin             | true |
 | PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register    | false |
 | PASSBOLT_SSL_FORCE                  | Redirects http to https          | true |
-| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true |
-| SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
+| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true | | SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
 For more env variables supported please check [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
