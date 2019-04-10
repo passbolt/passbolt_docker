@@ -80,6 +80,9 @@ COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
+RUN sed -i -e 's/\r$//' /docker-entrypoint.sh \
+    && sed -i -e 's/\r$//' /usr/bin/wait-for.sh
+
 EXPOSE 80 443
 
 CMD ["/docker-entrypoint.sh"]
