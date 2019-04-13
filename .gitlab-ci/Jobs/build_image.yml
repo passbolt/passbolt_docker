@@ -1,0 +1,30 @@
+.build-template:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - |
+      /kaniko/executor --context $CI_PROJECT_DIR \
+        --build-arg PASSBOLT_URL="$PASSBOLT_URL" \
+        --build-arg PHP_EXTENSIONS="$PHP_EXTENSIONS" \
+        --build-arg PASSBOLT_BASE_PACKAGES="$PASSBOLT_BASE_PACKAGES" \
+        --build-arg PASSBOLT_DEV_PACKAGES="$PASSBOLT_DEV_PACKAGES" \
+        --dockerfile $CI_PROJECT_DIR/Dockerfile \
+        --destination $CI_REGISTRY_IMAGE:$PASSBOLT_FLAVOUR-$CI_COMMIT_TAG
+
+passbolt-ce-prerelease:
+  extends: .build-template
+  variables:
+    PHP_EXTENSIONS: "gnupg redis mcrypt"
+    PASSBOLT_BASE_PACKAGES: "nginx gnupg libgpgme11 libmcrypt4 mysql-client supervisor cron"
+    PASSBOLT_DEV_PACKAGES: "libpng-dev libjpeg62-turbo-dev libicu-dev libxslt1-dev libmcrypt-dev unzip git"
+    PASSBOLT_FLAVOUR: "passbolt-ce"
+
+passbolt-pro-prerelease:
+  extends: .build-template
+  variables:
+    PHP_EXTENSIONS: "gnupg redis mcrypt ldap"
+    PASSBOLT_BASE_PACKAGES: "nginx gnupg libgpgme11 libmcrypt4 mysql-client supervisor cron"
+    PASSBOLT_DEV_PACKAGES: "libldap2-dev libpng-dev libjpeg62-turbo-dev libicu-dev libxslt1-dev libmcrypt-dev unzip git"
+    PASSBOLT_FLAVOUR: "passbolt-pro"

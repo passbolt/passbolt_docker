@@ -24,19 +24,22 @@ ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       unzip \
       git"
 
-ENV PECL_BASE_URL="https://pecl.php.net/get"
-ENV PHP_EXT_DIR="/usr/src/php/ext"
-
-WORKDIR /var/www/passbolt
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends $PASSBOLT_DEV_PACKAGES \
-         nginx \
+ARG PASSBOLT_BASE_PACKAGES="nginx \
          gnupg \
          libgpgme11 \
          libmcrypt4 \
          mysql-client \
          supervisor \
-         cron \
+         cron"
+
+ENV PECL_BASE_URL="https://pecl.php.net/get"
+ENV PHP_EXT_DIR="/usr/src/php/ext"
+
+WORKDIR /var/www/passbolt
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends \
+      $PASSBOLT_DEV_PACKAGES \
+      $PASSBOLT_BASE_PACKAGES \
     && mkdir /home/www-data \
     && chown -R www-data:www-data /home/www-data \
     && usermod -d /home/www-data www-data \
