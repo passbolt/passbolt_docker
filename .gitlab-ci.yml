@@ -7,5 +7,5 @@ stages:
   - build
 
 include:
-  - template: '/.gitlab-ci/Jobs/build_image.yml'
+  - '/.gitlab-ci/Jobs/build_image.yml'
 
