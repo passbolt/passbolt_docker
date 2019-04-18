@@ -62,6 +62,7 @@ RUN apt-get update \
        fi \
     && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
+    && rm composer-setup.php \
     && curl -sSL $PASSBOLT_URL | tar zxf - -C . --strip-components 1 \
     && composer install -n --no-dev --optimize-autoloader \
     && chown -R www-data:www-data . \
@@ -76,7 +77,6 @@ RUN apt-get update \
     && echo 'php_flag[expose_php] = off' > /usr/local/etc/php-fpm.d/expose.conf \
     && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
