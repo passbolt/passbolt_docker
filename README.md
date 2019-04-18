@@ -113,7 +113,7 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true | | SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
-For more env variables supported please check [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
+and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
 
 ### Configuration files
 
