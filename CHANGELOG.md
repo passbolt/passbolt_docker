@@ -2,7 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.8.4...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.9.0...HEAD)
+
+## [2.9.0](https://github.com/passbolt/passbolt_docker/compare/v2.8.4...v2.9.0) - 2019-04-24
+
+### Added
+
+- Build arg to pass headers to curl
+- Removed git as dev dependency
+
+### Fixed
+
+- Fix typo in Readme [#125](https://github.com/passbolt/passbolt_docker/pull/125)
 
 ## [2.8.4](https://github.com/passbolt/passbolt_docker/compare/v2.8.3...v2.8.4) - 2019-04-17
 
