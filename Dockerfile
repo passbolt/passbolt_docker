@@ -4,6 +4,7 @@ LABEL maintainer="diego@passbolt.com"
 
 ARG PASSBOLT_VERSION="2.8.4"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
+ARG PASSBOLT_CURL_HEADERS=""
 
 ARG PHP_EXTENSIONS="gd \
       intl \
@@ -62,7 +63,7 @@ RUN apt-get update \
     && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
     && rm composer-setup.php \
-    && curl -sSL $PASSBOLT_URL | tar zxf - -C . --strip-components 1 \
+    && curl -sSL -H "$PASSBOLT_CURL_HEADERS" "$PASSBOLT_URL" | tar zxf - -C . --strip-components 1 \
     && composer install -n --no-dev --optimize-autoloader \
     && chown -R www-data:www-data . \
     && chmod 775 $(find /var/www/passbolt/tmp -type d) \
