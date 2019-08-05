@@ -28,7 +28,7 @@ ARG PASSBOLT_BASE_PACKAGES="nginx \
          gnupg \
          libgpgme11 \
          libmcrypt4 \
-         mysql-client \
+         mariadb-client \
          supervisor \
          cron"
 
