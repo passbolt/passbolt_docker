@@ -109,4 +109,4 @@ fi
 install
 email_cron_job
 
-/usr/bin/supervisord -n
+exec /usr/bin/supervisord -n
