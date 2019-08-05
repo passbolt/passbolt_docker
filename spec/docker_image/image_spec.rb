@@ -62,6 +62,12 @@ describe 'Dockerfile' do
     end
   end
 
+  describe 'mariadb-client' do
+    it 'is installed' do
+      expect(package('mariadb-client')).to be_installed
+    end
+  end
+
   describe 'wait-for' do
     it 'is installed' do
       expect(file(wait_for)).to exist and be_executable
