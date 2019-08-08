@@ -2,7 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.10.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.11.0...HEAD)
+
+## [2.11.0](https://github.com/passbolt/passbolt_docker/compare/v2.10.0...v2.11.0) - 2019-08-08
+
+### Changed
+
+- Base Container switched to php7.3 and debian 10
+- Entrypoint runs supervisor with exec to take over PID 1
+- Minor changes: Maintainer label
 
 ## [2.10.0](https://github.com/passbolt/passbolt_docker/compare/v2.9.0...v2.10.0) - 2019-05-16
 
