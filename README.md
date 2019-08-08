@@ -155,6 +155,14 @@ Usage:
 $ docker-compose up
 ```
 
+### CLI healthcheck
+
+In order to run the healtcheck from the CLI on the container:
+
+```
+$ su -c "source /etc/environment; bin/cake passbolt healtcheck" -s /bin/bash www-data
+```
+
 # Requirements:
 
 * rng-tools or haveged are required on host machine to speed up entropy generation on containers.
