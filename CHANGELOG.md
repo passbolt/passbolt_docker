@@ -2,7 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.11.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.12.0...HEAD)
+
+## [2.12.0](https://github.com/passbolt/passbolt_docker/compare/v2.11.0...v2.12.0) - 2019-12-06
+
+### Changed
+
+- Timeout set to 0 in wait-for.sh. Fixes [#133](https://github.com/passbolt/passbolt_docker/issues/133)
 
 ## [2.11.0](https://github.com/passbolt/passbolt_docker/compare/v2.10.0...v2.11.0) - 2019-08-08
 
