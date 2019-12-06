@@ -160,7 +160,7 @@ $ docker-compose up
 In order to run the healtcheck from the CLI on the container:
 
 ```
-$ su -c "source /etc/environment; bin/cake passbolt healtcheck" -s /bin/bash www-data
+$ su -c "source /etc/environment; bin/cake passbolt healthcheck" -s /bin/bash www-data
 ```
 
 # Requirements:
