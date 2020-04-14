@@ -2,7 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.12.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.12.1...HEAD)
+
+## [2.12.1](https://github.com/passbolt/passbolt_docker/compare/v2.12.0...v2.12.1) - 2019-04-14
+
+### Changed
+
+- Dockerfile pins specific php version for better control
+- Pasbsolt code version bumped to 2.12.1
 
 ## [2.12.0](https://github.com/passbolt/passbolt_docker/compare/v2.11.0...v2.12.0) - 2019-12-06
 
