@@ -6,9 +6,9 @@ GEM
     docker-api (1.34.2)
       excon (>= 0.47.0)
       multi_json
-    excon (0.62.0)
+    excon (0.73.0)
     method_source (0.9.0)
-    multi_json (1.13.1)
+    multi_json (1.14.1)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (4.2.0)
@@ -16,7 +16,7 @@ GEM
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    rake (12.3.1)
+    rake (13.0.1)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
       rspec-expectations (~> 3.7.0)
@@ -49,10 +49,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  docker-api
+  docker-api (>= 1.34.2)
   pry
-  rake
+  rake (>= 12.3.3)
   serverspec
 
 BUNDLED WITH
-   1.16.1
+   1.17.3
