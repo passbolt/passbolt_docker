@@ -1,8 +1,8 @@
-FROM php:7.3-fpm
+FROM php:7.3.16-fpm
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
-ARG PASSBOLT_VERSION="2.12.0"
+ARG PASSBOLT_VERSION="2.12.1"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 ARG PASSBOLT_CURL_HEADERS=""
 
