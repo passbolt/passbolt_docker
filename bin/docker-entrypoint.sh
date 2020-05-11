@@ -69,6 +69,18 @@ gen_ssl_cert() {
     -keyout $ssl_key -out $ssl_cert
 }
 
+get_letsencrypt_cert() {
+  certbot certonly \
+    --dry-run -vvv \
+    --http-01-port ${LETSENCRYPT_PORT:-80} \
+    --http-01-address 0.0.0.0 \
+    --noninteractive \
+    --standalone \
+    --agree-tos \
+    --email ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} \
+    --domain $(basename ${APP_FULL_BASE_URL})
+}
+
 install() {
   local app_config="/var/www/passbolt/config/app.php"
 
@@ -103,7 +115,11 @@ fi
 
 if [ ! -f "$ssl_key" ] && [ ! -L "$ssl_key" ] && \
    [ ! -f "$ssl_cert" ] && [ ! -L "$ssl_cert" ]; then
-  gen_ssl_cert
+  if [ "${LETSENCRYPT_ENABLED:-false}" = "true" ]; then 
+     get_letsencrypt_cert
+  else
+    gen_ssl_cert
+  fi
 fi
 
 install

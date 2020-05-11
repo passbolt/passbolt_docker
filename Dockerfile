@@ -25,6 +25,8 @@ ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       unzip"
 
 ARG PASSBOLT_BASE_PACKAGES="nginx \
+         certbot \
+         python-certbot-nginx \
          gnupg \
          libgpgme11 \
          libmcrypt4 \
@@ -82,6 +84,7 @@ COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
+COPY scripts/letsencrypt-deploy.sh /etc/letsencrypt/renewal-hooks/deploy/deploy.sh
 
 EXPOSE 80 443
 

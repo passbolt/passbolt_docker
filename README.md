@@ -110,7 +110,9 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_PLUGINS_IMPORT_ENABLED     | Enable import plugin             | true |
 | PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register    | false |
 | PASSBOLT_SSL_FORCE                  | Redirects http to https          | true |
-| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true | | SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
+| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true | 
+| SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
+| LETSENCRYPT_ENABLED                 | Enable Letsencrypt               | false |
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
 and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
