@@ -71,7 +71,6 @@ gen_ssl_cert() {
 
 get_letsencrypt_cert() {
   certbot certonly \
-    --dry-run -vvv \
     --http-01-port ${LETSENCRYPT_PORT:-80} \
     --http-01-address 0.0.0.0 \
     --noninteractive \
