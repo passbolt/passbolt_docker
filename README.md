@@ -113,6 +113,7 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true | 
 | SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
 | LETSENCRYPT_ENABLED                 | Enable Letsencrypt               | false |
+| LETSENCRYPT_PORT                    | Letsencrypt ACME port            | 80 |
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
 and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
