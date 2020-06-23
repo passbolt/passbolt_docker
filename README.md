@@ -86,6 +86,7 @@ Passbolt docker image provides several environment variables to configure differ
 | DATASOURCES_DEFAULT_SSL_KEY         | Database SSL Key                 | '' |
 | DATASOURCES_DEFAULT_SSL_CERT        | Database SSL Cert                | '' |
 | DATASOURCES_DEFAULT_SSL_CA          | Database SSL CA                  | '' |
+| DATASOURCES_QUOTE_IDENTIFIER        | Enable database quoting ([needed for for MySQL 8+](https://github.com/passbolt/passbolt_api/issues/325)) | false |
 | EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                  | Smtp |
 | EMAIL_DEFAULT_FROM                  | From email address               | you@localhost |
 | EMAIL_DEFAULT_TRANSPORT             | Sets transport method            | default |
