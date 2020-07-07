@@ -9,24 +9,22 @@ services:
     ports:
       - "127.0.0.1:3306:3306"
 
-  passbolt:
-    image: passbolt/passbolt:2.13.0-debian
-    tty: true
+  nginx:
+    image: nginx_passbolt
     depends_on:
-      - db
-    env_file:
-      - env/passbolt.env
-    volumes:
-      - gpg_volume:/var/www/passbolt/config/gpg
-      - images_volume:/var/www/passbolt/webroot/img/public
-    tmpfs:
-      - /run
-    command: ["/usr/bin/wait-for.sh", "-t", "0", "db:3306", "--", "/docker-entrypoint.sh"]
+      - passbolt
     ports:
       - 80:80
       - 443:443
 
+  passbolt:
+    image: bazel/experimental/passbolt:passbolt-fpm
+    depends_on:
+      - db
+    env_file:
+      - env/passbolt.env
+    ports:
+      - 9000
+
 volumes:
   database_volume:
-  gpg_volume:
-  images_volume:
