@@ -9,18 +9,58 @@ services:
     ports:
       - "127.0.0.1:3306:3306"
 
+  gnupg:
+    image: bazel/experimental/passbolt-cli:passbolt-cli7.3
+    volumes:
+      - gpg_volume:/etc/passbolt/gpg
+    depends_on:
+      - db
+    env_file:
+      - env/passbolt.env
+    command:
+      - -c
+      - |
+        sleep 10
+        if [ ! -f /etc/passbolt/gpg/.keys_generated ]; then
+        gpg --batch --no-tty --gen-key <<EOF
+        Key-Type: default
+        Key-Length: 4096
+        Subkey-Type: default
+        Subkey-Length: 4096
+        Name-Real: passbolt.local serverkey
+        Name-Email: passbolt@passbolt.local
+        Expire-Date: 0
+        %no-protection
+        %commit
+        EOF
+        echo "EXPORTING GPG KEYS"
+        gpg --armor --export-secret-keys passbolt@passbolt.local > /etc/passbolt/gpg/serverkey_private.asc
+        gpg --armor --export passbolt@passbolt.local > /etc/passbolt/gpg/serverkey.asc
+        touch /etc/passbolt/gpg/.keys_generated
+        fi
+        export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=`gpg --list-keys --with-colons passbolt@passbolt.local |grep fpr |head -1| cut -f10 -d:`
+        echo $$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT
+        /usr/share/php/passbolt/bin/cake passbolt install --no-admin
+        /usr/share/php/passbolt/bin/cake passbolt migrate
+        echo "PLEASE ADD PASSBOLT_GPG_SERVER_KEY_FINGERPRINT $$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT to your env/passbolt.env"
+
   nginx:
     image: nginx_passbolt
+    restart: always
     depends_on:
       - passbolt
     ports:
       - 80:80
       - 443:443
+    command: [ "/usr/sbin/nginx", "-g", "daemon off;"]
 
   passbolt:
-    image: bazel/experimental/passbolt:passbolt-fpm
+    image: bazel/experimental/passbolt-fpm:passbolt-fpm7.3
+    restart: always
+    volumes:
+      - gpg_volume:/etc/passbolt/gpg
     depends_on:
-      - db
+      - gnupg
     env_file:
       - env/passbolt.env
     ports:
@@ -28,3 +68,4 @@ services:
 
 volumes:
   database_volume:
+  gpg_volume:
