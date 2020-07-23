@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-/var/www/passbolt/config/gpg/serverkey_private.asc}"
-gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-/var/www/passbolt/config/gpg/serverkey.asc}"
+passbolt_config="/etc/passbolt"
+gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-$passbolt_config/gpg/serverkey_private.asc}"
+gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-$passbolt_config/gpg/serverkey.asc}"
 
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
@@ -70,13 +71,12 @@ gen_ssl_cert() {
 }
 
 install() {
-  local app_config="/etc/passbolt/app.php"
 
-  if [ ! -f "$app_config" ]; then
-    su -c "cp $app_config/app.default.php $app_config/app.php" -s /bin/bash www-data
+  if [ ! -f "$passbolt_config/app.php" ]; then
+    su -c "cp $passbolt_config/app.default.php $passbolt_config/app.php" -s /bin/bash www-data
   fi
 
-  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  "$app_config/passbolt.php" ]; then
+  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  "$passbolt_config/passbolt.php" ]; then
     gpg_auto_fingerprint="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi

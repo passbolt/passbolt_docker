@@ -4,6 +4,7 @@ LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PASSBOLT_PKG=passbolt-ce-server
+ENV PHP_VERSION=7.3
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
@@ -15,8 +16,15 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
       nginx \
       $PASSBOLT_PKG \
-      supervisor
-
+      supervisor \
+    && rm /etc/nginx/sites-enabled/default \
+    && mkdir /run/php \
+    && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
+    && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
+    && sed -i 's,ssl on;,listen 443 ssl;,' /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i 's,__CERT_PATH__,/etc/ssl/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i 's,__KEY_PATH__,/etc/ssl/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf
 
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
 COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
