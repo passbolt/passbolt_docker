@@ -23,8 +23,8 @@ services:
       - /run
     command: ["/usr/bin/wait-for.sh", "-t", "0", "db:3306", "--", "/docker-entrypoint.sh"]
     ports:
-      - 80:80
-      - 443:443
+      - 80:8080
+      - 443:4443
 
 volumes:
   database_volume:
