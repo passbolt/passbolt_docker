@@ -4,7 +4,9 @@ LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PASSBOLT_PKG=passbolt-ce-server
+ENV PHP_VERSION=7.3
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
+
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
@@ -16,10 +18,17 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
       nginx \
       $PASSBOLT_PKG \
-      supervisor
+      supervisor \
+      php-apcu
 
 RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
     && rm /etc/nginx/sites-enabled/default \
+    && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
+    && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
+    && sed -i 's,ssl on;,listen 4443 ssl;,' /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i 's,__CERT_PATH__,/etc/passbolt/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i 's,__KEY_PATH__,/etc/passbolt/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i '/user www-data;/d' /etc/nginx/nginx.conf \
     && sed -i 's,/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
     && sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf \

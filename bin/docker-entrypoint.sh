@@ -2,14 +2,15 @@
 
 set -euo pipefail
 
-passbolt_base='/usr/share/php/passbolt'
 passbolt_config="/etc/passbolt"
-
+passbolt_base="/usr/share/php/passbolt"
 gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-$passbolt_config/gpg/serverkey_private.asc}"
 gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-$passbolt_config/gpg/serverkey.asc}"
 
 ssl_key="$passbolt_config/certs/certificate.key"
 ssl_cert="$passbolt_config/certs/certificate.crt"
+
+export GNUPGHOME="/var/lib/passbolt/.gnupg"
 
 entropy_check() {
   local entropy_avail
@@ -72,12 +73,11 @@ gen_ssl_cert() {
 
 install() {
   if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  "$passbolt_config/passbolt.php" ]; then
-    gpg_auto_fingerprint="$(gpg  --list-keys --with-colons "${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com}" |grep fpr |head -1| cut -f10 -d:)"
+    gpg_auto_fingerprint="$(gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
-    declare -p | grep PASSBOLT_GPG_SERVER_KEY_FINGERPRINT > ~/.profile
   fi
 
-  "$passbolt_base/bin/cake" passbolt install --no-admin || "$passbolt_base/bin/cake" passbolt migrate && echo "Enjoy! ☮"
+  $passbolt_base/bin/cake passbolt install --no-admin || $passbolt_base/bin/cake passbolt migrate && echo "Enjoy! ☮"
 }
 
 
