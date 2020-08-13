@@ -15,6 +15,19 @@
 [![license](https://img.shields.io/github/license/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/LICENSE)
 [![Twitter Follow](https://img.shields.io/twitter/follow/passbolt.svg?style=social&label=Follow)](https://twitter.com/passbolt)
 
+# If you are here for the distroless stack
+
+In order to run the distroless stack you need first to generate a gpg-key. This can be done like this:
+
+```docker-compose run generate-key```
+
+Once the process finishes it should output a GPG key fingerprint that you should add to the file
+`env/passbolt.env`
+
+Now you are good to go, launch the stack with:
+
+```docker-compose up```
+
 # What is passbolt?
 
 Passbolt is a free and open source password manager that allows team members to

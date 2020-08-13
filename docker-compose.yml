@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   db:
-    image: mariadb:10.3
+    image: mariadb:10.5.5
     env_file:
       - env/mysql.env
     volumes:
@@ -9,19 +9,18 @@ services:
     ports:
       - "127.0.0.1:3306:3306"
 
-  gnupg:
-    image: bazel/experimental/passbolt-cli:passbolt-cli7.3
+  generate-key:
+    image: passbolt/labs:2.13.5-cli
     volumes:
       - gpg_volume:/etc/passbolt/gpg
-    depends_on:
-      - db
     env_file:
       - env/passbolt.env
     command:
       - -c
       - |
+        set -eo
         sleep 10
-        if [ ! -f /etc/passbolt/gpg/.keys_generated ]; then
+        if [ ! -f /etc/passbolt/gpg/serverkey_private.asc ]; then
         gpg --batch --no-tty --gen-key <<EOF
         Key-Type: default
         Key-Length: 4096
@@ -36,31 +35,44 @@ services:
         echo "EXPORTING GPG KEYS"
         gpg --armor --export-secret-keys passbolt@passbolt.local > /etc/passbolt/gpg/serverkey_private.asc
         gpg --armor --export passbolt@passbolt.local > /etc/passbolt/gpg/serverkey.asc
-        touch /etc/passbolt/gpg/.keys_generated
-        fi
         export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=`gpg --list-keys --with-colons passbolt@passbolt.local |grep fpr |head -1| cut -f10 -d:`
-        echo $$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT
+        echo "PLEASE ADD PASSBOLT_GPG_SERVER_KEY_FINGERPRINT $$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT to your env/passbolt.env"
+        echo "After that run docker-compose up"
+        fi
+
+  install-passbolt:
+    image: passbolt/labs:2.13.5-cli
+    volumes:
+      - gpg_volume:/etc/passbolt/gpg
+    depends_on:
+      - db
+      - generate-key
+    env_file:
+      - env/passbolt.env
+    command:
+      - -c
+      - |
+        sleep 10
         /usr/share/php/passbolt/bin/cake passbolt install --no-admin
         /usr/share/php/passbolt/bin/cake passbolt migrate
-        echo "PLEASE ADD PASSBOLT_GPG_SERVER_KEY_FINGERPRINT $$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT to your env/passbolt.env"
+        echo "Now please run docker-compose up"
 
   nginx:
-    image: nginx_passbolt
+    image: passbolt/labs:nginx-passbolt-2.13.5
     restart: always
     depends_on:
       - passbolt
     ports:
       - 80:80
       - 443:443
-    command: [ "/usr/sbin/nginx", "-g", "daemon off;"]
 
   passbolt:
-    image: bazel/experimental/passbolt-fpm:passbolt-fpm7.3
+    image: passbolt/labs:2.13.5-fpm
     restart: always
     volumes:
       - gpg_volume:/etc/passbolt/gpg
     depends_on:
-      - gnupg
+      - install-passbolt
     env_file:
       - env/passbolt.env
     ports:
