@@ -38,6 +38,8 @@ services:
         export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=`gpg --list-keys --with-colons passbolt@passbolt.local |grep fpr |head -1| cut -f10 -d:`
         echo "PLEASE ADD PASSBOLT_GPG_SERVER_KEY_FINGERPRINT $$PASSBOLT_GPG_SERVER_KEY_FINGERPRINT to your env/passbolt.env"
         echo "After that run docker-compose up"
+        else
+        echo "Key already generated"
         fi
 
   install-passbolt:
@@ -55,7 +57,7 @@ services:
         sleep 10
         /usr/share/php/passbolt/bin/cake passbolt install --no-admin
         /usr/share/php/passbolt/bin/cake passbolt migrate
-        echo "Now please run docker-compose up"
+        echo "Install and migrations executed"
 
   nginx:
     image: passbolt/labs:nginx-passbolt-2.13.5
