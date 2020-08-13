@@ -17,6 +17,8 @@
 
 # If you are here for the distroless stack
 
+First configure env/passbolt.env to match your desired domain name or other env variables you might need.
+
 In order to run the distroless stack you need first to generate a gpg-key. This can be done like this:
 
 ```docker-compose run generate-key```
@@ -27,6 +29,25 @@ Once the process finishes it should output a GPG key fingerprint that you should
 Now you are good to go, launch the stack with:
 
 ```docker-compose up```
+
+Register an admin user with the following command:
+
+```docker-compose run install-passbolt -c "/usr/share/php/passbolt/bin/cake passbolt register_user -u email_address -f name -l surname
+-r admin"```
+
+The above command will output a one use link that you should paste on your browser to configure your browser extension
+
+Where:
+
+- email_address: should be your email address
+- name: first name of the user
+- surname: surname of the user
+
+# Distroless compose caveats
+
+Important the stack is for testing as you might expect there are some caveats:
+
+- There is no cron job service so expect no emails
 
 # What is passbolt?
 
