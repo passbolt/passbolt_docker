@@ -32,8 +32,10 @@ Now you are good to go, launch the stack with:
 
 Register an admin user with the following command:
 
-```docker-compose run install-passbolt -c "/usr/share/php/passbolt/bin/cake passbolt register_user -u email_address -f name -l surname
--r admin"```
+```
+docker-compose run install-passbolt -c "/usr/share/php/passbolt/bin/cake passbolt register_user -u email_address -f name -l surname
+-r admin"
+```
 
 The above command will output a one use link that you should paste on your browser to configure your browser extension
 
