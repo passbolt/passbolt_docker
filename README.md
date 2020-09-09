@@ -154,9 +154,3 @@ Usage:
 ```
 $ docker-compose up
 ```
-
-# Requirements:
-
-* rng-tools or haveged are required on host machine to speed up entropy generation on containers.
-This way gpg key creation on passbolt container will be faster.
-* mariadb/mysql >= 5.6
