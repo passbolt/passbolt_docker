@@ -1,4 +1,4 @@
-.passbolt-build:
+.passbolt-prerelease:
   stage: build
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -20,8 +20,8 @@
         --dockerfile $CI_PROJECT_DIR/debian/Dockerfile \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-$(date +%s)
 
-docker-build-pro:
-  extends: .passbolt-build
+prerelease-pro:
+  extends: .passbolt-prerelease
   variables:
     PASSBOLT_URL: "https://gitlab.com/api/v4/projects/$UPSTREAM_PROJECT_ID/repository/archive.tar.gz?sha=$UPSTREAM_COMMIT_SHA"
     PASSBOLT_CURL_HEADERS: "PRIVATE-TOKEN: $PRIVATE_TOKEN"
