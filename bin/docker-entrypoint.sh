@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
-gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-/var/www/passbolt/config/gpg/serverkey_private.asc}"
-gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-/var/www/passbolt/config/gpg/serverkey.asc}"
+passbolt_config="/etc/passbolt"
+gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-$passbolt_config/gpg/serverkey_private.asc}"
+gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-$passbolt_config/gpg/serverkey.asc}"
 
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
-export GNUPGHOME="/home/www-data/.gnupg"
+deprecation_message=""
+
+export GNUPGHOME="/var/lib/passbolt/.gnupg"
 
 entropy_check() {
   local entropy_avail
@@ -42,7 +45,7 @@ gpg_gen_key() {
 
   entropy_check
 
-  su -c "gpg --batch --no-tty --gen-key <<EOF
+  su -c "gpg --homedir $GNUPGHOME --batch --no-tty --gen-key <<EOF
     Key-Type: default
 		Key-Length: $key_length
 		Subkey-Type: default
@@ -54,13 +57,13 @@ gpg_gen_key() {
 		%commit
 EOF" -ls /bin/bash www-data
 
-  su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash www-data
-  su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/bash www-data
+  su -c "gpg --homedir $GNUPGHOME --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash www-data
+  su -c "gpg --homedir $GNUPGHOME --armor --export $key_email > $gpg_public_key" -ls /bin/bash www-data
 }
 
 gpg_import_key() {
-  su -c "gpg --batch --import $gpg_public_key" -ls /bin/bash www-data
-  su -c "gpg --batch --import $gpg_private_key" -ls /bin/bash www-data
+  su -c "gpg --homedir $GNUPGHOME --batch --import $gpg_public_key" -ls /bin/bash www-data
+  su -c "gpg --homedir $GNUPGHOME --batch --import $gpg_private_key" -ls /bin/bash www-data
 }
 
 gen_ssl_cert() {
@@ -70,18 +73,17 @@ gen_ssl_cert() {
 }
 
 install() {
-  local app_config="/var/www/passbolt/config/app.php"
 
-  if [ ! -f "$app_config" ]; then
-    su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/bash www-data
+  if [ ! -f "$passbolt_config/app.php" ]; then
+    su -c "cp $passbolt_config/app.default.php $passbolt_config/app.php" -s /bin/bash www-data
   fi
 
-  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  '/var/www/passbolt/config/passbolt.php' ]; then
-    gpg_auto_fingerprint="$(su -c "gpg --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
+  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  "$passbolt_config/passbolt.php" ]; then
+    gpg_auto_fingerprint="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
-  su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
+  su -c '/usr/share/php/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/usr/share/php/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
 }
 
 email_cron_job() {
@@ -93,8 +95,47 @@ email_cron_job() {
   fi
 }
 
-if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
-   [ ! -f "$gpg_public_key" ] && [ ! -L "$gpg_public_key" ]; then
+create_deprecation_message() {
+  deprecation_message+="\033[33;5;7mWARNING: $1 is deprecated, point your docker volume to $2\033[0m\n"
+}
+
+check_deprecated_paths() {
+  declare -A deprecated_paths
+  local deprecated_avatar_path="/var/www/passbolt/webroot/img/public/Avatar"
+  local avatar_path="/usr/share/php/passbolt/webroot/img/public/Avatar"
+  local deprecated_subscription_path="/var/www/passbolt/webroot/img/public/Avatar"
+  local subscription_path="/etc/passbolt/license"
+  deprecated_paths=(
+    ['/var/www/passbolt/config/gpg/serverkey.asc']='/etc/passbolt/gpg/serverkey.asc'
+    ['/var/www/passbolt/config/gpg/serverkey_private.asc']='/etc/passbolt/gpg/serverkey_private.asc'
+  )
+
+  if [ -z "$PASSBOLT_GPG_SERVER_KEY_PUBLIC" ] || [ -z "$PASSBOLT_GPG_SERVER_KEY_PRIVATE" ]; then
+    for path in "${!deprecated_paths[@]}"
+    do
+      echo "VOLTA"
+      if [ -f "$path" ] && [ ! -f "${deprecated_paths[$path]}" ]; then
+        ln -s "$path" "${deprecated_paths[$path]}"
+        create_deprecation_message "$path" "${deprecated_paths[$path]}"
+      fi
+    done
+  fi
+
+  if [ -d "$deprecated_avatar_path" ] && [ ! -d "$avatar_path" ]; then
+    ln -s "$deprecated_avatar_path" "$avatar_path"
+    create_deprecation_message "$deprecated_avatar_path" "$avatar_path"
+  fi
+
+  if [ -f "$deprecated_subscription_path" ] && [ ! -f "$subscription_path" ]; then
+    ln -s "$deprecated_subscription_path" "$subscription_path"
+    create_deprecation_message "$deprecated_subscription_path" "$subscription_path"
+  fi
+}
+
+check_deprecated_paths
+
+if [ ! -f "$gpg_private_key" ] || \
+   [ ! -f "$gpg_public_key" ]; then
   gpg_gen_key
   gpg_import_key
 else
@@ -108,5 +149,7 @@ fi
 
 install
 email_cron_job
+
+echo -e "$deprecation_message"
 
 exec /usr/bin/supervisord -n
