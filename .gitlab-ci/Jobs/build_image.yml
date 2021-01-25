@@ -18,7 +18,8 @@
         --build-arg PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian" \
         --build-arg PASSBOLT_COMPONENT="$COMPONENT" \
         --dockerfile $CI_PROJECT_DIR/debian/Dockerfile \
-        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-$(date +%s)
+        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-$(date +%s) \
+        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-latest
 
 build-docker:
   extends: .build
