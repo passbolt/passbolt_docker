@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
 passbolt_config="/etc/passbolt"
 gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-$passbolt_config/gpg/serverkey_private.asc}"
@@ -8,6 +8,8 @@ gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-$passbolt_config/gpg/serverkey
 
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
+
+deprecation_message=""
 
 export GNUPGHOME="/var/lib/passbolt/.gnupg"
 
@@ -93,8 +95,47 @@ email_cron_job() {
   fi
 }
 
-if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
-   [ ! -f "$gpg_public_key" ] && [ ! -L "$gpg_public_key" ]; then
+create_deprecation_message() {
+  deprecation_message+="\033[33;5;7mWARNING: $1 is deprecated, point your docker volume to $2\033[0m\n"
+}
+
+check_deprecated_paths() {
+  declare -A deprecated_paths
+  local deprecated_avatar_path="/var/www/passbolt/webroot/img/public/Avatar"
+  local avatar_path="/usr/share/php/passbolt/webroot/img/public/Avatar"
+  local deprecated_subscription_path="/var/www/passbolt/webroot/img/public/Avatar"
+  local subscription_path="/etc/passbolt/license"
+  deprecated_paths=(
+    ['/var/www/passbolt/config/gpg/serverkey.asc']='/etc/passbolt/gpg/serverkey.asc'
+    ['/var/www/passbolt/config/gpg/serverkey_private.asc']='/etc/passbolt/gpg/serverkey_private.asc'
+  )
+
+  if [ -z "$PASSBOLT_GPG_SERVER_KEY_PUBLIC" ] || [ -z "$PASSBOLT_GPG_SERVER_KEY_PRIVATE" ]; then
+    for path in "${!deprecated_paths[@]}"
+    do
+      echo "VOLTA"
+      if [ -f "$path" ] && [ ! -f "${deprecated_paths[$path]}" ]; then
+        ln -s "$path" "${deprecated_paths[$path]}"
+        create_deprecation_message "$path" "${deprecated_paths[$path]}"
+      fi
+    done
+  fi
+
+  if [ -d "$deprecated_avatar_path" ] && [ ! -d "$avatar_path" ]; then
+    ln -s "$deprecated_avatar_path" "$avatar_path"
+    create_deprecation_message "$deprecated_avatar_path" "$avatar_path"
+  fi
+
+  if [ -f "$deprecated_subscription_path" ] && [ ! -f "$subscription_path" ]; then
+    ln -s "$deprecated_subscription_path" "$subscription_path"
+    create_deprecation_message "$deprecated_subscription_path" "$subscription_path"
+  fi
+}
+
+check_deprecated_paths
+
+if [ ! -f "$gpg_private_key" ] || \
+   [ ! -f "$gpg_public_key" ]; then
   gpg_gen_key
   gpg_import_key
 else
@@ -108,5 +149,7 @@ fi
 
 install
 email_cron_job
+
+echo -e "$deprecation_message"
 
 exec /usr/bin/supervisord -n
