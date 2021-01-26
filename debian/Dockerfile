@@ -36,4 +36,6 @@ COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
 EXPOSE 80 443
 
+WORKDIR /usr/share/php/passbolt
+
 CMD ["/docker-entrypoint.sh"]
