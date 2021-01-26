@@ -113,7 +113,6 @@ check_deprecated_paths() {
   if [ -z "$PASSBOLT_GPG_SERVER_KEY_PUBLIC" ] || [ -z "$PASSBOLT_GPG_SERVER_KEY_PRIVATE" ]; then
     for path in "${!deprecated_paths[@]}"
     do
-      echo "VOLTA"
       if [ -f "$path" ] && [ ! -f "${deprecated_paths[$path]}" ]; then
         ln -s "$path" "${deprecated_paths[$path]}"
         create_deprecation_message "$path" "${deprecated_paths[$path]}"
