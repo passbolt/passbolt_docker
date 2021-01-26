@@ -10,7 +10,7 @@ services:
       - "127.0.0.1:3306:3306"
 
   passbolt:
-    image: localpassbolt
+    image: passbolt/passbolt:3.0.0-debian
     tty: true
     depends_on:
       - db
