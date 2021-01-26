@@ -17,11 +17,9 @@ services:
     env_file:
       - env/passbolt.env
     volumes:
-      - gpg_volume:/var/www/passbolt/config/gpg
-      - images_volume:/var/www/passbolt/webroot/img/public
-      - ./license:/var/www/passbolt/config/license
-    tmpfs:
-      - /run
+      - gpg_volume:/etc/passbolt/gpg
+      - images_volume:/usr/share/php/passbolt/webroot/img/public
+      - ./license:/etc/passbolt/license
     command: ["/usr/bin/wait-for.sh", "-t", "0", "db:3306", "--", "/docker-entrypoint.sh"]
     ports:
       - 80:80
