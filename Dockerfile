@@ -26,7 +26,8 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
     && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-    && sed -i 's,ssl on;,listen 4443 ssl;,' /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i 's,listen \[\:\:\]\:443 ssl http2;,listen \[\:\:\]\:4443 ssl http2;,' /etc/nginx/snippets/passbolt-ssl.conf \
+    && sed -i '/listen \[\:\:\]\:4443 ssl http2;/a listen 4443 ssl http2;' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i 's,__CERT_PATH__,/etc/passbolt/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i 's,__KEY_PATH__,/etc/passbolt/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i '/user www-data;/d' /etc/nginx/nginx.conf \
