@@ -17,15 +17,24 @@
         --build-arg PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server" \
         --build-arg PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian" \
         --build-arg PASSBOLT_COMPONENT="$COMPONENT" \
-        --dockerfile $CI_PROJECT_DIR/debian/Dockerfile \
-        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-$(date +%s) \
-        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-latest
+        --dockerfile $CI_PROJECT_DIR/$DOCKERFILE_PATH \
+        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-$(date +%s) \
+        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest
 
 build-docker:
   extends: .build
   variables:
-    PASSBOLT_URL: "https://gitlab.com/api/v4/projects/$UPSTREAM_PROJECT_ID/repository/archive.tar.gz?sha=$UPSTREAM_COMMIT_SHA"
-    PASSBOLT_CURL_HEADERS: "PRIVATE-TOKEN: $PRIVATE_TOKEN"
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root"
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+
+build-rootless:
+  extends: .build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
       when: on_success
