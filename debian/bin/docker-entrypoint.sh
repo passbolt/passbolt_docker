@@ -11,8 +11,6 @@ ssl_cert='/etc/ssl/certs/certificate.crt'
 
 deprecation_message=""
 
-export GNUPGHOME="/var/lib/passbolt/.gnupg"
-
 entropy_check() {
   local entropy_avail
 
@@ -73,7 +71,6 @@ gen_ssl_cert() {
 }
 
 install() {
-
   if [ ! -f "$passbolt_config/app.php" ]; then
     su -c "cp $passbolt_config/app.default.php $passbolt_config/app.php" -s /bin/bash www-data
   fi
@@ -84,15 +81,6 @@ install() {
   fi
 
   su -c '/usr/share/php/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/usr/share/php/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
-}
-
-email_cron_job() {
-  cron_task='/etc/cron.d/passbolt_email'
-  declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /etc/environment
-  if [ ! -f "$cron_task" ]; then
-    echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> $cron_task
-    crontab /etc/cron.d/passbolt_email
-  fi
 }
 
 create_deprecation_message() {
@@ -147,7 +135,8 @@ if [ ! -f "$ssl_key" ] && [ ! -L "$ssl_key" ] && \
 fi
 
 install
-email_cron_job
+
+echo -e "$deprecation_message"
 
 echo -e "$deprecation_message"
 

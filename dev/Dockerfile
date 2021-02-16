@@ -1,8 +1,8 @@
-FROM php:7.3.16-fpm
+FROM php:7.3.24-fpm
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
-ARG PASSBOLT_VERSION="2.12.1"
+ARG PASSBOLT_VERSION="2.13.5"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 ARG PASSBOLT_CURL_HEADERS=""
 
@@ -60,7 +60,7 @@ RUN apt-get update \
          rm composer-setup.php; \
          exit 1; \
        fi \
-    && php composer-setup.php \
+    && php composer-setup.php --1 \
     && mv composer.phar /usr/local/bin/composer \
     && rm composer-setup.php \
     && curl -sSL -H "$PASSBOLT_CURL_HEADERS" "$PASSBOLT_URL" | tar zxf - -C . --strip-components 1 \
@@ -76,11 +76,14 @@ RUN apt-get update \
     && rm /usr/local/bin/composer \
     && echo 'php_flag[expose_php] = off' > /usr/local/etc/php-fpm.d/expose.conf \
     && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
-    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+    && echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> /etc/cron.d/passbolt_email \
+    && crontab /etc/cron.d/passbolt_email \
+    && ln -s $(which php-fpm){,7.3}
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
-COPY bin/docker-entrypoint.sh /docker-entrypoint.sh
+COPY dev/bin/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
 EXPOSE 80 443
