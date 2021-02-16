@@ -2,15 +2,13 @@
 
 set -euo pipefail
 
-passbolt_config="/etc/passbolt"
-passbolt_base="/usr/share/php/passbolt"
-gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-$passbolt_config/gpg/serverkey_private.asc}"
-gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-$passbolt_config/gpg/serverkey.asc}"
+gpg_private_key="${PASSBOLT_GPG_SERVER_KEY_PRIVATE:-/var/www/passbolt/config/gpg/serverkey_private.asc}"
+gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-/var/www/passbolt/config/gpg/serverkey.asc}"
 
-ssl_key="$passbolt_config/certs/certificate.key"
-ssl_cert="$passbolt_config/certs/certificate.crt"
+ssl_key='/etc/ssl/certs/certificate.key'
+ssl_cert='/etc/ssl/certs/certificate.crt'
 
-export GNUPGHOME="/var/lib/passbolt/.gnupg"
+export GNUPGHOME="/home/www-data/.gnupg"
 
 entropy_check() {
   local entropy_avail
@@ -44,7 +42,7 @@ gpg_gen_key() {
 
   entropy_check
 
-  gpg --batch --no-tty --gen-key <<EOF
+  su -c "gpg --batch --no-tty --gen-key <<EOF
     Key-Type: default
 		Key-Length: $key_length
 		Subkey-Type: default
@@ -54,32 +52,37 @@ gpg_gen_key() {
     Expire-Date: $expiration
     %no-protection
 		%commit
-EOF
+EOF" -ls /bin/bash www-data
 
-  gpg --armor --export-secret-keys "$key_email" > "$gpg_private_key"
-  gpg --armor --export "$key_email" > "$gpg_public_key"
+  su -c "gpg --armor --export-secret-keys $key_email > $gpg_private_key" -ls /bin/bash www-data
+  su -c "gpg --armor --export $key_email > $gpg_public_key" -ls /bin/bash www-data
 }
 
 gpg_import_key() {
-  gpg  --batch --import "$gpg_public_key"
-  gpg  --batch --import "$gpg_private_key"
+  su -c "gpg --batch --import $gpg_public_key" -ls /bin/bash www-data
+  su -c "gpg --batch --import $gpg_private_key" -ls /bin/bash www-data
 }
 
 gen_ssl_cert() {
   openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
     -subj '/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.passbolt.local' \
-    -keyout "$ssl_key" -out "$ssl_cert"
+    -keyout $ssl_key -out $ssl_cert
 }
 
 install() {
-  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  "$passbolt_config/passbolt.php" ]; then
-    gpg_auto_fingerprint="$(gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:)"
+  local app_config="/var/www/passbolt/config/app.php"
+
+  if [ ! -f "$app_config" ]; then
+    su -c 'cp /var/www/passbolt/config/app.default.php /var/www/passbolt/config/app.php' -s /bin/bash www-data
+  fi
+
+  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  '/var/www/passbolt/config/passbolt.php' ]; then
+    gpg_auto_fingerprint="$(su -c "gpg --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
-  $passbolt_base/bin/cake passbolt install --no-admin || $passbolt_base/bin/cake passbolt migrate && echo "Enjoy! ☮"
+  su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
 }
-
 
 if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
    [ ! -f "$gpg_public_key" ] && [ ! -L "$gpg_public_key" ]; then
