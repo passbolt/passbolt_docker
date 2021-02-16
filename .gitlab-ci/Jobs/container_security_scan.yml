@@ -20,13 +20,15 @@ container_scanning:
     # https://docs.gitlab.com/runner/executors/kubernetes.html
     DOCKER_SERVICE: localhost
     DOCKER_HOST: tcp://${DOCKER_SERVICE}:2375/
+    DOCKER_TAG: rootless
     # https://hub.docker.com/r/arminc/clair-local-scan/tags
     CLAIR_LOCAL_SCAN_VERSION: v2.0.8_fe9b059d930314b54c78f75afe265955faf4fdc1
+    PASSBOLT_FLAVOUR: pro
   allow_failure: true
   services:
     - docker:18-dind
   script:
-    - export CI_APPLICATION_TAG=${PASSBOLT_FLAVOUR:-local}-${UPSTREAM_COMMIT_SHA:-latest}
+    - export CI_APPLICATION_TAG=${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest
     - echo "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
     - if [ -z "$DOCKER_HOST" -a "$KUBERNETES_PORT" ]; then { export DOCKER_SERVICE="localhost" ; export DOCKER_HOST="tcp://${DOCKER_SERVICE}:2375" ; } fi
     - |
