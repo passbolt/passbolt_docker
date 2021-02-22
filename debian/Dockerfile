@@ -11,11 +11,6 @@ ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
 ARG PASSBOLT_PKG=passbolt-ce-server
 
-ARG PASSBOLT_REPO_URL="https://download.passbolt.com/ce/debian"
-ARG PASSBOLT_DISTRO="buster"
-ARG PASSBOLT_COMPONENT="stable"
-ARG PASSBOLT_PKG=passbolt-ce-server
-
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
       ca-certificates \
@@ -27,6 +22,7 @@ RUN apt-get update \
       nginx \
       $PASSBOLT_PKG \
       supervisor \
+      curl \
     && rm /etc/nginx/sites-enabled/default \
     && mkdir /run/php \
     && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
@@ -36,6 +32,7 @@ RUN apt-get update \
     && sed -i 's,__CERT_PATH__,/etc/ssl/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i 's,__KEY_PATH__,/etc/ssl/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i 's,www-data.*$,www-data exec /bin/bash -c ". /etc/environment \&\& $PASSBOLT_BASE_DIR/bin/cron",' /etc/cron.d/$PASSBOLT_PKG \
+    && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
     && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
     && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
     && ln -sf /dev/stderr /var/log/passbolt/error.log \
