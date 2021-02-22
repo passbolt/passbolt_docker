@@ -32,3 +32,5 @@ conf/*.key
 src
 
 .ruby-version
+
+.bundle
