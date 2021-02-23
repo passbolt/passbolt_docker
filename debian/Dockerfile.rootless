@@ -2,14 +2,19 @@ FROM debian:buster-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
-ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
-ENV PHP_VERSION=7.3
-ENV GNUPGHOME=/var/lib/passbolt/.gnupg
-
+ARG SUPERCRONIC_ARCH=amd64
 ARG PASSBOLT_REPO_URL="https://download.passbolt.com/ce/debian"
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
 ARG PASSBOLT_PKG=passbolt-ce-server
+
+ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
+ENV PHP_VERSION=7.3
+ENV GNUPGHOME=/var/lib/passbolt/.gnupg
+ENV SUPERCRONIC_VERSION=0.1.12
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
+    SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH} \
+    SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
@@ -21,7 +26,13 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
       nginx \
       $PASSBOLT_PKG \
-      supervisor
+      supervisor \
+      curl \
+    && curl -fsSLO "$SUPERCRONIC_URL" \
+    && echo "${SUPERCRONIC_SHA1SUM} ${SUPERCRONIC}" | sha1sum -c - \
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
     && rm /etc/nginx/sites-enabled/default \
@@ -55,11 +66,10 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && chown -R www-data:0 /var/log/supervisor \
     && touch /var/www/.profile \
     && chown www-data:www-data /var/www/.profile \
-    && sed -i 's,www-data.*$,www-data exec /bin/bash -c ". /etc/environment \&\& $PASSBOLT_BASE_DIR/bin/cron",' /etc/cron.d/$PASSBOLT_PKG \
-    && crontab /etc/cron.d/$PASSBOLT_PKG
+    && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG
 
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
-COPY debian/bin/docker-entrypoint.sh /docker-entrypoint.sh
+COPY debian/bin/docker-entrypoint.sh.rootless /docker-entrypoint.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
 EXPOSE 8080 4443
