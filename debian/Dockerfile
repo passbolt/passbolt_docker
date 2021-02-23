@@ -39,7 +39,9 @@ RUN apt-get update \
     && ln -sf /dev/stderr /var/log/php7.3-fpm.log \
     && crontab /etc/cron.d/$PASSBOLT_PKG
 
-COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
+COPY conf/supervisor/cron.conf /etc/supervisor/conf.d/cron.conf
+COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
+COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 COPY debian/bin/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
