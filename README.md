@@ -6,7 +6,7 @@
    /_/    \__,_/____/____/_,___/\____/_/\__/           `,.__.   ^___.-/
                                                          `-./ .'...--`
   The open source password manager for teams                `'
-  (c) 2018 Passbolt SARL
+  (c) 2021 Passbolt SA
   https://www.passbolt.com
 ```
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0de4eaf7426944769a70a2d727a9012b)](https://www.codacy.com/app/passbolt/passbolt_docker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=passbolt/passbolt_docker&amp;utm_campaign=Badge_Grade)
@@ -20,13 +20,21 @@
 Passbolt is a free and open source password manager that allows team members to
 store and share credentials securely.
 
-# Requirements:
+# Requirements
 
-* rng-tools or haveged are required on host machine to speed up entropy generation on containers.
+* rng-tools or haveged might be required on host machine to speed up entropy generation on containers.
 This way gpg key creation on passbolt container will be faster.
 * mariadb/mysql >= 5.0
 
 # Usage
+
+### docker-compose
+
+Usage:
+
+```
+$ docker-compose up
+```
 
 Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
 
@@ -44,7 +52,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=<root_password> \
 ```
 
 Then you can start passbolt just by providing the database container ip in the
-`db_host` environment variable.
+`DATASOURCES_DEFAULT_HOST` environment variable.
 
 ```bash
 $ docker run --name passbolt \
@@ -61,7 +69,7 @@ $ docker run --name passbolt \
 Once the container is running create your first admin user:
 
 ```bash
-$ docker exec passbolt su -m -c "/var/www/passbolt/bin/cake passbolt register_user -u your@email.com -f yourname -l surname -r admin" -s /bin/sh www-data
+$ docker exec passbolt su -m -c "bin/cake passbolt register_user -u your@email.com -f yourname -l surname -r admin" -s /bin/sh www-data
 ```
 
 This registration command will return a single use url required to continue the
@@ -74,43 +82,44 @@ available browsing `https://yourdomain.com`
 
 Passbolt docker image provides several environment variables to configure different aspects:
 
-| Variable name                       | Description                      | Default value       |
-| ----------------------------------- | -------------------------------- | ------------------- |
-| APP_BASE                            | it allows people to specify the base subdir the application is running in | null |
-| APP_FULL_BASE_URL                   | Passbolt base url                | false |
-| DATASOURCES_DEFAULT_HOST            | Database hostname                | localhost |
-| DATASOURCES_DEFAULT_PORT            | Database port                    | 3306 |
-| DATASOURCES_DEFAULT_USERNAME        | Database username                | '' |
-| DATASOURCES_DEFAULT_PASSWORD        | Database password                | '' |
-| DATASOURCES_DEFAULT_DATABASE        | Database name                    | '' |
-| DATASOURCES_DEFAULT_SSL_KEY         | Database SSL Key                 | '' |
-| DATASOURCES_DEFAULT_SSL_CERT        | Database SSL Cert                | '' |
-| DATASOURCES_DEFAULT_SSL_CA          | Database SSL CA                  | '' |
-| EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                  | Smtp |
-| EMAIL_DEFAULT_FROM                  | From email address               | you@localhost |
-| EMAIL_DEFAULT_TRANSPORT             | Sets transport method            | default |
-| EMAIL_TRANSPORT_DEFAULT_HOST        | Server hostname                  | localhost |
-| EMAIL_TRANSPORT_DEFAULT_PORT        | Server port                      | 25 |
-| EMAIL_TRANSPORT_DEFAULT_TIMEOUT     | Timeout                          | 30 |
-| EMAIL_TRANSPORT_DEFAULT_USERNAME    | Username for email server auth   | null |
-| EMAIL_TRANSPORT_DEFAULT_PASSWORD    | Password for email server auth   | null |
-| EMAIL_TRANSPORT_DEFAULT_CLIENT      | Client                           | null |
-| EMAIL_TRANSPORT_DEFAULT_TLS         | Set tls                          | null |
-| EMAIL_TRANSPORT_DEFAULT_URL         | Set url                          | null |
-| GNUPGHOME                           | path to gnupghome directory      | /home/www-data/.gnupg |
-| PASSBOLT_KEY_LENGTH                 | Gpg desired key length           | 2048 |
-| PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length        | 2048 |
-| PASSBOLT_KEY_NAME                   | Key owner name                   | Passbolt default user |
-| PASSBOLT_KEY_EMAIL                  | Key owner email address          | passbolt@yourdomain.com |
-| PASSBOLT_KEY_EXPIRATION             | Key expiration date              | 0, never expires |
-| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                | null |
-| PASSBOLT_GPG_SERVER_KEY_PUBLIC      | Path to GnuPG public server key  | /var/www/passbolt/config/gpg/serverkey.asc |
-| PASSBOLT_GPG_SERVER_KEY_PRIVATE     | Path to GnuPG private server key | /var/www/passbolt/config/gpg/serverkey_private.asc |
-| PASSBOLT_PLUGINS_EXPORT_ENABLED     | Enable export plugin             | true |
-| PASSBOLT_PLUGINS_IMPORT_ENABLED     | Enable import plugin             | true |
-| PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register    | false |
-| PASSBOLT_SSL_FORCE                  | Redirects http to https          | true |
-| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                 | true | | SECURITY_SALT                       | CakePHP security salt            | __SALT__ |
+| Variable name                       | Description                                                               | Default value
+| ----------------------------------- | --------------------------------                                          | -------------------
+| APP_BASE                            | it allows people to specify the base subdir the application is running in | null
+| APP_FULL_BASE_URL                   | Passbolt base url                                                         | false
+| DATASOURCES_DEFAULT_HOST            | Database hostname                                                         | localhost
+| DATASOURCES_DEFAULT_PORT            | Database port                                                             | 3306
+| DATASOURCES_DEFAULT_USERNAME        | Database username                                                         | ''
+| DATASOURCES_DEFAULT_PASSWORD        | Database password                                                         | ''
+| DATASOURCES_DEFAULT_DATABASE        | Database name                                                             | ''
+| DATASOURCES_DEFAULT_SSL_KEY         | Database SSL Key                                                          | ''
+| DATASOURCES_DEFAULT_SSL_CERT        | Database SSL Cert                                                         | ''
+| DATASOURCES_DEFAULT_SSL_CA          | Database SSL CA                                                           | ''
+| EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                                                           | Smtp
+| EMAIL_DEFAULT_FROM                  | From email address                                                        | you@localhost
+| EMAIL_DEFAULT_TRANSPORT             | Sets transport method                                                     | default
+| EMAIL_TRANSPORT_DEFAULT_HOST        | Server hostname                                                           | localhost
+| EMAIL_TRANSPORT_DEFAULT_PORT        | Server port                                                               | 25
+| EMAIL_TRANSPORT_DEFAULT_TIMEOUT     | Timeout                                                                   | 30
+| EMAIL_TRANSPORT_DEFAULT_USERNAME    | Username for email server auth                                            | null
+| EMAIL_TRANSPORT_DEFAULT_PASSWORD    | Password for email server auth                                            | null
+| EMAIL_TRANSPORT_DEFAULT_CLIENT      | Client                                                                    | null
+| EMAIL_TRANSPORT_DEFAULT_TLS         | Set tls                                                                   | null
+| EMAIL_TRANSPORT_DEFAULT_URL         | Set url                                                                   | null
+| GNUPGHOME                           | path to gnupghome directory                                               | /var/lib/passbolt/.gnupg
+| PASSBOLT_KEY_LENGTH                 | Gpg desired key length                                                    | 2048
+| PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length                                                 | 2048
+| PASSBOLT_KEY_NAME                   | Key owner name                                                            | Passbolt default user
+| PASSBOLT_KEY_EMAIL                  | Key owner email address                                                   | passbolt@yourdomain.com
+| PASSBOLT_KEY_EXPIRATION             | Key expiration date                                                       | 0, never expires
+| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                                                         | null
+| PASSBOLT_GPG_SERVER_KEY_PUBLIC      | Path to GnuPG public server key                                           | /etc/passbolt/gpg/serverkey.asc
+| PASSBOLT_GPG_SERVER_KEY_PRIVATE     | Path to GnuPG private server key                                          | /etc/passbolt/gpg/serverkey_private.asc
+| PASSBOLT_PLUGINS_EXPORT_ENABLED     | Enable export plugin                                                      | true
+| PASSBOLT_PLUGINS_IMPORT_ENABLED     | Enable import plugin                                                      | true
+| PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register                                             | false
+| PASSBOLT_SSL_FORCE                  | Redirects http to https                                                   | true
+| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                                                          | true
+| SECURITY_SALT                       | CakePHP security salt                                                     | __SALT__
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
 and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
@@ -120,11 +129,11 @@ and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/confi
 What if you already have a set of gpg keys and custom configuration files for passbolt?
 It it possible to mount the desired configuration files as volumes.
 
-* /var/www/passbolt/config/app.php
-* /var/www/passbolt/config/passbolt.php
-* /var/www/passbolt/config/gpg/serverkey.asc
-* /var/www/passbolt/config/gpg/serverkey_private.asc
-* /var/www/passbolt/webroot/img/public/images
+* /etc/passbolt/app.php
+* /etc/passbolt/passbolt.php
+* /etc/passbolt/gpg/serverkey.asc
+* /etc/passbolt/gpg/serverkey_private.asc
+* /usr/share/php/passbolt/webroot/img/public/images
 
 ### SSL certificate files
 
@@ -147,24 +156,22 @@ ssl-cert=/etc/mysql/ssl/server-cert.pem
 ssl-key=/etc/mysql/ssl/server-key.pem
 ```
 
-### docker-compose
-
-Usage:
-
-```
-$ docker-compose up
-```
 
 ### CLI healthcheck
 
 In order to run the healtcheck from the CLI on the container:
 
+On a root docker image:
+
 ```
-$ su -c "source /etc/environment; bin/cake passbolt healthcheck" -s /bin/bash www-data
+$ su -s /bin/bash www-data
+$ export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
+$ bin/cake passbolt healthcheck
 ```
 
-# Requirements:
+Non root image:
 
-* rng-tools or haveged are required on host machine to speed up entropy generation on containers.
-This way gpg key creation on passbolt container will be faster.
-* mariadb/mysql >= 5.6
+```
+$ export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
+$ bin/cake passbolt healthcheck
+```
