@@ -11,6 +11,8 @@ services:
 
   passbolt:
     image: passbolt/passbolt:3.0.0-pro
+    #Alternatively you can use rootless:
+    #image: passbolt/passbolt:3.0.0-pro-non-root
     tty: true
     depends_on:
       - db
@@ -24,6 +26,9 @@ services:
     ports:
       - 80:80
       - 443:443
+    #Alternatively for non-root images:
+    # - 80:8080
+    # - 443:4433
 
 volumes:
   database_volume:
