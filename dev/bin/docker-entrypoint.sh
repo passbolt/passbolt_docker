@@ -84,15 +84,6 @@ install() {
   su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
 }
 
-email_cron_job() {
-  cron_task='/etc/cron.d/passbolt_email'
-  declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /etc/environment
-  if [ ! -f "$cron_task" ]; then
-    echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> $cron_task
-    crontab /etc/cron.d/passbolt_email
-  fi
-}
-
 if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
    [ ! -f "$gpg_public_key" ] && [ ! -L "$gpg_public_key" ]; then
   gpg_gen_key
@@ -107,6 +98,5 @@ if [ ! -f "$ssl_key" ] && [ ! -L "$ssl_key" ] && \
 fi
 
 install
-email_cron_job
 
 exec /usr/bin/supervisord -n

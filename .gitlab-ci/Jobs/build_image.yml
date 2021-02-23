@@ -1,0 +1,64 @@
+.build:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    COMPONENT: "testing"
+  script:
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - |
+      echo "********************************************"
+      echo "Build details"
+      echo "============================================"
+      echo "Flavour ${PASSBOLT_FLAVOUR:-local}"
+      echo "Commit  ${UPSTREAM_COMMIT_SHA:-latest}"
+      echo "********************************************"
+    - |
+      /kaniko/executor --context $CI_PROJECT_DIR \
+        --build-arg PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server" \
+        --build-arg PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian" \
+        --build-arg PASSBOLT_COMPONENT="$COMPONENT" \
+        --dockerfile $CI_PROJECT_DIR/$DOCKERFILE_PATH \
+        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-$(date +%s) \
+        --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest
+
+build-docker-ce:
+  extends: .build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root"
+    PASSBOLT_FLAVOUR: "ce"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+
+build-rootless-ce:
+  extends: .build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "ce"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+
+build-docker-pro:
+  extends: .build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root"
+    PASSBOLT_FLAVOUR: "pro"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+
+build-rootless-pro:
+  extends: .build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "pro"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
+      when: on_success

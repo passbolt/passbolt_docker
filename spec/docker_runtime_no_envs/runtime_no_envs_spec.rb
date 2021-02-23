@@ -24,13 +24,13 @@ describe 'passbolt_api service' do
       sleep 1
     end
 
-    @image     = Docker::Image.build_from_dir(ROOT_DOCKERFILES)
+    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => 'debian/Dockerfile' })
 
     @container = Docker::Container.create(
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
       ],
-      'Binds' => [ "#{FIXTURES_PATH + '/passbolt.php'}:/var/www/passbolt/config/passbolt.php" ],
+      'Binds' => [ "#{FIXTURES_PATH + '/passbolt.php'}:/etc/passbolt/passbolt.php" ],
       'Image' => @image.id)
 
     @container.start
@@ -52,10 +52,6 @@ describe 'passbolt_api service' do
   describe 'php service' do
     it 'is running supervised' do
       expect(service('php-fpm')).to be_running.under('supervisor')
-    end
-
-    it 'has its port open' do
-      expect(@container.json['Config']['ExposedPorts']).to have_key('9000/tcp')
     end
   end
 
@@ -85,28 +81,8 @@ describe 'passbolt_api service' do
     end
   end
 
-  describe 'passbolt serverkey unaccessible' do
-    let(:uri) { '/config/gpg/serverkey.asc' }
-    it "returns 404" do
-      expect(command(curl).stdout).to eq '404'
-    end
-  end
-
-  describe 'passbolt serverkey private unaccessible' do
-    let(:uri) { '/config/gpg/serverkey_private.asc' }
-    it 'returns 404' do
-      expect(command(curl).stdout).to eq '404'
-    end
-  end
-
-  describe 'passbolt conf unaccessible' do
-    let(:uri) { '/config/app.php' }
-    it 'returns 404' do
-      expect(command(curl).stdout).to eq '404'
-    end
-  end
-  describe 'passbolt tmp folder is unaccessible' do
-    let(:uri) { '/tmp/cache/database/empty' }
+  describe 'can not access outside webroot' do
+    let(:uri) { '/vendor/autoload.php' }
     it 'returns 404' do
       expect(command(curl).stdout).to eq '404'
     end
@@ -119,7 +95,7 @@ describe 'passbolt_api service' do
     end
 
     it 'hides nginx version' do
-      expect(command("#{curl} | grep 'Server:'").stdout.strip).to match(/^Server:\s+nginx$/)
+      expect(command("#{curl} | grep 'server:'").stdout.strip).to match(/^server:\s+nginx$/)
     end
   end
 
