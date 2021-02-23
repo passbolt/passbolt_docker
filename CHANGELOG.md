@@ -2,7 +2,73 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v2.12.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.0.0...HEAD)
+
+## [3.0.0](https://github.com/passbolt/passbolt_docker/compare/v2.13.5...v3.0.0) - 2021-02-23
+
+We are happy to announce the release of passbolt docker 3.0.0!
+
+This release contains passbolt-api 3.0.0 as well as some new additions and deprection
+notices.
+
+Passbolt docker images now rely on passbolt's debian package. As a result the dockerfiles
+are now using debian-slim as base images and not longer rely on docker php library images.
+
+As a result of using debian packages some paths such as /var/www/passbolt are going to be
+deprecated. This release still supports both paths by symlinking so users should not
+be impacted by the path changes. We strongly recommend that you update your volumes
+accordingly.
+
+We have also released a rootless image that runs entirely under www-data user and uses
+supercronic instead of plain cron to run the background tasks. We aim to make a transition
+to rootless images by default to make our docker images a bit more secure by default.
+However, rootless alternatives are still considered beta.
+
+As with this release passbolt images are no longer tagged with the '-debian' suffix. Instead:
+
+- Passbolt docker CE images will be tagged as: passbolt/passbolt:<version>-ce
+- Passbolt docker CE rootless images will be tagged as: passbolt/passbolt:<version>-ce-non-root
+- Passbolt docker pro images will be tagged as: passbolt/passbolt:<version>-pro
+- Passbolt docker pro rootless images will be tagged as: passbolt/passbolt:<version>-pro-non-root
+
+You can still find the old Dockerfiles on the dev/ directory as they are still quite
+handy for development purposes.
+
+### Added
+
+- New debian package based docker images
+- New rootless images
+- Supercronic introduced on rootless images
+
+### Changed
+
+- Passbolt installation uses official passbolt debian packages
+- /var/www/passbolt files are now in /usr/share/php/passbolt
+- /var/www/passbolt/config files are no in /etc/passbolt
+- Default workdir is now /usr/share/php/passbolt
+- Old docker images moved to dev/ directory
+- debian Dockerfiles moved to debian/ directory
+- Deprecation message is shown on startup of the containers if old paths detected
+
+## [2.13.5](https://github.com/passbolt/passbolt_docker/compare/v2.13.1...v2.13.5) - 2020-08-04
+
+- Passbolt api bumped to 2.13.5
+
+## [2.13.1](https://github.com/passbolt/passbolt_docker/compare/v2.13.0...v2.13.1) - 2020-07-07
+
+- Passbolt api bumped to 2.13.1
+
+## [2.13.0](https://github.com/passbolt/passbolt_docker/compare/v2.12.1...v2.13.0) - 2020-06-23
+
+- Passbolt api bumped to 2.13.0
+- PHP version pinned to 7.3.19
+
+## [2.12.1](https://github.com/passbolt/passbolt_docker/compare/v2.12.0...v2.12.1) - 2020-04-14
+
+### Changed
+
+- Dockerfile pins specific php version for better control
+- Passbolt code version bumped to 2.12.1
 
 ## [2.12.0](https://github.com/passbolt/passbolt_docker/compare/v2.11.0...v2.12.0) - 2019-12-06
 
