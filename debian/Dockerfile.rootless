@@ -16,6 +16,7 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${
     SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH} \
     SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
 
+
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
       ca-certificates \
@@ -33,6 +34,8 @@ RUN apt-get update \
     && chmod +x "$SUPERCRONIC" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
+COPY conf/supervisor/cron.conf.rootless /etc/supervisor/conf.d/cron.conf
 
 RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
     && rm /etc/nginx/sites-enabled/default \
@@ -66,9 +69,9 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && chown -R www-data:0 /var/log/supervisor \
     && touch /var/www/.profile \
     && chown www-data:www-data /var/www/.profile \
-    && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG
+    && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG \
+    && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf
 
-COPY conf/supervisor/cron.conf.rootless /etc/supervisor/conf.d/cron.conf
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 COPY debian/bin/docker-entrypoint.sh.rootless /docker-entrypoint.sh
