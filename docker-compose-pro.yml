@@ -10,9 +10,9 @@ services:
       - "127.0.0.1:3306:3306"
 
   passbolt:
-    image: passbolt/passbolt:3.0.1-pro
+    image: passbolt/passbolt:latest-pro
     #Alternatively you can use rootless:
-    #image: passbolt/passbolt:3.0.0-pro-non-root
+    #image: passbolt/passbolt:latest-pro-non-root
     tty: true
     depends_on:
       - db
