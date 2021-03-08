@@ -34,6 +34,8 @@ RUN apt-get update \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
+COPY conf/supervisor/cron.conf.rootless /etc/supervisor/conf.d/cron.conf
+
 RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
     && rm /etc/nginx/sites-enabled/default \
     && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
@@ -66,9 +68,9 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && chown -R www-data:0 /var/log/supervisor \
     && touch /var/www/.profile \
     && chown www-data:www-data /var/www/.profile \
-    && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG
+    && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG \
+    && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf
 
-COPY conf/supervisor/cron.conf.rootless /etc/supervisor/conf.d/cron.conf
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 COPY debian/bin/docker-entrypoint.sh.rootless /docker-entrypoint.sh
