@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.0.1...HEAD)
 
+## [3.0.2](https://github.com/passbolt/passbolt_docker/compare/v3.0.1...v3.0.2) - 2021-03-12
+
+- This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.0.1...v3.0.2) for passbolt_api
+
 ## [3.0.1](https://github.com/passbolt/passbolt_docker/compare/v3.0.0...v3.0.1) - 2021-02-24
 
 - This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.0.0...v3.0.1) for passbolt_api
