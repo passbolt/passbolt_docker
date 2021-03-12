@@ -11,7 +11,7 @@ describe 'Dockerfile' do
       'PASSBOLT_GPG_KEYRING'         => '/var/lib/passbolt/.gnupg'
     }
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => 'debian/Dockerfile' })
+    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile })
     set :docker_image, @image.id
     set :docker_container_create_options, { 'Cmd' => '/bin/sh' }
   end
@@ -28,7 +28,7 @@ describe 'Dockerfile' do
   let(:passbolt_tmp)    { '/var/lib/passbolt/tmp' }
   let(:passbolt_image)  { "#{passbolt_home}/webroot/img/public" }
   let(:passbolt_owner)  { 'www-data' }
-  let(:exposed_ports)   { [ '80', '443' ] }
+  let(:exposed_ports)   { [ $http_port, $https_port ] }
   let(:php_extensions)  { [
     'gd', 'intl', 'json', 'mysqlnd', 'xsl', 'phar',
     'posix', 'xml', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
@@ -53,6 +53,10 @@ describe 'Dockerfile' do
         expect(file(config)).to exist
       end
     end
+  end
+
+  describe file($cron_service) do
+    it { should exist and be_executable }
   end
 
   describe 'wait-for' do
@@ -99,7 +103,7 @@ describe 'Dockerfile' do
     end
 
     it 'has the correct permissions' do
-      expect(file(nginx_conf)).to be_owned_by 'root'
+      expect(file(nginx_conf)).to be_owned_by $root_user
     end
   end
 
@@ -109,15 +113,11 @@ describe 'Dockerfile' do
     end
 
     it 'has the correct permissions' do
-      expect(file(site_conf)).to be_owned_by 'root'
+      expect(file(site_conf)).to be_owned_by $root_user
     end
 
     it 'points to the correct root folder' do
       expect(file(site_conf).content).to match "root #{passbolt_home}/webroot"
-    end
-
-    it 'has server tokens off' do
-      expect(file(nginx_conf).content).to match(/^\s+server_tokens off;/)
     end
   end
 

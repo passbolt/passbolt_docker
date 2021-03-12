@@ -1,5 +1,5 @@
 [program:cron]
-command=/usr/local/bin/supercronic /etc/cron.d/passbolt-ce-server
+command=/usr/local/bin/supercronic /etc/cron.d/__PASSBOLT_PACKAGE__
 autostart=true
 priority=20
 stdout_logfile=/dev/stdout
