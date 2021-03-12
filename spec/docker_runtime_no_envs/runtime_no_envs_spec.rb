@@ -24,7 +24,7 @@ describe 'passbolt_api service' do
       sleep 1
     end
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => 'debian/Dockerfile' })
+    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile })
 
     @container = Docker::Container.create(
       'Env' => [
@@ -47,7 +47,7 @@ describe 'passbolt_api service' do
 
   let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
   let(:uri)               { "/healthcheck/status.json" }
-  let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}/#{uri}" }
+  let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
 
   describe 'php service' do
     it 'is running supervised' do
@@ -67,11 +67,11 @@ describe 'passbolt_api service' do
     end
 
     it 'is listening on port 80' do
-      expect(@container.json['Config']['ExposedPorts']).to have_key('80/tcp')
+      expect(@container.json['Config']['ExposedPorts']).to have_key("#{$http_port}/tcp")
     end
 
     it 'is listening on port 443' do
-      expect(@container.json['Config']['ExposedPorts']).to have_key('443/tcp')
+      expect(@container.json['Config']['ExposedPorts']).to have_key("#{$https_port}/tcp")
     end
   end
 
@@ -89,13 +89,13 @@ describe 'passbolt_api service' do
   end
 
   describe 'hide information' do
-    let(:curl) { "curl -Isk -H 'Host: passbolt.local' https://#{passbolt_host}/" }
+    let(:curl) { "curl -Isk -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/" }
     it 'hides php version' do
       expect(command("#{curl} | grep 'X-Powered-By: PHP'").stdout).to be_empty
     end
 
     it 'hides nginx version' do
-      expect(command("#{curl} | grep 'server:'").stdout.strip).to match(/^server:\s+nginx$/)
+      expect(command("#{curl} | grep 'server:'").stdout.strip).to match(/^server:\s+nginx.*$/)
     end
   end
 
