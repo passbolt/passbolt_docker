@@ -79,7 +79,7 @@ RUN apt-get update \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> /etc/cron.d/passbolt_email \
     && crontab /etc/cron.d/passbolt_email \
-    && ln -s $(which php-fpm){,7.3}
+    && ln -s $(which php-fpm) $(which php-fpm)7.3
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/

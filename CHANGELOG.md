@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.0.1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.1.0...HEAD)
+
+## [3.1.0](https://github.com/passbolt/passbolt_docker/compare/v3.0.2...v3.1.0) - 2021-03-18
+
+- This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.0.2...v3.1.0) for passbolt_api
+- Fix dev Dockerfile ln command syntax
 
 ## [3.0.2](https://github.com/passbolt/passbolt_docker/compare/v3.0.1...v3.0.2) - 2021-03-12
 
