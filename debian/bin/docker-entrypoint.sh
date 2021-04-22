@@ -91,7 +91,7 @@ check_deprecated_paths() {
   declare -A deprecated_paths
   local deprecated_avatar_path="/var/www/passbolt/webroot/img/public/Avatar"
   local avatar_path="/usr/share/php/passbolt/webroot/img/public/Avatar"
-  local deprecated_subscription_path="/var/www/passbolt/webroot/img/public/Avatar"
+  local deprecated_subscription_path="/var/www/passbolt/config/license"
   local subscription_path="/etc/passbolt/license"
   deprecated_paths=(
     ['/var/www/passbolt/config/gpg/serverkey.asc']='/etc/passbolt/gpg/serverkey.asc'
