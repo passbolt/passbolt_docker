@@ -11,6 +11,8 @@ ssl_cert='/etc/ssl/certs/certificate.crt'
 
 deprecation_message=""
 
+subscription_key_file_paths=("/etc/passbolt/subscription_key.txt" "/etc/passbolt/license")
+
 entropy_check() {
   local entropy_avail
 
@@ -70,6 +72,29 @@ gen_ssl_cert() {
     -keyout $ssl_key -out $ssl_cert
 }
 
+get_subscription_file() {
+  if [ "${PASSBOLT_FLAVOUR}" == 'ce' ]; then
+    return 1
+  fi
+  
+  # Look for subscription key on possible paths
+  for path in "${subscription_key_file_paths[@]}";
+  do
+    if [ -f "${path}" ]; then
+      SUBSCRIPTION_FILE="${path}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+check_subscription() {
+  if get_subscription_file; then
+    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import $SUBSCRIPTION_FILE" -s /bin/bash www-data
+  fi
+}
+
 install() {
   if [ ! -f "$passbolt_config/app.php" ]; then
     su -c "cp $passbolt_config/app.default.php $passbolt_config/app.php" -s /bin/bash www-data
@@ -79,6 +104,8 @@ install() {
     gpg_auto_fingerprint="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
+
+  check_subscription
 
   su -c '/usr/share/php/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/usr/share/php/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
 }
