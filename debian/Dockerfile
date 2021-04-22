@@ -2,14 +2,16 @@ FROM debian:buster-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
-ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
-ENV PHP_VERSION=7.3
-ENV GNUPGHOME=/var/lib/passbolt/.gnupg
-
 ARG PASSBOLT_REPO_URL="https://download.passbolt.com/ce/debian"
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
 ARG PASSBOLT_PKG=passbolt-ce-server
+ARG PASSBOLT_FLAVOUR="ce"
+
+ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
+ENV PHP_VERSION=7.3
+ENV GNUPGHOME=/var/lib/passbolt/.gnupg
+ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
