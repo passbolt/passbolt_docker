@@ -24,7 +24,8 @@ ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libicu-dev \
       libxslt1-dev \
       libmcrypt-dev \
-      unzip"
+      unzip \
+      libldap2-dev"
 
 ARG PASSBOLT_BASE_PACKAGES="nginx \
          gnupg \
