@@ -91,8 +91,19 @@ get_subscription_file() {
 
 check_subscription() {
   if get_subscription_file; then
-    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import $SUBSCRIPTION_FILE" -s /bin/bash www-data
+    echo "Subscription file found: $SUBSCRIPTION_FILE"
+    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file $SUBSCRIPTION_FILE" -s /bin/bash www-data
   fi
+}
+
+install_command() {
+  echo "Installing passbolt"
+  su -c '/usr/share/php/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data 
+}
+
+migrate_command() {
+  echo "Running migrations"
+  su -c '/usr/share/php/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data 
 }
 
 install() {
@@ -105,9 +116,9 @@ install() {
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
-  check_subscription
+  check_subscription || true
 
-  su -c '/usr/share/php/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/usr/share/php/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
+  install_command || migrate_command && echo "Enjoy! ☮"
 }
 
 create_deprecation_message() {
