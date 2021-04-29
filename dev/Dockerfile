@@ -64,7 +64,7 @@ RUN apt-get update \
          rm composer-setup.php; \
          exit 1; \
        fi \
-    && php composer-setup.php --1 \
+    && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
     && rm composer-setup.php \
     && curl -sSL -H "$PASSBOLT_CURL_HEADERS" "$PASSBOLT_URL" | tar zxf - -C . --strip-components 1 \
