@@ -2,15 +2,17 @@ FROM php:7.3.24-fpm
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
-ARG PASSBOLT_VERSION="2.13.5"
+ARG PASSBOLT_VERSION="3.1.0"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 ARG PASSBOLT_CURL_HEADERS=""
+ARG PASSBOLT_FLAVOUR="ce"
 
 ARG PHP_EXTENSIONS="gd \
       intl \
       pdo_mysql \
       opcache \
-      xsl"
+      xsl \
+      ldap"
 
 ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
       redis \
@@ -22,7 +24,8 @@ ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libicu-dev \
       libxslt1-dev \
       libmcrypt-dev \
-      unzip"
+      unzip \
+      libldap2-dev"
 
 ARG PASSBOLT_BASE_PACKAGES="nginx \
          gnupg \
@@ -34,6 +37,7 @@ ARG PASSBOLT_BASE_PACKAGES="nginx \
 
 ENV PECL_BASE_URL="https://pecl.php.net/get"
 ENV PHP_EXT_DIR="/usr/src/php/ext"
+ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
 
 WORKDIR /var/www/passbolt
 RUN apt-get update \
@@ -60,7 +64,7 @@ RUN apt-get update \
          rm composer-setup.php; \
          exit 1; \
        fi \
-    && php composer-setup.php --1 \
+    && php composer-setup.php \
     && mv composer.phar /usr/local/bin/composer \
     && rm composer-setup.php \
     && curl -sSL -H "$PASSBOLT_CURL_HEADERS" "$PASSBOLT_URL" | tar zxf - -C . --strip-components 1 \

@@ -8,6 +8,8 @@ gpg_public_key="${PASSBOLT_GPG_SERVER_KEY_PUBLIC:-/var/www/passbolt/config/gpg/s
 ssl_key='/etc/ssl/certs/certificate.key'
 ssl_cert='/etc/ssl/certs/certificate.crt'
 
+subscription_key_file_paths=("/etc/passbolt/subscription_key.txt" "/etc/passbolt/license")
+
 export GNUPGHOME="/home/www-data/.gnupg"
 
 entropy_check() {
@@ -69,6 +71,40 @@ gen_ssl_cert() {
     -keyout $ssl_key -out $ssl_cert
 }
 
+get_subscription_file() {
+  if [ "${PASSBOLT_FLAVOUR}" == 'ce' ]; then
+    return 1
+  fi
+  
+  # Look for subscription key on possible paths
+  for path in "${subscription_key_file_paths[@]}";
+  do
+    if [ -f "${path}" ]; then
+      SUBSCRIPTION_FILE="${path}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+check_subscription() {
+  if get_subscription_file; then
+    echo "Subscription file found: $SUBSCRIPTION_FILE"
+    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file $SUBSCRIPTION_FILE" -s /bin/bash www-data
+  fi
+}
+
+install_command() {
+  echo "Installing passbolt"
+  su -c './bin/cake passbolt install --no-admin' -s /bin/bash www-data 
+}
+
+migrate_command() {
+  echo "Running migrations"
+  su -c './bin/cake passbolt migrate' -s /bin/bash www-data 
+}
+
 install() {
   local app_config="/var/www/passbolt/config/app.php"
 
@@ -81,7 +117,9 @@ install() {
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
-  su -c '/var/www/passbolt/bin/cake passbolt install --no-admin' -s /bin/bash www-data || su -c '/var/www/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data && echo "Enjoy! ☮"
+  check_subscription || true
+  
+  install_command || migrate_command
 }
 
 if [ ! -f "$gpg_private_key" ] && [ ! -L "$gpg_private_key" ] || \
