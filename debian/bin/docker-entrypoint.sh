@@ -89,7 +89,7 @@ get_subscription_file() {
   return 1
 }
 
-check_subscription() {
+import_subscription() {
   if get_subscription_file; then
     echo "Subscription file found: $SUBSCRIPTION_FILE"
     su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file $SUBSCRIPTION_FILE" -s /bin/bash www-data
@@ -116,7 +116,7 @@ install() {
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
-  check_subscription || true
+  import_subscription || true
 
   install_command || migrate_command && echo "Enjoy! ☮"
 }
