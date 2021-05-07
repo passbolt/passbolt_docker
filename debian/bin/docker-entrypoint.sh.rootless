@@ -70,6 +70,40 @@ gen_ssl_cert() {
     -keyout $ssl_key -out $ssl_cert
 }
 
+get_subscription_file() {
+  if [ "${PASSBOLT_FLAVOUR}" == 'ce' ]; then
+    return 1
+  fi
+  
+  # Look for subscription key on possible paths
+  for path in "${subscription_key_file_paths[@]}";
+  do
+    if [ -f "${path}" ]; then
+      SUBSCRIPTION_FILE="${path}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+import_subscription() {
+  if get_subscription_file; then
+    echo "Subscription file found: $SUBSCRIPTION_FILE"
+    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file $SUBSCRIPTION_FILE" -s /bin/bash www-data
+  fi
+}
+
+install_command() {
+  echo "Installing passbolt"
+  /usr/share/php/passbolt/bin/cake passbolt install --no-admin
+}
+
+migrate_command() {
+  echo "Running migrations"
+  /usr/share/php/passbolt/bin/cake passbolt migrate
+}
+
 install() {
   if [ ! -f "$passbolt_config/app.php" ]; then
     cp $passbolt_config/app.default.php $passbolt_config/app.php
@@ -80,7 +114,9 @@ install() {
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi
 
-  /usr/share/php/passbolt/bin/cake passbolt install --no-admin || /usr/share/php/passbolt/bin/cake passbolt migrate && echo "Enjoy! ☮"
+  import_subscription || true
+
+  install_command || migrate_command && echo "Enjoy! ☮"
 }
 
 create_deprecation_message() {
