@@ -7,6 +7,7 @@ ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
 ARG PASSBOLT_PKG=passbolt-ce-server
 ARG PASSBOLT_FLAVOUR="ce"
+ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PHP_VERSION=7.3
@@ -17,7 +18,7 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
       ca-certificates \
       gnupg \
-    && apt-key adv --keyserver keys.gnupg.net --recv-keys $PASSBOLT_PKG_KEY \
+    && apt-key adv --keyserver $PASSBOLT_SERVER_KEY --recv-keys $PASSBOLT_PKG_KEY \
     && echo "deb $PASSBOLT_REPO_URL $PASSBOLT_DISTRO $PASSBOLT_COMPONENT" > /etc/apt/sources.list.d/passbolt.list \
     && apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
