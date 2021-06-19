@@ -6,8 +6,6 @@ services:
       - env/mysql.env
     volumes:
       - database_volume:/var/lib/mysql
-    ports:
-      - "127.0.0.1:3306:3306"
 
   passbolt:
     image: passbolt/passbolt:latest-pro
@@ -15,6 +13,8 @@ services:
     #image: passbolt/passbolt:latest-pro-non-root
     tty: true
     depends_on:
+      - db
+    links:
       - db
     env_file:
       - env/passbolt.env

@@ -6,8 +6,6 @@ services:
       - env/mysql.env
     volumes:
       - database_volume:/var/lib/mysql
-    ports:
-      - "127.0.0.1:3306:3306"
 
   passbolt:
     build:
@@ -15,6 +13,8 @@ services:
       args:
         PECL_PASSBOLT_EXTENSIONS: "redis gnupg xdebug"
     depends_on:
+      - db
+    links:
       - db
     env_file:
       - env/passbolt.env
