@@ -159,7 +159,7 @@ ssl-key=/etc/mysql/ssl/server-key.pem
 
 ### CLI healthcheck
 
-In order to run the healtcheck from the CLI on the container:
+In order to run the healthcheck from the CLI on the container:
 
 On a root docker image:
 
