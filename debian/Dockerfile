@@ -10,7 +10,7 @@ ARG PASSBOLT_FLAVOUR="ce"
 ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
-ENV PHP_VERSION=7.3
+ENV PHP_VERSION=7.4
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
 
@@ -39,7 +39,7 @@ RUN apt-get update \
     && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
     && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
     && ln -sf /dev/stderr /var/log/passbolt/error.log \
-    && ln -sf /dev/stderr /var/log/php7.3-fpm.log \
+    && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log \
     && crontab /etc/cron.d/$PASSBOLT_PKG
 
 COPY conf/supervisor/cron.conf /etc/supervisor/conf.d/cron.conf
