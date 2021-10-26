@@ -17,7 +17,7 @@ describe 'Dockerfile' do
   end
 
   let(:nginx_conf)      { '/etc/nginx/nginx.conf' }
-  let(:php_conf)        { '/etc/php/7.3/fpm/php.ini' }
+  let(:php_conf)        { '/etc/php/7.4/fpm/php.ini' }
   let(:site_conf)       { '/etc/nginx/sites-enabled/nginx-passbolt.conf' }
   let(:supervisor_conf) do
     [ '/etc/supervisor/conf.d/nginx.conf',
@@ -55,7 +55,7 @@ describe 'Dockerfile' do
     end
   end
 
-  describe file($cron_service) do
+  describe file($cron_binary) do
     it { should exist and be_executable }
   end
 
