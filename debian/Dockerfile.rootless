@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
@@ -10,7 +10,7 @@ ARG PASSBOLT_PKG=passbolt-ce-server
 ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
-ENV PHP_VERSION=7.3
+ENV PHP_VERSION=7.4
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV SUPERCRONIC_VERSION=0.1.12
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
@@ -49,9 +49,9 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && sed -i '/user www-data;/d' /etc/nginx/nginx.conf \
     && sed -i 's,/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
     && sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf \
-    && sed -i 's,listen = /run/php/php7.3-fpm.sock,listen = 127.0.0.1:9000,' /etc/php/7.3/fpm/pool.d/www.conf \
-    && sed -i 's,unix:/run/php/php7.3-fpm.sock,127.0.0.1:9000,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-    && sed -i 's,pid = /run/php/php7.3-fpm.pid,pid = /tmp/php7.3-fpm.pid,' /etc/php/7.3/fpm/php-fpm.conf \
+    && sed -i "s,listen = /run/php/php$PHP_VERSION-fpm.sock,listen = 127.0.0.1:9000," /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
+    && sed -i "s,unix:/run/php/php$PHP_VERSION-fpm.sock,127.0.0.1:9000," /etc/nginx/sites-enabled/nginx-passbolt.conf \
+    && sed -i "s,pid = /run/php/php$PHP_VERSION-fpm.pid,pid = /tmp/php$PHP_VERSION-fpm.pid," /etc/php/$PHP_VERSION/fpm/php-fpm.conf \
     && sed -i 's,/var/run/supervisor.sock,/tmp/supervisor.sock,' /etc/supervisor/supervisord.conf \
 # nginx user must own the cache and etc directory to write cache and tweak the nginx config
     #&& chown -R www-data:0 /var/cache/nginx \
@@ -65,7 +65,7 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
     && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
     && ln -sf /dev/stderr /var/log/passbolt/error.log \
-    && ln -sf /dev/stderr /var/log/php7.3-fpm.log \
+    && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log \
     && chown -R www-data:0 /var/log/supervisor \
     && touch /var/www/.profile \
     && chown www-data:www-data /var/www/.profile \

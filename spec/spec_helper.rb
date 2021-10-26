@@ -22,5 +22,3 @@ if ENV['ROOTLESS'] == "true"
   # Where www-data has to be the owner instead of root
   $root_user = 'www-data'
 end
-
-puts($root_user)
