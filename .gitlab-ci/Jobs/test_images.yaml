@@ -3,10 +3,12 @@
   image: 
     name: aquasec/trivy
   variables:
+    TRIVY_USERNAME: $CI_REGISTRY_USER
+    TRIVY_PASSWORD: $CI_REGISTRY_PASSWORD
     PASSBOLT_FLAVOUR: ce
     DOCKER_TAG: root
   script:
-    trivy image --ignore-unfixed $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
+    - trivy image --ignore-unfixed $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
 
 .testing-test:
   extends: .test

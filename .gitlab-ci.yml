@@ -5,8 +5,8 @@ variables:
   DOCKER_HOST: tcp://localhost:2375/
 
 stages:
-  - build
   - scanning
+  - build
   - test
 
 include:
