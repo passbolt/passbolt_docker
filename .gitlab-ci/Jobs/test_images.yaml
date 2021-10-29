@@ -1,0 +1,36 @@
+.test:
+  stage: test
+  image: 
+    name: aquasec/trivy
+  variables:
+    PASSBOLT_FLAVOUR: ce
+    DOCKER_TAG: root
+  script:
+    trivy image --ignore-unfixed $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
+
+.testing-test:
+  extends: .test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+      when: on_success
+
+.stable-test:
+  extends: .test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+test-docker-ce:
+  extends: .testing-test
+test-docker-pro:
+  extends: .testing-test
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+test-docker-ce-non-root:
+  extends: .testing-test
+  variables:
+    DOCKER_TAG: "rootless"
+test-docker-pro-non-root:
+  extends: .testing-test
+  variables:
+    PASSBOLT_FLAVOUR: "pro"

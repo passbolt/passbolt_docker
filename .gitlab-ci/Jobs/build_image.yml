@@ -23,42 +23,44 @@
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-$(date +%s) \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest
 
-build-docker-ce:
+.testing-build:
   extends: .build
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+      when: on_success
+
+.stable-build:
+  extends: .build
+  variables:
+    COMPONENT: "stable"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+build-testing-docker-ce:
+  extends: .testing-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
     PASSBOLT_FLAVOUR: "ce"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
-      when: on_success
 
-build-rootless-ce:
-  extends: .build
+build-testing-rootless-ce:
+  extends: .testing-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
     PASSBOLT_FLAVOUR: "ce"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
-      when: on_success
 
-build-docker-pro:
-  extends: .build
+build-testing-docker-pro:
+  extends: .testing-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
     PASSBOLT_FLAVOUR: "pro"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
-      when: on_success
 
-build-rootless-pro:
-  extends: .build
+build-testing-rootless-pro:
+  extends: .testing-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
     PASSBOLT_FLAVOUR: "pro"
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"'
-      when: on_success
