@@ -16,8 +16,7 @@
       echo "********************************************"
     - |
       /kaniko/executor --context $CI_PROJECT_DIR \
-        --build-arg PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server" \
-        --build-arg PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian" \
+        --build-arg PASSBOLT_FLAVOUR="$PASSBOLT_FLAVOUR" \
         --build-arg PASSBOLT_COMPONENT="$COMPONENT" \
         --dockerfile $CI_PROJECT_DIR/$DOCKERFILE_PATH \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-$(date +%s) \
