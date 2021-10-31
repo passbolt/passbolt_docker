@@ -1,5 +1,5 @@
 .test-vulnerabilities:
-  stage: test
+  stage: test-vulnerabilities
   image: 
     name: aquasec/trivy
   variables:
