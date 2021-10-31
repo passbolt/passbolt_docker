@@ -1,3 +1,6 @@
+services:
+  - docker:19.03.0-dind
+
 .test-images:
   stage: test
   image: 
