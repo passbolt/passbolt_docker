@@ -1,0 +1,40 @@
+.test-images:
+  stage: test
+  image: 
+    name: ruby:latest
+  variables:
+    PASSBOLT_FLAVOUR: ce
+  script:
+    - bundle install 
+    - rake spec:$TEST_NAME
+
+.testing-test-images:
+  extends: .test-images
+  variables:
+    PASSBOLT_COMPONENT: testing
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+      when: on_success
+
+.stable-test-images:
+  extends: .test-images
+  variables:
+    PASSBOLT_COMPONENT: stable
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+testing-docker-image:
+  extends: .testing-test-images
+  variables:
+    TEST_NAME: docker_image
+
+testing-docker-runtime:
+  extends: .testing-test-images
+  variables:
+    TEST_NAME: docker_runtime
+
+testing-docker-runtime-no-envs:
+  extends: .testing-test-images
+  variables:
+    TEST_NAME: docker_runtime_no_envs
