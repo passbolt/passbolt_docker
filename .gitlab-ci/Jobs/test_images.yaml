@@ -24,17 +24,17 @@
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
 
-testing-docker-image:
+testing-ce-docker-image:
   extends: .testing-test-images
   variables:
     TEST_NAME: docker_image
 
-testing-docker-runtime:
+testing-ce-docker-runtime:
   extends: .testing-test-images
   variables:
     TEST_NAME: docker_runtime
 
-testing-docker-runtime-no-envs:
+testing-ce-docker-runtime-no-envs:
   extends: .testing-test-images
   variables:
     TEST_NAME: docker_runtime_no_envs
