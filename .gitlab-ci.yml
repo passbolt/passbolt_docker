@@ -10,9 +10,11 @@ stages:
   - build
   - test-vulnerabilities
   - test
+  - publish
 
 include:
   - local: '/.gitlab-ci/Jobs/build_image.yml'
   - local: '/.gitlab-ci/Jobs/container_security_scan.yml'
   - local: '/.gitlab-ci/Jobs/test_vulnerabilities.yaml'
   - local: '/.gitlab-ci/Jobs/test_images.yaml'
+  - local: '/.gitlab-ci/Jobs/publish.yaml'

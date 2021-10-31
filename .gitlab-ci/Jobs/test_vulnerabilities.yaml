@@ -22,17 +22,17 @@
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: on_success
 
-test-vulnerabilities-docker-ce:
+docker-ce:
   extends: .testing-test-vulnerabilities
-test-vulnerabilities-docker-pro:
+docker-pro:
   extends: .testing-test-vulnerabilities
   variables:
     PASSBOLT_FLAVOUR: "pro"
-test-vulnerabilities-docker-ce-non-root:
+docker-ce-non-root:
   extends: .testing-test-vulnerabilities
   variables:
     DOCKER_TAG: "rootless"
-test-vulnerabilities-docker-pro-non-root:
+docker-pro-non-root:
   extends: .testing-test-vulnerabilities
   variables:
     PASSBOLT_FLAVOUR: "pro"

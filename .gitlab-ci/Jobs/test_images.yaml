@@ -10,34 +10,90 @@ services:
   script:
     - bundle install 
     - rake spec:$TEST_NAME
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+      when: on_success
 
-.testing-test-images:
+.test-pro-images:
   extends: .test-images
+  before_script:
+    - cat $SUBSCRIPTION_KEY > subscription_key.txt
   variables:
     PASSBOLT_COMPONENT: testing
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
       when: on_success
 
-.stable-test-images:
+ce-docker-image:
   extends: .test-images
-  variables:
-    PASSBOLT_COMPONENT: stable
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: on_success
-
-testing-ce-docker-image:
-  extends: .testing-test-images
   variables:
     TEST_NAME: docker_image
 
-testing-ce-docker-runtime:
-  extends: .testing-test-images
+ce-docker-runtime:
+  extends: .test-images
   variables:
     TEST_NAME: docker_runtime
 
-testing-ce-docker-runtime-no-envs:
-  extends: .testing-test-images
+ce-docker-runtime-no-envs:
+  extends: .test-images
   variables:
     TEST_NAME: docker_runtime_no_envs
+    PASSBOLT_FLAVOUR: ce
+
+pro-docker-image:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_image
+    PASSBOLT_FLAVOUR: pro
+
+pro-docker-runtime:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_runtime
+    PASSBOLT_FLAVOUR: pro
+
+pro-docker-runtime-no-envs:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_runtime_no_envs
+    PASSBOLT_FLAVOUR: pro
+
+ce-non-root-docker-image:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_image
+    ROOTLESS: "true"
+
+ce-non-root-docker-runtime:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime
+    ROOTLESS: "true"
+
+ce-non-root-docker-runtime-no-envs:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_no_envs
+    PASSBOLT_FLAVOUR: ce
+    ROOTLESS: "true"
+
+pro-non-root-docker-image:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_image
+    PASSBOLT_FLAVOUR: pro
+    ROOTLESS: "true"
+
+pro-non-root-docker-runtime:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_runtime
+    PASSBOLT_FLAVOUR: pro
+    ROOTLESS: "true"
+
+pro-non-root-docker-runtime-no-envs:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_runtime_no_envs
+    PASSBOLT_FLAVOUR: pro
+    ROOTLESS: "true"
