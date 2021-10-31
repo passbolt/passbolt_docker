@@ -24,13 +24,13 @@ describe 'passbolt_api service' do
       sleep 1
     end
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile })
+    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
 
     @container = Docker::Container.create(
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
       ],
-      'Binds' => [ "#{FIXTURES_PATH + '/passbolt.php'}:/etc/passbolt/passbolt.php" ],
+      'Binds' => $binds.append("#{FIXTURES_PATH + '/passbolt.php'}:/etc/passbolt/passbolt.php"),
       'Image' => @image.id)
 
     @container.start

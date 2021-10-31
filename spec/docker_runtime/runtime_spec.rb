@@ -24,7 +24,7 @@ describe 'passbolt_api service' do
       sleep 1
     end
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile })
+    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
     @container = Docker::Container.create(
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
@@ -33,7 +33,9 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
         'PASSBOLT_SSL_FORCE=true'
       ],
-      'Image' => @image.id)
+      'Image' => @image.id,
+      'Binds' => $binds
+    )
     @container.start
     @container.logs(stdout: true)
 
