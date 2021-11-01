@@ -30,7 +30,11 @@ describe 'passbolt_api service' do
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
       ],
-      'Binds' => $binds.append("#{FIXTURES_PATH + '/passbolt.php'}:/etc/passbolt/passbolt.php"),
+      'Binds' => $binds.append(
+        "#{FIXTURES_PATH + '/passbolt.php'}:/etc/passbolt/passbolt.php",
+        "#{FIXTURES_PATH + '/public-test.key'}:/etc/passbolt/serverkey.key",
+        "#{FIXTURES_PATH + '/private-test.key'}:/etc/passbolt/serverkey_private.key",
+      ),
       'Image' => @image.id)
 
     @container.start
