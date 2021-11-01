@@ -100,7 +100,7 @@ return [
             // - Apache on Debian it would be in '/var/www/.gnupg'
             // - Nginx on Centos it would be in '/var/lib/nginx/.gnupg'
             // - etc.
-            'keyring' => '/home/www-data/.gnupg',
+            'keyring' => '/var/lib/passbolt/.gnupg',
             //
             // Replace GNUPGHOME with above value even if it is set.
             //'putenv' => false,
@@ -108,7 +108,7 @@ return [
             // Main server key.
             'serverKey' => [
                 // Server private key fingerprint.
-                'fingerprint' => '2FC8945833C51946E937F9FED47B0811573EE67E',
+                'fingerprint' => '949F98330810B145A3D0CEE4E7030AAA2D0ACFB6',
                 'public' => CONFIG . DS . 'gpg' . DS . 'unsecure.key',
                 'private' => CONFIG . DS . 'gpg' . DS . 'unsecure_private.key',
             ],
