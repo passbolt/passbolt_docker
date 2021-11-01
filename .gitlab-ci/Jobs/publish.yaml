@@ -32,7 +32,7 @@
     entrypoint: [""]
   variables:
     DOCKER_TAG: "root"
-    IMAGE_NAME: "danieldelrio/test"
+    IMAGE_NAME: "passbolt/passbolt"
     PASSBOLT_FLAVOUR: "ce"
     PASSBOLT_IMAGE_FLAVOUR: "ce"
   rules:
