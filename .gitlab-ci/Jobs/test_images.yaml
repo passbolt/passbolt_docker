@@ -3,7 +3,7 @@ services:
 
 .rules:
   rules:
-  - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+  - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ || $CI_COMMIT_BRANCH == "master"'
     when: on_success
 
 .test-images:
