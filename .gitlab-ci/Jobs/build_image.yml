@@ -33,7 +33,7 @@
   variables:
     COMPONENT: "stable"
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"|| $PASSBOLT_FLAVOUR =~ /ce|pro/'
+    - if: '$CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR =~ /ce|pro/'
       when: on_success
 
 build-testing-docker:
