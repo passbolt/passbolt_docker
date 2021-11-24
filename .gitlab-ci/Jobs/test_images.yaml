@@ -1,7 +1,13 @@
 services:
   - docker:19.03.0-dind
 
+.rules:
+  rules:
+  - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+    when: on_success
+
 .test-images:
+  extends: .rules
   stage: test
   image: 
     name: ruby:latest
@@ -10,19 +16,13 @@ services:
   script:
     - bundle install 
     - rake spec:$TEST_NAME
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
-      when: on_success
 
 .test-pro-images:
   extends: .test-images
   before_script:
     - cat $SUBSCRIPTION_KEY > subscription_key.txt
   variables:
-    PASSBOLT_COMPONENT: testing
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
-      when: on_success
+    PASSBOLT_COMPONENT: stable
 
 ce-docker-image:
   extends: .test-images
