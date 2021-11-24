@@ -25,7 +25,7 @@
 .testing-build:
   extends: .build
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"  || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_MESSAGE =~ /test-image/'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"  || $CI_COMMIT_MESSAGE =~ /test-image/'
       when: on_success
 
 .stable-build:
@@ -59,6 +59,34 @@ build-testing-docker-pro:
 
 build-testing-rootless-pro:
   extends: .testing-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "pro"
+
+build-stable-docker-ce:
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root"
+    PASSBOLT_FLAVOUR: "ce"
+
+build-stable-rootless-ce:
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "ce"
+
+build-stable-docker-pro:
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root"
+    PASSBOLT_FLAVOUR: "pro"
+
+build-stable-rootless-pro:
+  extends: .stable-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
