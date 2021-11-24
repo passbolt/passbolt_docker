@@ -36,7 +36,7 @@
     PASSBOLT_FLAVOUR: "ce"
     PASSBOLT_IMAGE_FLAVOUR: "ce"
   rules:
-    - if: '$PASSBOLT_VERSION'
+    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master"'
       when: on_success
 
 publish-ce:
