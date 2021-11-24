@@ -25,7 +25,7 @@
 .testing-build:
   extends: .build
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"  || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_MESSAGE =~ /test-image/'
       when: on_success
 
 .stable-build:
