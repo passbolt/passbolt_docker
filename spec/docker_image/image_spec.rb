@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'json'
 
 describe 'Dockerfile' do
 
@@ -11,7 +12,7 @@ describe 'Dockerfile' do
       'PASSBOLT_GPG_KEYRING'         => '/var/lib/passbolt/.gnupg'
     }
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile })
+    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
     set :docker_image, @image.id
     set :docker_container_create_options, { 'Cmd' => '/bin/sh' }
   end

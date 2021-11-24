@@ -1,0 +1,38 @@
+.test-vulnerabilities:
+  stage: test-vulnerabilities
+  image: 
+    name: aquasec/trivy
+  variables:
+    TRIVY_USERNAME: $CI_REGISTRY_USER
+    TRIVY_PASSWORD: $CI_REGISTRY_PASSWORD
+    PASSBOLT_FLAVOUR: ce
+    DOCKER_TAG: root
+  script:
+    - trivy image --ignore-unfixed $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
+
+.testing-test-vulnerabilities:
+  extends: .test-vulnerabilities
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+      when: on_success
+
+.stable-test-vulnerabilities:
+  extends: .test-vulnerabilities
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: on_success
+
+docker-ce:
+  extends: .testing-test-vulnerabilities
+docker-pro:
+  extends: .testing-test-vulnerabilities
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+docker-ce-non-root:
+  extends: .testing-test-vulnerabilities
+  variables:
+    DOCKER_TAG: "rootless"
+docker-pro-non-root:
+  extends: .testing-test-vulnerabilities
+  variables:
+    PASSBOLT_FLAVOUR: "pro"

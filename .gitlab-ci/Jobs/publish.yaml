@@ -1,0 +1,77 @@
+.docker-authentication: &docker-authentication |
+  cat << EOF > /kaniko/.docker/config.json
+  {
+      "auths": {
+          "https://index.docker.io/v1/": {
+              "auth": "${AUTH_STRING_DOCKER_HUB}"
+          },
+          "$CI_REGISTRY": {
+              "username": "${CI_REGISTRY_USER}",
+              "password": "${CI_REGISTRY_PASSWORD}"
+          }
+      }
+  }
+  EOF
+
+.publish-command: &publish-command |
+  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
+    --dockerfile /dev/stdin \
+    --destination "$IMAGE_NAME:latest-$PASSBOLT_IMAGE_FLAVOUR" \
+    --destination "$IMAGE_NAME:$PASSBOLT_VERSION" \
+    --destination "$IMAGE_NAME:$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR" 
+
+.publish-command-latest: &publish-command-latest |
+  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
+    --dockerfile /dev/stdin \
+    --destination "$IMAGE_NAME:latest"
+
+.publish:
+  stage: publish
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    DOCKER_TAG: "root"
+    IMAGE_NAME: "passbolt/passbolt"
+    PASSBOLT_FLAVOUR: "ce"
+    PASSBOLT_IMAGE_FLAVOUR: "ce"
+  rules:
+    - if: '$PASSBOLT_VERSION'
+      when: on_success
+
+publish-ce:
+  extends: .publish
+  script:
+    - *docker-authentication
+    - *publish-command
+    - *publish-command-latest
+
+publish-ce-non-root:
+  extends: .publish
+  variables:
+    DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "ce"
+    PASSBOLT_IMAGE_FLAVOUR: "ce-non-root"
+  script:
+    - *docker-authentication
+    - *publish-command
+
+publish-pro:
+  extends: .publish
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+    PASSBOLT_IMAGE_FLAVOUR: "pro"
+  script:
+    - *docker-authentication
+    - *publish-command
+
+publish-pro-non-root:
+  extends: .publish
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+    DOCKER_TAG: "rootless"
+    PASSBOLT_IMAGE_FLAVOUR: "pro-non-root"
+  script:
+    - *docker-authentication
+    - *publish-command
+

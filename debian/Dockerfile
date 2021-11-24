@@ -2,17 +2,17 @@ FROM debian:bullseye-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
-ARG PASSBOLT_REPO_URL="https://download.passbolt.com/ce/debian"
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
-ARG PASSBOLT_PKG=passbolt-ce-server
 ARG PASSBOLT_FLAVOUR="ce"
 ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
+ARG PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian"
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PHP_VERSION=7.4
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
+ENV PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \

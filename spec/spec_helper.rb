@@ -3,12 +3,23 @@ require 'docker'
 
 ROOT_DOCKERFILES = File.expand_path('../../', __FILE__)
 FIXTURES_PATH    = File::expand_path("fixtures", File::dirname(__FILE__))
+LOCAL_SUBSCRIPTION_KEY_PATH    = File.expand_path('../../subscription_key.txt', __FILE__)
+SUBSCRIPTION_KEY_PATH = '/etc/passbolt/subscription_key.txt'
 
 $cron_binary = '/usr/sbin/cron'
 $dockerfile = 'debian/Dockerfile'
 $http_port = '80'
 $https_port = '443'
 $root_user = 'root'
+$binds = []
+
+$buildargs = {
+  :PASSBOLT_FLAVOUR=>"#{ENV['PASSBOLT_FLAVOUR']}",
+}
+
+if ENV['PASSBOLT_FLAVOUR'] == "pro"
+  $binds = ["#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"]
+end
 
 set :backend, :docker
 Docker.options[:read_timeout]  = 3600

@@ -2,12 +2,19 @@ image: alpine:latest
 
 variables:
   DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://localhost:2375/
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_TLS_CERTDIR: ""
 
 stages:
+  - scanning
   - build
+  - test-vulnerabilities
   - test
+  - publish
 
 include:
   - local: '/.gitlab-ci/Jobs/build_image.yml'
   - local: '/.gitlab-ci/Jobs/container_security_scan.yml'
+  - local: '/.gitlab-ci/Jobs/test_vulnerabilities.yaml'
+  - local: '/.gitlab-ci/Jobs/test_images.yaml'
+  - local: '/.gitlab-ci/Jobs/publish.yaml'
