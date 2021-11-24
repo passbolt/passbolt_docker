@@ -5,25 +5,16 @@
   variables:
     TRIVY_USERNAME: $CI_REGISTRY_USER
     TRIVY_PASSWORD: $CI_REGISTRY_PASSWORD
-    PASSBOLT_FLAVOUR: ce
     DOCKER_TAG: root
   script:
     - trivy image --ignore-unfixed $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/'
+    - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ ) && $PASSBOLT_FLAVOUR =~ /ce|pro/'
       when: on_success
 
-docker-ce:
+docker:
   extends: .test-vulnerabilities
-docker-pro:
-  extends: .test-vulnerabilities
-  variables:
-    PASSBOLT_FLAVOUR: "pro"
-docker-ce-non-root:
+docker-non-root:
   extends: .test-vulnerabilities
   variables:
     DOCKER_TAG: "rootless"
-docker-pro-non-root:
-  extends: .test-vulnerabilities
-  variables:
-    PASSBOLT_FLAVOUR: "pro"

@@ -25,7 +25,7 @@
 .testing-build:
   extends: .build
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"  || $CI_COMMIT_MESSAGE =~ /test-image/'
+    - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"  || $CI_COMMIT_MESSAGE =~ /test-image/ ) && $PASSBOLT_FLAVOUR =~ /ce|pro/'
       when: on_success
 
 .stable-build:
@@ -33,61 +33,29 @@
   variables:
     COMPONENT: "stable"
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_COMMIT_BRANCH == "master"|| $PASSBOLT_FLAVOUR =~ /ce|pro/'
       when: on_success
 
-build-testing-docker-ce:
+build-testing-docker:
   extends: .testing-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
-    PASSBOLT_FLAVOUR: "ce"
 
-build-testing-rootless-ce:
+build-testing-rootless:
   extends: .testing-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
-    PASSBOLT_FLAVOUR: "ce"
 
-build-testing-docker-pro:
-  extends: .testing-build
-  variables:
-    DOCKERFILE_PATH: "debian/Dockerfile"
-    DOCKER_TAG: "root"
-    PASSBOLT_FLAVOUR: "pro"
-
-build-testing-rootless-pro:
-  extends: .testing-build
-  variables:
-    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
-    DOCKER_TAG: "rootless"
-    PASSBOLT_FLAVOUR: "pro"
-
-build-stable-docker-ce:
+build-stable-docker:
   extends: .stable-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
-    PASSBOLT_FLAVOUR: "ce"
 
-build-stable-rootless-ce:
+build-stable-rootless:
   extends: .stable-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
-    PASSBOLT_FLAVOUR: "ce"
-
-build-stable-docker-pro:
-  extends: .stable-build
-  variables:
-    DOCKERFILE_PATH: "debian/Dockerfile"
-    DOCKER_TAG: "root"
-    PASSBOLT_FLAVOUR: "pro"
-
-build-stable-rootless-pro:
-  extends: .stable-build
-  variables:
-    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
-    DOCKER_TAG: "rootless"
-    PASSBOLT_FLAVOUR: "pro"

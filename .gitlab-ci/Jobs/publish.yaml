@@ -33,10 +33,9 @@
   variables:
     DOCKER_TAG: "root"
     IMAGE_NAME: "passbolt/passbolt"
-    PASSBOLT_FLAVOUR: "ce"
     PASSBOLT_IMAGE_FLAVOUR: "ce"
   rules:
-    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master"'
+    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR == "ce"'
       when: on_success
 
 publish-ce:
@@ -50,7 +49,6 @@ publish-ce-non-root:
   extends: .publish
   variables:
     DOCKER_TAG: "rootless"
-    PASSBOLT_FLAVOUR: "ce"
     PASSBOLT_IMAGE_FLAVOUR: "ce-non-root"
   script:
     - *docker-authentication
@@ -59,19 +57,23 @@ publish-ce-non-root:
 publish-pro:
   extends: .publish
   variables:
-    PASSBOLT_FLAVOUR: "pro"
     PASSBOLT_IMAGE_FLAVOUR: "pro"
   script:
     - *docker-authentication
     - *publish-command
+  rules:
+    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR == "pro"'
+      when: on_success
 
 publish-pro-non-root:
   extends: .publish
   variables:
-    PASSBOLT_FLAVOUR: "pro"
     DOCKER_TAG: "rootless"
     PASSBOLT_IMAGE_FLAVOUR: "pro-non-root"
   script:
     - *docker-authentication
     - *publish-command
+  rules:
+    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR == "pro"'
+      when: on_success
 

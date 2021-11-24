@@ -1,21 +1,16 @@
 services:
   - docker:19.03.0-dind
 
-.rules:
-  rules:
-  - if: '$CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ || $CI_COMMIT_BRANCH == "master"'
-    when: on_success
-
 .test-images:
-  extends: .rules
   stage: test
   image: 
     name: ruby:latest
-  variables:
-    PASSBOLT_FLAVOUR: ce
   script:
     - bundle install 
     - rake spec:$TEST_NAME
+  rules:
+  - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ || $CI_COMMIT_BRANCH == "master" ) && $PASSBOLT_FLAVOUR == "ce"'
+    when: on_success
 
 .test-pro-images:
   extends: .test-images
@@ -23,6 +18,9 @@ services:
     - cat $SUBSCRIPTION_KEY > subscription_key.txt
   variables:
     PASSBOLT_COMPONENT: stable
+  rules:
+  - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ || $CI_COMMIT_BRANCH == "master" ) && $PASSBOLT_FLAVOUR == "pro"'
+    when: on_success
 
 ce-docker-image:
   extends: .test-images
@@ -38,25 +36,21 @@ ce-docker-runtime-no-envs:
   extends: .test-images
   variables:
     TEST_NAME: docker_runtime_no_envs
-    PASSBOLT_FLAVOUR: ce
 
 pro-docker-image:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_image
-    PASSBOLT_FLAVOUR: pro
 
 pro-docker-runtime:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_runtime
-    PASSBOLT_FLAVOUR: pro
 
 pro-docker-runtime-no-envs:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_runtime_no_envs
-    PASSBOLT_FLAVOUR: pro
 
 ce-non-root-docker-image:
   extends: .test-images
@@ -74,26 +68,22 @@ ce-non-root-docker-runtime-no-envs:
   extends: .test-images
   variables:
     TEST_NAME: docker_runtime_no_envs
-    PASSBOLT_FLAVOUR: ce
     ROOTLESS: "true"
 
 pro-non-root-docker-image:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_image
-    PASSBOLT_FLAVOUR: pro
     ROOTLESS: "true"
 
 pro-non-root-docker-runtime:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_runtime
-    PASSBOLT_FLAVOUR: pro
     ROOTLESS: "true"
 
 pro-non-root-docker-runtime-no-envs:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_runtime_no_envs
-    PASSBOLT_FLAVOUR: pro
     ROOTLESS: "true"
