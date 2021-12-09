@@ -139,8 +139,8 @@ It it possible to mount the desired configuration files as volumes.
 
 It is also possible to mount a ssl certificate on the following paths:
 
-* /etc/ssl/certs/certificate.crt
-* /etc/ssl/certs/certificate.key
+* /etc/passbolt/certs/certificate.crt
+* /etc/passbolt/certs/certificate.key
 
 ### Database SSL certificate files
 
