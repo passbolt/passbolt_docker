@@ -15,6 +15,7 @@ $binds = []
 
 $buildargs = {
   :PASSBOLT_FLAVOUR=>"#{ENV['PASSBOLT_FLAVOUR']}",
+  :PASSBOLT_COMPONENT=>"#{ENV['PASSBOLT_COMPONENT']}",
 }
 
 if ENV['PASSBOLT_FLAVOUR'] == "pro"

@@ -8,6 +8,8 @@ services:
   script:
     - bundle install 
     - rake spec:$TEST_NAME
+  variables:
+    PASSBOLT_COMPONENT: stable
   rules:
   - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ || $CI_COMMIT_BRANCH == "master" ) && $PASSBOLT_FLAVOUR == "ce"'
     when: on_success

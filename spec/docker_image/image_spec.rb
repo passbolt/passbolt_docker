@@ -35,6 +35,7 @@ describe 'Dockerfile' do
     'posix', 'xml', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
     ] }
   let(:wait_for) { '/usr/bin/wait-for.sh' }
+  jwt_conf = '/etc/passbolt/jwt'
 
   describe 'passbolt required php extensions' do
     it 'has php extensions installed' do
@@ -127,6 +128,13 @@ describe 'Dockerfile' do
       exposed_ports.each do |port|
         expect(@image.json['ContainerConfig']['ExposedPorts']).to include("#{port}/tcp")
       end
+    end
+  end
+
+  describe file(jwt_conf) do
+    it { should be_a_directory }
+    it 'should be an empty directory' do
+      Dir.glob(jwt_conf).should eq []
     end
   end
 end
