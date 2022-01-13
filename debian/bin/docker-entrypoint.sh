@@ -106,6 +106,15 @@ migrate_command() {
   su -c '/usr/share/php/passbolt/bin/cake passbolt migrate' -s /bin/bash www-data 
 }
 
+jwt_keys_creation() {
+  if [[ ! -f $passbolt_config/jwt/jwt.key || ! -f $passbolt_config/jwt/jwt.pem ]]
+  then 
+    su -c '/usr/share/php/passbolt/bin/cake passbolt create_jwt_keys' -s /bin/bash www-data
+    chmod 640 "$JWT_KEY" && chown root:www-data "$JWT_KEY" 
+    chmod 640 "$JWT_PEM" && chown root:www-data "$JWT_PEM" 
+  fi 
+}
+
 install() {
   if [ ! -f "$passbolt_config/app.php" ]; then
     su -c "cp $passbolt_config/app.default.php $passbolt_config/app.php" -s /bin/bash www-data
@@ -118,6 +127,7 @@ install() {
 
   import_subscription || true
 
+  jwt_keys_creation
   install_command || migrate_command && echo "Enjoy! ☮"
 }
 
