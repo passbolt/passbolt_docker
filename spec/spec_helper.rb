@@ -11,6 +11,7 @@ $dockerfile = 'debian/Dockerfile'
 $http_port = '80'
 $https_port = '443'
 $root_user = 'root'
+$config_group = 'www-data'
 $binds = []
 
 $buildargs = {
@@ -33,4 +34,5 @@ if ENV['ROOTLESS'] == "true"
   $https_port = '4433'
   # Where www-data has to be the owner instead of root
   $root_user = 'www-data'
+  $config_group = '0'
 end
