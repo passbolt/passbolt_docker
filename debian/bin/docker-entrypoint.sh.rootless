@@ -109,9 +109,9 @@ migrate_command() {
 jwt_keys_creation() {
   if [[ ! -f $passbolt_config/jwt/jwt.key || ! -f $passbolt_config/jwt/jwt.pem ]]
   then 
-    su -c '/usr/share/php/passbolt/bin/cake passbolt create_jwt_keys' -s /bin/bash www-data
-    chmod 640 "$JWT_KEY" && chown root:www-data "$JWT_KEY" 
-    chmod 640 "$JWT_PEM" && chown root:www-data "$JWT_PEM" 
+    /usr/share/php/passbolt/bin/cake passbolt create_jwt_keys
+    chmod 640 "$passbolt_config/jwt/jwt.key" && chown www-data:www-data "$passbolt_config/jwt/jwt.key" 
+    chmod 640 "$passbolt_config/jwt/jwt.pem" && chown www-data:www-data "$passbolt_config/jwt/jwt.pem" 
   fi 
 }
 

@@ -110,8 +110,8 @@ jwt_keys_creation() {
   if [[ ! -f $passbolt_config/jwt/jwt.key || ! -f $passbolt_config/jwt/jwt.pem ]]
   then 
     su -c '/usr/share/php/passbolt/bin/cake passbolt create_jwt_keys' -s /bin/bash www-data
-    chmod 640 "$JWT_KEY" && chown root:www-data "$JWT_KEY" 
-    chmod 640 "$JWT_PEM" && chown root:www-data "$JWT_PEM" 
+    chmod 640 "$passbolt_config/jwt/jwt.key" && chown root:www-data "$passbolt_config/jwt/jwt.key" 
+    chmod 640 "$passbolt_config/jwt/jwt.pem" && chown root:www-data "$passbolt_config/jwt/jwt.pem" 
   fi 
 }
 
