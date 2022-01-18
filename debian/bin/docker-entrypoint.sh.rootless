@@ -106,6 +106,15 @@ migrate_command() {
   /usr/share/php/passbolt/bin/cake passbolt migrate
 }
 
+jwt_keys_creation() {
+  if [[ ! -f $passbolt_config/jwt/jwt.key || ! -f $passbolt_config/jwt/jwt.pem ]]
+  then 
+    /usr/share/php/passbolt/bin/cake passbolt create_jwt_keys
+    chmod 640 "$passbolt_config/jwt/jwt.key" && chown www-data:www-data "$passbolt_config/jwt/jwt.key" 
+    chmod 640 "$passbolt_config/jwt/jwt.pem" && chown www-data:www-data "$passbolt_config/jwt/jwt.pem" 
+  fi 
+}
+
 install() {
   if [ ! -f "$passbolt_config/app.php" ]; then
     cp $passbolt_config/app.default.php $passbolt_config/app.php
@@ -118,6 +127,7 @@ install() {
 
   import_subscription || true
 
+  jwt_keys_creation
   install_command || migrate_command && echo "Enjoy! ☮"
 }
 

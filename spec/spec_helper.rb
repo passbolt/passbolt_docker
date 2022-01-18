@@ -11,10 +11,12 @@ $dockerfile = 'debian/Dockerfile'
 $http_port = '80'
 $https_port = '443'
 $root_user = 'root'
+$config_group = 'www-data'
 $binds = []
 
 $buildargs = {
   :PASSBOLT_FLAVOUR=>"#{ENV['PASSBOLT_FLAVOUR']}",
+  :PASSBOLT_COMPONENT=>"#{ENV['PASSBOLT_COMPONENT']}",
 }
 
 if ENV['PASSBOLT_FLAVOUR'] == "pro"
@@ -32,4 +34,5 @@ if ENV['ROOTLESS'] == "true"
   $https_port = '4433'
   # Where www-data has to be the owner instead of root
   $root_user = 'www-data'
+  $config_group = '0'
 end

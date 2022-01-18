@@ -26,6 +26,7 @@ RUN apt-get update \
       $PASSBOLT_PKG \
       supervisor \
       curl \
+    && rm -f /etc/passbolt/jwt/* \
     && rm /etc/nginx/sites-enabled/default \
     && mkdir /run/php \
     && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \

@@ -31,6 +31,7 @@ RUN apt-get update \
       $PASSBOLT_PKG \
       supervisor \
       curl \
+    && rm -f /etc/passbolt/jwt/* \
     && curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM} ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC" \
@@ -63,6 +64,7 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && chmod -R g+w /etc/nginx \
     && mkdir /etc/passbolt/certs \
     && chown www-data:0 /etc/passbolt/certs \
+    && chown www-data:0 /etc/passbolt/jwt \
     && chown www-data:0 /var/log/supervisor \
     && chown -R www-data:0 /var/log/nginx \
     && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
