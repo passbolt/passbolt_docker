@@ -69,6 +69,7 @@ gpg_import_key() {
 gen_ssl_cert() {
   openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
     -subj '/C=FR/ST=Denial/L=Springfield/O=Dis/CN=www.passbolt.local' \
+    -addext "subjectAltName = DNS:www.passbolt.local" \
     -keyout $ssl_key -out $ssl_cert
 }
 
