@@ -12,7 +12,7 @@ services:
       - database_volume:/var/lib/mysql
 
   passbolt:
-    image: local-passbolt
+    image: passbolt/passbolt:latest-ce
     #Alternatively you can use rootless:
     #image: passbolt/passbolt:latest-ce-non-root
     restart: unless-stopped
