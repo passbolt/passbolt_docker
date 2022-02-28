@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      APP_FULL_BASE_URL: http://localhost
+      APP_FULL_BASE_URL: https://passbolt.local
       DATASOURCES_DEFAULT_HOST: "db"
       DATASOURCES_DEFAULT_USERNAME: "passbolt"
       DATASOURCES_DEFAULT_PASSWORD: "P4ssb0lt"
