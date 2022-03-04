@@ -3,10 +3,10 @@ services:
 
 .test-images:
   stage: test
-  image: 
-    name: ruby:latest
+  image:
+    name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/ruby:latest
   script:
-    - bundle install 
+    - bundle install
     - rake spec:$TEST_NAME
   variables:
     PASSBOLT_COMPONENT: stable

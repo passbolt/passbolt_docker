@@ -2,7 +2,7 @@
 
 container_scanning:
   stage: scanning
-  image: docker:stable
+  image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/docker:latest
   variables:
     DOCKER_DRIVER: overlay2
     # Defining two new variables based on GitLab's CI/CD predefined variables
