@@ -1,7 +1,7 @@
 .test-vulnerabilities:
   stage: test-vulnerabilities
-  image: 
-    name: aquasec/trivy
+  image:
+    name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/aquasec:latest
   variables:
     TRIVY_USERNAME: $CI_REGISTRY_USER
     TRIVY_PASSWORD: $CI_REGISTRY_PASSWORD

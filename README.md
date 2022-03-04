@@ -175,3 +175,11 @@ Non root image:
 $ export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
 $ bin/cake passbolt healthcheck
 ```
+
+## CI passbolt Docker images building
+
+In order to pull custom images from the Gitlab registry, you need to set this variables and assuming you are not using a self-hosted gitlab instance:
+
+REGISTRY_USERNAME=<username>
+REGISTRY_PASSWORD=<password>
+REGISTRY_EMAIL=<email>

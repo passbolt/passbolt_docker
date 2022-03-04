@@ -26,6 +26,7 @@ end
 set :backend, :docker
 Docker.options[:read_timeout]  = 3600
 Docker.options[:write_timeout] = 3600
+Docker.authenticate!('username' => "#{ENV['REGISTRY_USERNAME']}", 'password' => "#{ENV['REGISTRY_PASSWORD']}", 'email' => "#{ENV['REGISTRY_EMAIL']}", 'serveraddress' => 'https://registry.gitlab.com/')
 
 if ENV['ROOTLESS'] == "true"
   $cron_binary = '/usr/local/bin/supercronic'
