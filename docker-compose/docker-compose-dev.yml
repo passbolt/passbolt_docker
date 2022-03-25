@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.9'
 services:
   db:
     image: mariadb:10.3
@@ -19,6 +19,7 @@ services:
     env_file:
       - env/passbolt.env
     volumes:
+      #- <PATH_TO_PASSBOLT_API>:/var/www/passbolt
       - gpg_volume:/var/www/passbolt/config/gpg
       - images_volume:/var/www/passbolt/webroot/img/public/images
     command: ["/usr/bin/wait-for.sh", "db:3306", "--", "/docker-entrypoint.sh"]
