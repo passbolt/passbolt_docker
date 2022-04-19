@@ -1,4 +1,4 @@
-FROM php:7.3.33-fpm
+FROM php:7.4-fpm
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
@@ -52,7 +52,7 @@ RUN apt-get update \
          mkdir $PHP_EXT_DIR/$i; \
          curl -sSL $PECL_BASE_URL/$i | tar zxf - -C $PHP_EXT_DIR/$i --strip-components 1; \
        done \
-    && docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-configure gd --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j4 $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && docker-php-ext-enable $PHP_EXTENSIONS $PECL_PASSBOLT_EXTENSIONS \
     && docker-php-source delete \
