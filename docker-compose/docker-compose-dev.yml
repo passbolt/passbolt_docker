@@ -11,7 +11,8 @@ services:
 
   passbolt:
     build:
-      context: .
+      context: ..
+      dockerfile: dev/Dockerfile
       args:
         PECL_PASSBOLT_EXTENSIONS: "redis gnupg xdebug"
     depends_on:
