@@ -1,7 +1,7 @@
-version: '3.7'
+version: '3.9'
 services:
   db:
-    image: mariadb:latest
+    image: mariadb:10.3
     restart: unless-stopped
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "true"
@@ -16,7 +16,6 @@ services:
     #Alternatively you can use rootless:
     #image: passbolt/passbolt:latest-pro-non-root
     restart: unless-stopped
-    tty: true
     depends_on:
       - db
     environment:
