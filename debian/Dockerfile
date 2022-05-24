@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/passbolt/passbolt-ci-docker-images/debian-bullseye-11-slim:latest
+FROM debian:bullseye-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
