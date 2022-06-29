@@ -87,6 +87,7 @@ RUN apt-get update \
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
+COPY conf/supervisor/php-dev.conf /etc/supervisor/conf.d/php.conf
 COPY dev/bin/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
