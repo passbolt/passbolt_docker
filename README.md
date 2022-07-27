@@ -51,7 +51,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=<root_password> \
              mariadb
 ```
 
-Then you can start passbolt just by providing the database container ip in the
+Then you can start passbolt just by providing the database container's IP address in the
 `DATASOURCES_DEFAULT_HOST` environment variable.
 
 ```bash
