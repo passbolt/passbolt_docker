@@ -62,7 +62,7 @@ $ docker run --name passbolt \
              -e DATASOURCES_DEFAULT_PASSWORD=<mariadb_password> \
              -e DATASOURCES_DEFAULT_USERNAME=<mariadb_user> \
              -e DATASOURCES_DEFAULT_DATABASE=<mariadb_database> \
-             -e APP_FULL_BASE_URL=https://mydomain.com \
+             -e APP_FULL_BASE_URL=https://example.com \
              passbolt/passbolt:develop-debian
 ```
 
@@ -74,7 +74,7 @@ $ docker exec passbolt su -m -c "bin/cake passbolt register_user -u your@email.c
 
 This registration command will return a single use url required to continue the
 web browser setup and finish the registration. Your passbolt instance should be
-available browsing `https://yourdomain.com`
+available browsing `https://example.com`
 
 # Configure passbolt
 
