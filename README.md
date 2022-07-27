@@ -85,7 +85,7 @@ Passbolt docker image provides several environment variables to configure differ
 | Variable name                       | Description                                                               | Default value
 | ----------------------------------- | --------------------------------                                          | -------------------
 | APP_BASE                            | In case you want to run Passbolt in a subdirectory (e.g. `https://example.com/passbolt`), set this to the path to the subdirectory (e.g. `/passbolt`). Make sure this does **not** end in a trailing slash! | null
-| APP_FULL_BASE_URL                   | Passbolt base url                                                         | false
+| APP_FULL_BASE_URL                   | The hostname where your server is reachable, including `https://` (or `http://`). Make sure this does **not** end in a trailing slash! And in case you are running Passbolt from a subdirectory (e.g. `https://example.com/passbolt`), please include the subdirectory in this variable, too. | false
 | DATASOURCES_DEFAULT_HOST            | Database hostname                                                         | localhost
 | DATASOURCES_DEFAULT_PORT            | Database port                                                             | 3306
 | DATASOURCES_DEFAULT_USERNAME        | Database username                                                         | ''
