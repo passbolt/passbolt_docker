@@ -38,8 +38,8 @@ EOF
 gpg_gen_key() {
   key_email="${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com}"
   key_name="${PASSBOLT_KEY_NAME:-Passbolt default user}"
-  key_length="${PASSBOLT_KEY_LENGTH:-2048}"
-  subkey_length="${PASSBOLT_SUBKEY_LENGTH:-2048}"
+  key_length="${PASSBOLT_KEY_LENGTH:-3072}"
+  subkey_length="${PASSBOLT_SUBKEY_LENGTH:-3072}"
   expiration="${PASSBOLT_KEY_EXPIRATION:-0}"
 
   entropy_check
