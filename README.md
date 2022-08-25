@@ -106,8 +106,8 @@ Passbolt docker image provides several environment variables to configure differ
 | EMAIL_TRANSPORT_DEFAULT_TLS         | Set tls                                                                   | null
 | EMAIL_TRANSPORT_DEFAULT_URL         | Set url                                                                   | null
 | GNUPGHOME                           | path to gnupghome directory                                               | /var/lib/passbolt/.gnupg
-| PASSBOLT_KEY_LENGTH                 | Gpg desired key length                                                    | 2048
-| PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length                                                 | 2048
+| PASSBOLT_KEY_LENGTH                 | Gpg desired key length                                                    | 3072
+| PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length                                                 | 3072
 | PASSBOLT_KEY_NAME                   | Key owner name                                                            | Passbolt default user
 | PASSBOLT_KEY_EMAIL                  | Key owner email address                                                   | passbolt@yourdomain.com
 | PASSBOLT_KEY_EXPIRATION             | Key expiration date                                                       | 0, never expires
