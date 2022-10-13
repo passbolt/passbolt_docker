@@ -28,7 +28,12 @@ services:
       - gpg_volume:/etc/passbolt/gpg
       - jwt_volume:/etc/passbolt/jwt
       - ./subscription_key.txt:/etc/passbolt/subscription_key.txt:ro
-    command: ["/usr/bin/wait-for.sh", "-t", "0", "db:3306", "--", "/docker-entrypoint.sh"]
+    command:
+      - /bin/bash
+      - -c
+      - |
+        echo '0 0 * * * www-data exec /bin/bash -c "/usr/share/php/passbolt/bin/cake directory_sync all" >> /var/log/cron.log 2>&1' >> /etc/cron.d/passbolt-ce-server
+        /usr/bin/wait-for.sh -t 0 db:3306 -- /docker-entrypoint.sh
     ports:
       - 80:80
       - 443:443
