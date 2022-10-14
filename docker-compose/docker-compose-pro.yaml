@@ -27,8 +27,14 @@ services:
     volumes:
       - gpg_volume:/etc/passbolt/gpg
       - jwt_volume:/etc/passbolt/jwt
-      - ./subscription_key.txt:/etc/passbolt/subscription_key.txt:ro
-    command: ["/usr/bin/wait-for.sh", "-t", "0", "db:3306", "--", "/docker-entrypoint.sh"]
+      - ${PWD}/subscription_key.txt:/etc/passbolt/subscription_key.txt:ro
+    command:
+      - /bin/bash
+      - -c
+      - |
+        # Uncomment line below if you are using ldap sync. Change '* * * * *' to your preferred sync schedule. More info: https://en.wikipedia.org/wiki/Cron
+        # echo '* * * * * www-data exec /bin/bash -c "source /etc/environment && /usr/share/php/passbolt/bin/cake directory_sync all" >> /var/log/cron.log 2>&1' >> /etc/cron.d/passbolt-pro-server
+        /usr/bin/wait-for.sh -t 0 db:3306 -- /docker-entrypoint.sh
     ports:
       - 80:80
       - 443:443
