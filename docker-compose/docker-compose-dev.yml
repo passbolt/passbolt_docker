@@ -2,6 +2,7 @@ version: '3.9'
 services:
   db:
     image: mariadb:10.3
+    container_name: passbolt-db
     env_file:
       - env/mysql.env
     volumes:
@@ -15,6 +16,7 @@ services:
       dockerfile: dev/Dockerfile
       args:
         PECL_PASSBOLT_EXTENSIONS: "redis gnupg xdebug"
+    container_name: passbolt
     depends_on:
       - db
     env_file:

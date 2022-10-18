@@ -2,6 +2,7 @@ version: '3.9'
 services:
   db:
     image: mariadb:10.3
+    container_name: passbolt-db
     restart: unless-stopped
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "true"
@@ -13,6 +14,7 @@ services:
 
   passbolt:
     image: passbolt/passbolt:latest-ce
+    container_name: passbolt
     #Alternatively you can use rootless:
     #image: passbolt/passbolt:latest-ce-non-root
     restart: unless-stopped
