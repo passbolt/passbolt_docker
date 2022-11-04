@@ -2,28 +2,38 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.5.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.7.3...HEAD)
 
-## [3.5.0](https://github.com/passbolt/passbolt_docker/compare/v3.4.0...v3.5.0) - 2022-01-18
+## [3.7.3](https://github.com/passbolt/passbolt_docker/compare/v3.0.2...v3.7.3) - 2022-11-04
 
-- This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.4.0...v3.5.0) for passbolt_api
+### Added
 
-## [3.4.0](https://github.com/passbolt/passbolt_docker/compare/v3.3.0...v3.4.0) - 2021-12-07
-
-- This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.3.0...v3.4.0) for passbolt_api
-
-## [3.3.0](https://github.com/passbolt/passbolt_docker/compare/v3.2.0...v3.3.0) - 2021-10-27
-
-- This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.2.0...v3.3.0) for passbolt_api
-
-## [3.2.0](https://github.com/passbolt/passbolt_docker/compare/v3.1.0...v3.2.0) - 2021-05-31
-
-- This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.1.0...v3.2.0) for passbolt_api
-
-## [3.1.0](https://github.com/passbolt/passbolt_docker/compare/v3.0.2...v3.1.0) - 2021-03-18
-
-- This is a sync release. Check [changes](https://github.com/passbolt/passbolt_api/compare/v3.0.2...v3.1.0) for passbolt_api
+- PB-19792 add github actions to automate release creation
 - Fix dev Dockerfile ln command syntax
+- PB-19311: directory sync command on entrypoint for pro
+- PB-14006: docker-compose file for postgresql
+- Add new subscription file machinery
+- Add pro dependencies
+
+### Changed 
+- Default key length from 2048 to 3072
+- Bump php version to 8 on dev Dockerfile
+- PB-14373 fix composer files
+- PB-14373 use relative paths on build field
+- PB-14373 bump php version to 7.4
+- PB-14111: Set https://passbolt.local as APP_FULL_BASE_URL
+- PB-13681 add subaltname parameter on the automatic certs
+- PB-13552 check jwt variable before executing create_jwt_keys
+- PB-13533 add create_jwt_keys in the entrypoint
+- PB-13533 remove jwt keys during build
+- Security upgrade php from 7.3.31-fpm to 7.3.33-fpm
+- Refactor dockerfile args and vars
+- PB-9399 fix ipv6 http port on rootless image
+- Security upgrade php from 7.3.30-fpm to 7-fpm
+- PB-8416 Use debian 11 image as base image.
+- Fix deprecated license path
+- Add PASSBOLT_FLAVOUR env variable
+- Fix ln command syntax
 
 ## [3.0.2](https://github.com/passbolt/passbolt_docker/compare/v3.0.1...v3.0.2) - 2021-03-12
 
