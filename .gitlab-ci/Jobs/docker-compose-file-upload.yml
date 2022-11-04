@@ -1,0 +1,28 @@
+.upload-files:
+  stage: upload-assets
+  image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/gcloud
+  variables:
+    BUCKET: "gs://download.passbolt.com"
+    PREFIX: "ce/docker"
+  before_script:
+    gcloud auth activate-service-account --key-file "$BUCKET_SVC_ACC"
+  after_script:
+    gsutil -m setmeta -r -h "Content-Type:text/html" \
+      -h "Cache-Control:no-cache" \
+      "gs://$BUCKET/$PREFIX/*"
+  rules:
+    - if: '$CI_COMMIT_TAG != null'
+    
+upload-ce-files:
+  extends: .upload-files
+  script: |
+    gsutil cp docker-compose/docker-compose-ce.yaml "$BUCKET/$PREFIX/docker-compose-ce.yaml"
+    gsutil cp docker-compose/docker-compose-ce-postgresql.yaml "$BUCKET/$PREFIX/docker-compose-ce-postgresql.yaml"
+        
+upload-pro-files:
+  extends: .upload-files
+  variables:
+    BUCKET: "gs://download.passbolt.com"
+    PREFIX: "pro/docker"
+  script: |
+    gsutil cp docker-compose/docker-compose-pro.yaml "$BUCKET/$PREFIX/docker-compose-pro.yaml"

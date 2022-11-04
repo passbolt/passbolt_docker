@@ -11,6 +11,7 @@ stages:
   - test-vulnerabilities
   - test
   - publish
+  - upload-assets
 
 include:
   - local: '/.gitlab-ci/Jobs/build_image.yml'
@@ -18,3 +19,4 @@ include:
   - local: '/.gitlab-ci/Jobs/test_vulnerabilities.yaml'
   - local: '/.gitlab-ci/Jobs/test_images.yaml'
   - local: '/.gitlab-ci/Jobs/publish.yaml'
+  - local: '/.gitlab-ci/Jobs/docker-compose-file-upload.yml'
