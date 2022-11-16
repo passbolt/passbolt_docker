@@ -139,6 +139,11 @@ It it possible to mount the desired configuration files as volumes.
 
 It is also possible to mount a ssl certificate on the following paths:
 
+For **image: passbolt/passbolt:latest-ce-non-root**
+* /etc/passbolt/certs/certificate.crt
+* /etc/passbolt/certs/certificate.key
+
+For **image: passbolt/passbolt:latest-ce**
 * /etc/ssl/certs/certificate.crt
 * /etc/ssl/certs/certificate.key
 
@@ -159,7 +164,7 @@ ssl-key=/etc/mysql/ssl/server-key.pem
 
 ### CLI healthcheck
 
-In order to run the healtcheck from the CLI on the container:
+In order to run the healthcheck from the CLI on the container:
 
 On a root docker image:
 
