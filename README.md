@@ -51,7 +51,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=<root_password> \
              mariadb
 ```
 
-Then you can start passbolt just by providing the database container ip in the
+Then you can start passbolt just by providing the database container's IP address in the
 `DATASOURCES_DEFAULT_HOST` environment variable.
 
 ```bash
@@ -62,7 +62,7 @@ $ docker run --name passbolt \
              -e DATASOURCES_DEFAULT_PASSWORD=<mariadb_password> \
              -e DATASOURCES_DEFAULT_USERNAME=<mariadb_user> \
              -e DATASOURCES_DEFAULT_DATABASE=<mariadb_database> \
-             -e APP_FULL_BASE_URL=https://mydomain.com \
+             -e APP_FULL_BASE_URL=https://example.com \
              passbolt/passbolt:develop-debian
 ```
 
@@ -74,7 +74,7 @@ $ docker exec passbolt su -m -c "bin/cake passbolt register_user -u your@email.c
 
 This registration command will return a single use url required to continue the
 web browser setup and finish the registration. Your passbolt instance should be
-available browsing `https://yourdomain.com`
+available browsing `https://example.com`
 
 # Configure passbolt
 
@@ -84,8 +84,8 @@ Passbolt docker image provides several environment variables to configure differ
 
 | Variable name                       | Description                                                               | Default value
 | ----------------------------------- | --------------------------------                                          | -------------------
-| APP_BASE                            | it allows people to specify the base subdir the application is running in | null
-| APP_FULL_BASE_URL                   | Passbolt base url                                                         | false
+| APP_BASE                            | In case you want to run Passbolt in a subdirectory (e.g. `https://example.com/passbolt`), set this to the path to the subdirectory (e.g. `/passbolt`). Make sure this does **not** end in a trailing slash! | null
+| APP_FULL_BASE_URL                   | The hostname where your server is reachable, including `https://` (or `http://`). Make sure this does **not** end in a trailing slash! And in case you are running Passbolt from a subdirectory (e.g. `https://example.com/passbolt`), please include the subdirectory in this variable, too. | false
 | DATASOURCES_DEFAULT_HOST            | Database hostname                                                         | localhost
 | DATASOURCES_DEFAULT_PORT            | Database port                                                             | 3306
 | DATASOURCES_DEFAULT_USERNAME        | Database username                                                         | ''
