@@ -22,6 +22,8 @@ services:
     depends_on:
       - db
       - mailhog
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - env/passbolt.env
     volumes:

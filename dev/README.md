@@ -67,3 +67,47 @@ docker-compose -f dev/docker-compose-ce.yaml exec passbolt /bin/bash -c \
 ```
 
 8. Copy-paste the output in the browser and you are ready!
+
+# Setup xDebug
+
+In order to setup xDebug with an IDE or code editor, please use dev/Dockerfile or docker-compose/docker-compose-dev.yaml to spin up a development stack, which already contains xDebug configured to run within the Passbolt server.
+You will then have to configure your IDE to connect to xDebug. Below are the steps required for a few IDEs:
+
+## Visual Studio Code
+
+1. From the Extensions tab, install the "PHP Debug" extension from the "Xdebug" publisher
+2. In the "Run and Debug" tab, click the gear icon at the very top of the panel to "Open 'launch.json'"
+3. Under "configurations", add a new JSON object with the following content:
+```
+{
+  "name": "Listen for Xdebug on Docker",
+  "type": "php",
+  "request": "launch",
+  "port": 9003,
+  "pathMappings": {
+    "/var/www/passbolt": "${workspaceFolder}"
+  }
+},
+```
+4. Check for errors by adding `xdebug_info(); die();` to the Passbolt `webroot/index.php` file and visiting the Passbolt server root page. If you don't see anything under the "Diagnosis" section, you can remove this change and start using xDebug
+5. In the "Run and Debug" tab, select the debug profile we added in "launch.json" ("Listen for Xdebug on Docker") and click the green arrow to connect to xDebug
+
+In case the "${workspaceFolder}" value is not mapped correctly (this seems to be the case on MacOS), you can provide the full path of the open workspace folder:
+* Either manually: `<ABSOLUTE_PATH_TO_WORKSPACE_FOLDER>`
+* Or if you store all your code fodlers in a common code place:
+  - `<ABSOLUTE_PATH_TO_COMMON_CODE_FOLDER>/${workspaceFolderBasename}` OR
+  - `${workspaceRoot}` (deprecated in vscode but still works, though only works in single-workspace setup)
+
+## PHPStorm
+
+1. Configure your IDE so that it can properly connect with Docker: under Settings/Preferences -> Build, Execution, Deployment -> Docker. Here is a tutorial: https://www.jetbrains.com/help/phpstorm/docker.html#enable_docker
+2. Then, under Settings/Preferences -> PHP -> Debug, in the "External connections" section, make sure the "Break at first line in PHP scripts" checkbox is unchecked
+3. Thereafter, we need to configure a PHP server, which can be done by going to File > Settings > PHP > Servers. Click on the plus sign twice to create two servers:
+  - The first server should be set to xDebug: Name="Docker - Passbolt", Host="passbolt.local", Port="9003", Debugger="Xdebug", ProjectFiles="<PATH_TO_PASSBOLT_API_REPO>", AbsolutePath="/var/www/passbolt"
+  - The second server should be set to the web server (passbolt.local): Name="passbolt.local", Host="passbolt.local", Port="443", Debugger="Xdebug", ProjectFiles="<PATH_TO_PASSBOLT_API_REPO>", AbsolutePath="/var/www/passbolt"
+4. Save and close the Settings/Preferences window
+5. At the top of the main window, click the "Add Configuration..." button, then "Add new..." > "PHP Remote Debug"
+6. Check the "Filter debug connection by IDE key", and fill in the form with: Name="Docker - Passbolt", Server="Docker - Passbolt", IDEKey="docker_passbolt"
+7. At the top of the main window, click the "Listen for PHP debug connection" button and start a debugging session
+
+**Note:** If you want to debug tests, you will need to properly setup the PHPUnit library under Settings/Preferences -> PHP -> Test Frameworks by adding a configuration and setting the path to phpunit.phar to "/var/www/passbolt/vendor/bin/phpunit" (the docker path mapping must be setup for it to work with this path)
