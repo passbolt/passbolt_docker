@@ -34,3 +34,4 @@ src
 .ruby-version
 
 .bundle
+docker-compose/.env
