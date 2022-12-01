@@ -35,13 +35,12 @@ RUN apt-get update \
     && sed -i '/listen \[\:\:\]\:443 ssl http2;/a listen 443 ssl http2;' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i 's,__CERT_PATH__,/etc/ssl/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
     && sed -i 's,__KEY_PATH__,/etc/ssl/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
-    && sed -i 's,www-data.*$,www-data exec /bin/bash -c ". /etc/environment \&\& $PASSBOLT_BASE_DIR/bin/cron",' /etc/cron.d/$PASSBOLT_PKG \
+    && sed -i 's,www-data.*$,root su -s /bin/bash -c ". /etc/environment \&\& $PASSBOLT_BASE_DIR/bin/cron" www-data >/proc/1/fd/1 2>\&1,' /etc/cron.d/$PASSBOLT_PKG \
     && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
     && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
     && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
     && ln -sf /dev/stderr /var/log/passbolt/error.log \
-    && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log \
-    && crontab /etc/cron.d/$PASSBOLT_PKG
+    && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log
 
 COPY conf/supervisor/cron.conf /etc/supervisor/conf.d/cron.conf
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
