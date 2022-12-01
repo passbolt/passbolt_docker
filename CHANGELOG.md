@@ -2,7 +2,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.7.3...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.7.5...HEAD)
+
+## [3.7.5](https://github.com/passbolt/passbolt_docker/compare/v3.7.4...v3.7.5) - 2022-12-01
+
+### Added
+
+- Improved logging for cron tasks
+
+## [3.7.4](https://github.com/passbolt/passbolt_docker/compare/v3.7.3...v3.7.4) - 2022-11-17
+
+### Added
+
+- Directory sync commands on docker-compose pro
+
+### Fixed
+
+- Multiple merge request from community. Thanks a lot to all of you who contributed!
 
 ## [3.7.3](https://github.com/passbolt/passbolt_docker/compare/v3.0.2...v3.7.3) - 2022-11-04
 
@@ -15,7 +31,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add new subscription file machinery
 - Add pro dependencies
 
-### Changed 
+### Changed
 - Default key length from 2048 to 3072
 - Bump php version to 8 on dev Dockerfile
 - PB-14373 fix composer files
