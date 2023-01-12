@@ -35,7 +35,7 @@
     IMAGE_NAME: "passbolt/passbolt"
     PASSBOLT_IMAGE_FLAVOUR: "ce"
   rules:
-    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR == "ce"'
+    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "ce"'
       when: on_success
 
 publish-ce:
@@ -62,7 +62,7 @@ publish-pro:
     - *docker-authentication
     - *publish-command
   rules:
-    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR == "pro"'
+    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
 
 publish-pro-non-root:

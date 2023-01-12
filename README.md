@@ -6,7 +6,7 @@
    /_/    \__,_/____/____/_,___/\____/_/\__/           `,.__.   ^___.-/
                                                          `-./ .'...--`
   The open source password manager for teams                `'
-  (c) 2022 Passbolt SA
+  (c) 2023 Passbolt SA
   https://www.passbolt.com
 ```
 [![Docker Pulls](https://img.shields.io/docker/pulls/passbolt/passbolt.svg?style=flat-square)](https://hub.docker.com/r/passbolt/passbolt/tags/)
@@ -187,3 +187,26 @@ In order to pull custom images from the Gitlab registry, you need to set this va
 REGISTRY_USERNAME=<username>
 REGISTRY_PASSWORD=<password>
 REGISTRY_EMAIL=<email>
+
+## Docker secrets support
+
+As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
+
+```
+$ docker run --name passsbolt -e DATASOURCES_DEFAULT_PASSWORD_FILE=/run/secrets/db-password -d passbolt/passbolt
+```
+
+Currently, this is only supported for DATASOURCES_DEFAULT_PASSWORD, DATASOURCES_DEFAULT_HOST, DATASOURCES_DEFAULT_USERNAME, DATASOURCES_DEFAULT_DATABASE
+
+Following the behaviour we use to mount docker secrets as environment variables, it is also posible to mount docker secrets as a file inside the passbolt container. So, for some secret files the user can store them using docker secrets and then inject them into the container with a env variable and the entrypoint script will create a symlink to the proper path.
+
+```
+$ docker run --name passsbolt -e PASSBOLT_SSL_SERVER_CERT_FILE=/run/secrets/ssl-cert -d passbolt/passbolt
+```
+
+This feature is only supported for:
+
+- PASSBOLT_SSL_SERVER_CERT_FILE that points to /etc/ssl/certs/certificate.crt
+- PASSBOLT_SSL_SERVER_KEY_FILE that points to /etc/ssl/certs/certificate.key
+- PASSBOLT_GPG_SERVER_KEY_PRIVATE_FILE that points to /etc/passbolt/gpg/serverkey_private.asc
+- PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE that points to /etc/passbolt/gpg/serverkey.asc
