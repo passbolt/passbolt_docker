@@ -3,7 +3,12 @@ require 'spec_helper'
 describe 'passbolt_api service' do
 
   before(:all) do
-    @mysql_image = Docker::Image.create('fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest')
+    if ENV['GITLAB_CI']
+      @mysql_image = Docker::Image.create('fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest')
+    else 
+      @mysql_image = Docker::Image.create('fromImage' => 'mariadb:latest')
+    end
+
     @mysql = Docker::Container.create(
       'Env' => [
         'MYSQL_ROOT_PASSWORD=test',

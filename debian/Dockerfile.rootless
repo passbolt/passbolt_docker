@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/passbolt/passbolt-ci-docker-images/debian-bullseye-11-slim:latest
+FROM debian:bullseye-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
@@ -79,7 +79,11 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
 
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
-COPY debian/bin/docker-entrypoint.sh.rootless /docker-entrypoint.sh
+COPY debian/entrypoint/docker-entrypoint.rootless.sh /docker-entrypoint.sh
+COPY debian/entrypoint/passbolt/entrypoint-rootless.sh /passbolt/entrypoint-rootless.sh
+COPY debian/entrypoint/passbolt/env.sh /passbolt/env.sh
+COPY debian/entrypoint/passbolt/deprecated_paths.sh /passbolt/deprecated_paths.sh
+COPY debian/entrypoint/passbolt/entropy.sh /passbolt/entropy.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
 EXPOSE 8080 4433

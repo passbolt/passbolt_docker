@@ -1,7 +1,10 @@
 services:
-  - docker:19.03.0-dind
+  - name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/dind:latest
+    alias: docker
+    command: ["--tls=false"]
 
 .test-images:
+  extends: .rules
   stage: test
   image:
     name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/ruby:latest
@@ -10,9 +13,8 @@ services:
     - rake spec:$TEST_NAME
   variables:
     PASSBOLT_COMPONENT: stable
-  rules:
-  - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ || $CI_COMMIT_BRANCH == "master" ) && $PASSBOLT_FLAVOUR == "ce"'
-    when: on_success
+    PASSBOLT_FLAVOUR: ce
+    OPPOSITE_FLAVOUR: pro
 
 .test-pro-images:
   extends: .test-images
@@ -20,9 +22,8 @@ services:
     - cat $SUBSCRIPTION_KEY > subscription_key.txt
   variables:
     PASSBOLT_COMPONENT: stable
-  rules:
-  - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ || $CI_COMMIT_BRANCH == "master" ) && $PASSBOLT_FLAVOUR == "pro"'
-    when: on_success
+    PASSBOLT_FLAVOUR: pro
+    OPPOSITE_FLAVOUR: ce
 
 ce-docker-image:
   extends: .test-images

@@ -1,4 +1,5 @@
 .build:
+  extends: .rules
   stage: build
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -22,31 +23,19 @@
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-$(date +%s) \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest
 
-.testing-build:
-  extends: .build
-  rules:
-    - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "develop"  || $CI_COMMIT_MESSAGE =~ /test-image/ ) && $PASSBOLT_FLAVOUR =~ /ce|pro/'
-      when: on_success
-
 .stable-build:
   extends: .build
   variables:
     COMPONENT: "stable"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR =~ /ce|pro/'
-      when: on_success
+    PASSBOLT_FLAVOUR: "ce"
+    OPPOSITE_FLAVOUR: "pro"
 
-build-testing-docker:
-  extends: .testing-build
+.stable-build-pro:
+  extends: .build
   variables:
-    DOCKERFILE_PATH: "debian/Dockerfile"
-    DOCKER_TAG: "root"
-
-build-testing-rootless:
-  extends: .testing-build
-  variables:
-    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
-    DOCKER_TAG: "rootless"
+    COMPONENT: "stable"
+    PASSBOLT_FLAVOUR: "pro"
+    OPPOSITE_FLAVOUR: "ce"
 
 build-stable-docker:
   extends: .stable-build
@@ -56,6 +45,18 @@ build-stable-docker:
 
 build-stable-rootless:
   extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless"
+
+build-pro-stable-docker:
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root"
+
+build-pro-stable-rootless:
+  extends: .stable-build-pro
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"

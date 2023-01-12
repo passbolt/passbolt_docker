@@ -45,11 +45,15 @@ RUN apt-get update \
 COPY conf/supervisor/cron.conf /etc/supervisor/conf.d/cron.conf
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
-COPY debian/bin/docker-entrypoint.sh /docker-entrypoint.sh
+COPY debian/entrypoint/docker-entrypoint.sh /docker-entrypoint.sh
+COPY debian/entrypoint/passbolt/entrypoint.sh /passbolt/entrypoint.sh
+COPY debian/entrypoint/passbolt/env.sh /passbolt/env.sh
+COPY debian/entrypoint/passbolt/deprecated_paths.sh /passbolt/deprecated_paths.sh
+COPY debian/entrypoint/passbolt/entropy.sh /passbolt/entropy.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
 EXPOSE 80 443
 
 WORKDIR /usr/share/php/passbolt
 
-CMD ["/docker-entrypoint.sh"]
+CMD ["//docker-entrypoint.sh"]
