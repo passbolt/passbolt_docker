@@ -1,4 +1,5 @@
 .test-vulnerabilities:
+  extends: .rules
   stage: test-vulnerabilities
   image:
     name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/aquasec:latest
@@ -8,13 +9,29 @@
     DOCKER_TAG: root
   script:
     - trivy image --ignore-unfixed $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
-  rules:
-    - if: '($CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_MESSAGE =~ /test-image/ ) && $PASSBOLT_FLAVOUR =~ /ce|pro/'
-      when: on_success
 
-docker:
-  extends: .test-vulnerabilities
-docker-non-root:
+docker-ce:
   extends: .test-vulnerabilities
   variables:
+    PASSBOLT_FLAVOUR: "ce"
+    OPPOSITE_FLAVOUR: "pro"
+
+docker-ce-rootless:
+  extends: .test-vulnerabilities
+  variables:
+    PASSBOLT_FLAVOUR: "ce"
     DOCKER_TAG: "rootless"
+    OPPOSITE_FLAVOUR: "pro"
+
+docker-pro:
+  extends: .test-vulnerabilities
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+    OPPOSITE_FLAVOUR: "ce"
+
+docker-pro-rootless:
+  extends: .test-vulnerabilities
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+    DOCKER_TAG: "rootless"
+    OPPOSITE_FLAVOUR: "ce"

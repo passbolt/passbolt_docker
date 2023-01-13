@@ -67,6 +67,16 @@ describe 'Dockerfile' do
       expect(file(wait_for)).to exist and be_executable
     end
   end
+  
+  describe 'entrypoint' do
+    it 'is installed' do
+      expect(file('/docker-entrypoint.sh')).to exist and be_executable
+      expect(file('/passbolt/entrypoint.sh')).to exist and be_owned_by(passbolt_owner)
+      expect(file('/passbolt/env.sh')).to exist and be_owned_by(passbolt_owner)
+      expect(file('/passbolt/entropy.sh')).to exist and be_owned_by(passbolt_owner)
+      expect(file('/passbolt/deprecated_paths.sh')).to exist and be_executable
+    end
+  end
 
   describe 'passbolt directory structure' do
     it 'must exist and be directories' do

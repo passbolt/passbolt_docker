@@ -1,0 +1,9 @@
+entrypoint-tests:
+  extends: .rules
+  stage: test
+  image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/debian-bullseye-11-slim:latest
+  before_script:
+    - apt update && apt install curl git -y
+    - curl -fsSL https://git.io/shellspec | sh -s -- --yes
+  script:
+    - /root/.local/bin/shellspec -s /bin/bash -f d

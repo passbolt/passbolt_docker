@@ -2,7 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.7.5...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.8.0...HEAD)
+
+## [3.8.0](https://github.com/passbolt/passbolt_docker/compare/v3.7.5...v3.8.0) - 2023-01-13
+
+### Added
+
+- Support for docker secrets
+- Shellspec for entrypoint testing
+
+### Changed
+
+- Entrypoint refactor in separated libraries for increased testability
 
 ## [3.7.5](https://github.com/passbolt/passbolt_docker/compare/v3.7.4...v3.7.5) - 2022-12-01
 
