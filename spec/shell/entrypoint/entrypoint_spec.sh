@@ -1,4 +1,4 @@
-Describe "secret_file_to_path function from rootless lib"
+Describe "secret_file_to_path function"
   # Mocks
   function mkdir() {
     echo > /dev/null
@@ -12,7 +12,7 @@ Describe "secret_file_to_path function from rootless lib"
     export PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE="/tmp/public.key"
   }
   Before "environment"
-  Include "./lib/entrypoint-rootless.sh"
+  Include "./entrypoint/passbolt/env.sh"
   It "should create the symlink to the secret file"
     
     When call secret_file_to_path 'PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE' '/etc/passbolt/gpg/serverkey.asc'
@@ -24,7 +24,7 @@ Describe "secret_file_to_path function from rootless lib"
     export PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE="NOT_A_FILE"
   }
   Before "environment"
-  Include "./lib/entrypoint-rootless.sh"
+  Include "./entrypoint/passbolt/env.sh"
   It "should NOT create the symlink to the secret file"
     When call secret_file_to_path 'PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE' '/etc/passbolt/gpg/serverkey.asc'
     The status should be success
@@ -32,7 +32,7 @@ Describe "secret_file_to_path function from rootless lib"
   End
 End
 
-Describe "env_from_file function from rootless lib"
+Describe "env_from_file function"
 
   function environment() {
     cat << EOF >> /tmp/passbolt-username
@@ -48,7 +48,7 @@ EOF
   }
   Before "environment"
   After "cleanup"
-  Include "./lib/entrypoint-rootless.sh"
+  Include "./entrypoint/passbolt/env.sh"
   It "should return an error because none of the variables are empty"
     When call env_from_file 'DATASOURCES_DEFAULT_USERNAME' 
     The status should be failure
@@ -65,7 +65,7 @@ EOF
   }
 
   Before "environment"
-  Include "./lib/entrypoint-rootless.sh"
+  Include "./entrypoint/passbolt/env.sh"
   After "cleanup"
   It "should set the right value on the DATASOURCES_DEFAULT_PASSWORD variable using the DATASOURCES_DEFAULT_PASSWORD_FILE variable"
     function check() {
@@ -83,7 +83,7 @@ EOF
     export DATASOURCES_DEFAULT_PASSWORD="password"
   }
   Before "environment"
-  Include "./lib/entrypoint-rootless.sh"
+  Include "./entrypoint/passbolt/env.sh"
   It "should not change the DATASOURCES_DEFAULT_PASSWORD if it is set"
     function check() {
       env_from_file 'DATASOURCES_DEFAULT_PASSWORD'
@@ -95,5 +95,5 @@ EOF
     When call check
     The status should be success
   End
-End
 
+End
