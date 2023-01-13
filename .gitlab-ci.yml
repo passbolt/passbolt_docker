@@ -19,3 +19,4 @@ include:
   - local: '/.gitlab-ci/Jobs/test_images.yaml'
   - local: '/.gitlab-ci/Jobs/publish.yaml'
   - local: '/.gitlab-ci/Jobs/docker-compose-file-upload.yml'
+  - local: '/.gitlab-ci/Jobs/entrypoint_test.yml'
