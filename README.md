@@ -210,3 +210,9 @@ This feature is only supported for:
 - PASSBOLT_SSL_SERVER_KEY_FILE that points to /etc/ssl/certs/certificate.key
 - PASSBOLT_GPG_SERVER_KEY_PRIVATE_FILE that points to /etc/passbolt/gpg/serverkey_private.asc
 - PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE that points to /etc/passbolt/gpg/serverkey.asc
+
+## Develop on Passbolt
+
+This repository also provides a way to quickly setup Passbolt for development purposes. This way should never be used in production, as this would be unsafe.
+You can use the docker-compose files under [docker-compose/](./docker-compose/) to spin up Passbolt for production using docker compose.
+If you would like to setup Passbolt for development purposes, please follow the steps described [here](./dev/README.md).

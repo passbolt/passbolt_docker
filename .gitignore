@@ -34,4 +34,6 @@ src
 .ruby-version
 
 .bundle
-docker-compose/.env
+
+# docker compose specific
+dev/.env

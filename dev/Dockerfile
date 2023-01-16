@@ -1,10 +1,10 @@
 FROM composer:2.4 AS composer
 
-FROM php:8-fpm
+FROM php:8.1-fpm
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
-ARG PASSBOLT_VERSION="3.2.1"
+ARG PASSBOLT_VERSION="3.8.3"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
 ARG PASSBOLT_CURL_HEADERS=""
 ARG PASSBOLT_FLAVOUR="ce"
