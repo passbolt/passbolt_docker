@@ -5,7 +5,7 @@ describe 'passbolt_api service' do
   before(:all) do
     if ENV['GITLAB_CI']
       @mysql_image = Docker::Image.create('fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest')
-    else 
+    else
       @mysql_image = Docker::Image.create('fromImage' => 'mariadb:latest')
     end
 
@@ -16,10 +16,10 @@ describe 'passbolt_api service' do
         'MYSQL_USER=passbolt',
         'MYSQL_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
       ],
-      "Healthcheck" => {
+      'Healthcheck' => {
         "Test": [
-          "CMD-SHELL",
-          "mysqladmin ping --silent"
+          'CMD-SHELL',
+          'mysqladmin ping --silent'
         ]
       },
       'Image' => @mysql_image.id)
@@ -29,7 +29,21 @@ describe 'passbolt_api service' do
       sleep 1
     end
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+    if ENV['GITLAB_CI']
+      Docker.authenticate!(
+        'username' => ENV['CI_REGISTRY_USER'].to_s,
+        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
+        'serveraddress' => 'https://registry.gitlab.com/'
+      )
+      if ENV['ROOTLESS']
+        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
+      else
+        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
+      end
+    else
+      @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+    end
+
     @container = Docker::Container.create(
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
@@ -54,7 +68,7 @@ describe 'passbolt_api service' do
   end
 
   let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
-  let(:uri)               { "/healthcheck/status.json" }
+  let(:uri)               { '/healthcheck/status.json' }
   let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
 
   describe 'php service' do
