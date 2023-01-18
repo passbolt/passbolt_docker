@@ -12,7 +12,20 @@ describe 'Dockerfile' do
       'PASSBOLT_GPG_KEYRING'         => '/var/lib/passbolt/.gnupg'
     }
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+    if ENV['GITLAB_CI']
+      Docker.authenticate!(
+        'username' => ENV['CI_REGISTRY_USER'].to_s,
+        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
+        'serveraddress' => 'https://registry.gitlab.com/'
+      )
+      if ENV['ROOTLESS']
+        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
+      else
+        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
+      end
+    else
+      @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+    end
     set :docker_image, @image.id
     set :docker_container_create_options, { 'Cmd' => '/bin/sh' }
   end
@@ -67,14 +80,18 @@ describe 'Dockerfile' do
       expect(file(wait_for)).to exist and be_executable
     end
   end
-  
+
   describe 'entrypoint' do
     it 'is installed' do
-      expect(file('/docker-entrypoint.sh')).to exist and be_executable
-      expect(file('/passbolt/entrypoint.sh')).to exist and be_owned_by(passbolt_owner)
-      expect(file('/passbolt/env.sh')).to exist and be_owned_by(passbolt_owner)
-      expect(file('/passbolt/entropy.sh')).to exist and be_owned_by(passbolt_owner)
-      expect(file('/passbolt/deprecated_paths.sh')).to exist and be_executable
+      expect(file('/docker-entrypoint.sh')).to exist and be_executable.by(passbolt_owner)
+      if ENV['ROOTLESS'] == 'true'
+        expect(file('/passbolt/entrypoint-rootless.sh')).to exist and be_readable.by(passbolt_owner)
+      else
+        expect(file('/passbolt/entrypoint.sh')).to exist and be_readable.by(passbolt_owner)
+      end
+      expect(file('/passbolt/env.sh')).to exist and be_readable.by(passbolt_owner)
+      expect(file('/passbolt/entropy.sh')).to exist and be_readable.by(passbolt_owner)
+      expect(file('/passbolt/deprecated_paths.sh')).to exist and be_readable.by(passbolt_owner)
     end
   end
 
@@ -137,7 +154,7 @@ describe 'Dockerfile' do
   describe 'ports exposed' do
     it 'exposes port' do
       exposed_ports.each do |port|
-        expect(@image.json['ContainerConfig']['ExposedPorts']).to include("#{port}/tcp")
+        expect(@image.json['Config']['ExposedPorts']).to include("#{port}/tcp")
       end
     end
   end

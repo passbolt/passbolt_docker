@@ -36,7 +36,7 @@ if ENV['GITLAB_CI']
   )
 end
 
-if ENV['ROOTLESS'] == true
+if ENV['ROOTLESS'] == 'true'
   $cron_binary = '/usr/local/bin/supercronic'
   $dockerfile = 'debian/Dockerfile.rootless'
   $http_port = '8080'
