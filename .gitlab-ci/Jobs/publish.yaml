@@ -74,6 +74,6 @@ publish-pro-non-root:
     - *docker-authentication
     - *publish-command
   rules:
-    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_FLAVOUR == "pro"'
+    - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
 
