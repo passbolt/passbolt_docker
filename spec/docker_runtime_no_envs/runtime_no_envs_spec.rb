@@ -5,7 +5,7 @@ describe 'passbolt_api service' do
   before(:all) do
     if ENV['GITLAB_CI']
       @mysql_image = Docker::Image.create('fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest')
-    else 
+    else
       @mysql_image = Docker::Image.create('fromImage' => 'mariadb:latest')
     end
     @mysql = Docker::Container.create(
@@ -28,7 +28,20 @@ describe 'passbolt_api service' do
       sleep 1
     end
 
-    @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+    if ENV['GITLAB_CI']
+      Docker.authenticate!(
+        'username' => ENV['CI_REGISTRY_USER'].to_s,
+        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
+        'serveraddress' => 'https://registry.gitlab.com/'
+      )
+      if ENV['ROOTLESS']
+        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
+      else
+        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
+      end
+    else
+      @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+    end
 
     @container = Docker::Container.create(
       'Env' => [
