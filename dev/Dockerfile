@@ -15,11 +15,13 @@ ARG PHP_EXTENSIONS="gd \
       pdo_mysql \
       opcache \
       xsl \
-      ldap"
+      ldap\
+      xdebug"
 
 ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
       redis \
-      mcrypt"
+      mcrypt\
+      xdebug"
 
 ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libpng-dev \
@@ -27,18 +29,19 @@ ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libicu-dev \
       libxslt1-dev \
       libmcrypt-dev \
+      libldap2-dev \
       libzip-dev \
-      zip \
       unzip \
-      libldap2-dev"
+      zip"
 
 ARG PASSBOLT_BASE_PACKAGES="nginx \
-         gnupg \
-         libgpgme11 \
-         libmcrypt4 \
-         mariadb-client \
-         supervisor \
-         cron"
+      git \
+      gnupg \
+      libgpgme11 \
+      libmcrypt4 \
+      mariadb-client \
+      supervisor \
+      cron"
 
 ENV PECL_BASE_URL="https://pecl.php.net/get"
 ENV PHP_EXT_DIR="/usr/src/php/ext"
@@ -78,11 +81,15 @@ RUN apt-get update \
     && mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
     && echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> /etc/cron.d/passbolt_email \
     && crontab /etc/cron.d/passbolt_email \
-    && ln -s $(which php-fpm) $(which php-fpm)7.3
+    && ln -s $(which php-fpm) $(which php-fpm)7.3 \
+    && touch /var/log/xdebug.log \
+    && chown www-data:www-data /var/log/xdebug.log \
+    && chmod 664 /var/log/xdebug.log
 
 COPY conf/passbolt.conf /etc/nginx/conf.d/default.conf
 COPY conf/supervisor/*.conf /etc/supervisor/conf.d/
 COPY conf/supervisor/php-dev.conf /etc/supervisor/conf.d/php.conf
+COPY conf/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 COPY dev/bin/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
