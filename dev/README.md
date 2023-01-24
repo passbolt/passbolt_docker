@@ -68,6 +68,28 @@ docker-compose -f dev/docker-compose-ce.yaml exec passbolt /bin/bash -c \
 
 8. Copy-paste the output in the browser and you are ready!
 
+# Setup LDAP
+
+1. Add an entry for `ldap.local` inside your /etc/hosts file:
+```
+127.0.0.1   ldap.local
+```
+2. Run docker compose with the `--profile ldap` parameter
+3. Visit http://localhost:8080/ using your web browser, and login with the following credentials:
+  - Login DN:  `cn=admin,dc=example,dc=org`
+  - Password:  `admin`
+4. Click the Import button and upload the [LDAP init file](./ldap/init.ldiff)
+5. Navigate to https://passbolt.local, login and put the following configuration under Administration > User Directory:
+  - Directory Type:  `Open Ldap`
+  - Server url:      `ldap://openldap:389`
+  - Username:        `cn=admin,dc=example,dc=org`
+  - Password:        `admin`
+  - Domain:          `ldap.local`
+  - Base DN:         `dc=example,dc=org`
+6. Click the button to test the configuration, ensure the dummy data has been processed and click the button to save the settings
+
+**Note:** If you get an "Internal Server Error" while testing the configurations and you are using the php debug mode, set the debug flag to false (e.g. in passbolt.php) and try again.
+
 # Setup xDebug
 
 In order to setup xDebug with an IDE or code editor, please use dev/Dockerfile or docker-compose/docker-compose-dev.yaml to spin up a development stack, which already contains xDebug configured to run within the Passbolt server.

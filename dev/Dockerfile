@@ -20,7 +20,6 @@ ARG PHP_EXTENSIONS="gd \
 
 ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
       redis \
-      mcrypt\
       xdebug"
 
 ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
@@ -31,6 +30,7 @@ ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libmcrypt-dev \
       libldap2-dev \
       libzip-dev \
+      libldap2-dev \
       unzip \
       zip"
 
