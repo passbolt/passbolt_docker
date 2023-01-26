@@ -64,9 +64,18 @@ function install_command() {
   /usr/share/php/passbolt/bin/cake passbolt install --no-admin
 }
 
+function clear_cake_cache_engines() {
+  echo "Clearing cake caches"
+  for engine in "${@}";
+  do
+    /usr/share/php/passbolt/bin/cake cache clear "_cake_${engine}_"
+  done
+}
+
 function migrate_command() {
   echo "Running migrations"
-  /usr/share/php/passbolt/bin/cake passbolt migrate
+  /usr/share/php/passbolt/bin/cake passbolt migrate --no-clear-cache
+  clear_cake_cache_engines model core
 }
 
 function jwt_keys_creation() {

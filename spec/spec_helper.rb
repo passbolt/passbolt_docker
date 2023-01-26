@@ -7,6 +7,7 @@ ROOT_DOCKERFILES = File.expand_path('..', __dir__)
 FIXTURES_PATH = File.expand_path('fixtures', File.dirname(__FILE__))
 LOCAL_SUBSCRIPTION_KEY_PATH = File.expand_path('../subscription_key.txt', __dir__)
 SUBSCRIPTION_KEY_PATH = '/etc/passbolt/subscription_key.txt'
+PASSBOLT_CONFIG_PATH = '/etc/passbolt'
 
 $cron_binary = '/usr/sbin/cron'
 $dockerfile = 'debian/Dockerfile'
