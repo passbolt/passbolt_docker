@@ -48,7 +48,7 @@ describe 'Dockerfile' do
     'posix', 'xml', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
     ] }
   let(:wait_for) { '/usr/bin/wait-for.sh' }
-  jwt_conf = '/etc/passbolt/jwt'
+  jwt_conf = "#{PASSBOLT_CONFIG_PATH + '/jwt'}"
   let(:jwt_key_pair)   { [ "#{jwt_conf}/jwt.key", "#{jwt_conf}/jwt.pem" ] }
 
   describe 'passbolt required php extensions' do
