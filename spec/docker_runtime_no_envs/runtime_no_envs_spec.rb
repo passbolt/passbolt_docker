@@ -34,7 +34,7 @@ describe 'passbolt_api service' do
         'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
         'serveraddress' => 'https://registry.gitlab.com/'
       )
-      if ENV['ROOTLESS']
+      if ENV['ROOTLESS'] == 'true'
         @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
       else
         @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
