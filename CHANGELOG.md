@@ -15,6 +15,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 - Development only: Configuration for xdebug to ease working with IDES
 
+### Fixed
+
+- Ports for rootless version pointing to 4433 on docker-compose files
+
 ## [3.8.1](https://github.com/passbolt/passbolt_docker/compare/v3.8.0...v3.8.1) - 2023-01-18
 
 ### Changed
