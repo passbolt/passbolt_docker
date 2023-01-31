@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.1...HEAD)
+
+## [3.9.1](https://github.com/passbolt/passbolt_docker/compare/v3.9.0...v3.9.1) - 2023-01-31
+
+### Fixed
+- Github actions on new path for development composer files
 
 ## [3.9.0](https://github.com/passbolt/passbolt_docker/compare/v3.8.1...v3.9.0) - 2023-01-31
 
