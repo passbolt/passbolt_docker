@@ -34,7 +34,7 @@ describe 'passbolt_api service' do
         'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
         'serveraddress' => 'https://registry.gitlab.com/'
       )
-      if ENV['ROOTLESS']
+      if ENV['ROOTLESS'] == 'true'
         @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
       else
         @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
@@ -48,9 +48,9 @@ describe 'passbolt_api service' do
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
       ],
       'Binds' => $binds.append(
-        "#{FIXTURES_PATH + '/passbolt.php'}:/etc/passbolt/passbolt.php",
-        "#{FIXTURES_PATH + '/public-test.key'}:/etc/passbolt/serverkey.key",
-        "#{FIXTURES_PATH + '/private-test.key'}:/etc/passbolt/serverkey_private.key",
+        "#{FIXTURES_PATH + '/passbolt.php'}:#{PASSBOLT_CONFIG_PATH + '/passbolt.php'}",
+        "#{FIXTURES_PATH + '/public-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure.key'}",
+        "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}",
       ),
       'Image' => @image.id)
 

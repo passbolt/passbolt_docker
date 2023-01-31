@@ -1,9 +1,9 @@
 version: '3.9'
-
 services:
+
   db:
     image: mariadb:10.3
-    container_name: passbolt-db-dev
+    container_name: db
     env_file:
       - env/mysql.env
     volumes:
@@ -18,10 +18,12 @@ services:
       dockerfile: dev/Dockerfile
       args:
         PECL_PASSBOLT_EXTENSIONS: "redis gnupg xdebug"
-    container_name: passbolt-app-dev
+    container_name: passbolt
     depends_on:
       - db
       - mailhog
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - env/passbolt.env
     volumes:
@@ -36,9 +38,10 @@ services:
   ####################
   # Dev tools starts #
   ####################
+
   adminer:
     image: adminer
-    container_name: passbolt-adminer-dev
+    container_name: adminer
     restart: always
     ports:
       - "9501:8080"
@@ -47,7 +50,7 @@ services:
 
   mailhog:
     image: mailhog/mailhog:latest
-    container_name: passbolt-mailhog-dev
+    container_name: mailhog
     restart: always
     # Mailhog logs are noisy so not logging it
     logging:

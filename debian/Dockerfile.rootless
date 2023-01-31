@@ -75,7 +75,10 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && touch /var/www/.profile \
     && chown www-data:www-data /var/www/.profile \
     && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG \
-    && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf
+    && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf \
+    && touch /etc/environment \
+    && chown www-data:www-data /etc/environment \
+    && chmod 600 /etc/environment 
 
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf

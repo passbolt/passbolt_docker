@@ -18,7 +18,7 @@ describe 'Dockerfile' do
         'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
         'serveraddress' => 'https://registry.gitlab.com/'
       )
-      if ENV['ROOTLESS']
+      if ENV['ROOTLESS'] == 'true'
         @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
       else
         @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
@@ -48,7 +48,7 @@ describe 'Dockerfile' do
     'posix', 'xml', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
     ] }
   let(:wait_for) { '/usr/bin/wait-for.sh' }
-  jwt_conf = '/etc/passbolt/jwt'
+  jwt_conf = "#{PASSBOLT_CONFIG_PATH + '/jwt'}"
   let(:jwt_key_pair)   { [ "#{jwt_conf}/jwt.key", "#{jwt_conf}/jwt.pem" ] }
 
   describe 'passbolt required php extensions' do
@@ -109,11 +109,11 @@ describe 'Dockerfile' do
     end
 
     it 'must have the correct permissions on tmp' do
-      expect(file(passbolt_tmp)).to be_mode('755')
+      expect(file(passbolt_tmp)).to be_mode 755
     end
 
     it 'must have the correct permissions on img' do
-      expect(file(passbolt_image)).to be_mode('755')
+      expect(file(passbolt_image)).to be_mode 755
     end
   end
 
@@ -161,7 +161,7 @@ describe 'Dockerfile' do
 
   describe file(jwt_conf) do
     it { should be_a_directory }
-    it { should be_a_mode('770') }
+    it { should be_mode 770  }
     it { should be_owned_by($root_user) }
     it { should be_grouped_into($config_group) }
   end
@@ -173,5 +173,22 @@ describe 'Dockerfile' do
     it { should_not exist }
   end
 
+  describe '/etc/environment' do
+    it 'exists and has the correct permissions' do
+      expect(file('/etc/environment')).to exist
+      if ENV['ROOTLESS'] == 'true'
+        expect(file('/etc/environment')).to be_owned_by(passbolt_owner)
+        expect(file('/etc/environment')).to be_mode 600 
+      else
+        expect(file('/etc/environment')).to be_owned_by($root_user)
+        expect(file('/etc/environment')).to be_mode 644 
+      end
+    end
+  end
 
+  describe 'cron table' do
+    it 'exists and executes the email job' do
+      expect(cron.table).to match(/PASSBOLT_BASE_DIR\/bin\/cron/)
+    end
+  end
 end
