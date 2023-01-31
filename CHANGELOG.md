@@ -2,7 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.8.1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.0...HEAD)
+
+## [3.9.0](https://github.com/passbolt/passbolt_docker/compare/v3.8.1...v3.9.0) - 2023-01-31
+
+### Changed
+
+- Now environment is dumped during entrypoint script running instead of during cron runs
+- Migrations are executed without clearing the cache by default and only core and model caches are cleared.
+
+### Added
+
+- Development only: Configuration for xdebug to ease working with IDES
+
+### Fixed
+
+- Ports for rootless version pointing to 4433 on docker-compose files
 
 ## [3.8.1](https://github.com/passbolt/passbolt_docker/compare/v3.8.0...v3.8.1) - 2023-01-18
 
