@@ -13,7 +13,7 @@ jobs:
           cd docker-compose
           sha512sum docker-compose-ce.yaml > docker-compose-ce-SHA512SUM.txt &&
           sha512sum docker-compose-pro.yaml > docker-compose-pro-SHA512SUM.txt &&
-          sha512sum docker-compose-dev.yaml > docker-compose-dev-SHA512SUM.txt &&
+          sha512sum ../dev/docker-compose-dev.yaml > docker-compose-dev-SHA512SUM.txt &&
           sha512sum docker-compose-ce-postgresql.yaml > docker-compose-ce-postgresql-SHA512SUM.txt
       - uses: ncipollo/release-action@v1
         with:
