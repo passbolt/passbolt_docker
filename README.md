@@ -180,14 +180,6 @@ $ export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME 
 $ bin/cake passbolt healthcheck
 ```
 
-## CI passbolt Docker images building
-
-In order to pull custom images from the Gitlab registry, you need to set this variables and assuming you are not using a self-hosted gitlab instance:
-
-REGISTRY_USERNAME=<username>
-REGISTRY_PASSWORD=<password>
-REGISTRY_EMAIL=<email>
-
 ## Docker secrets support
 
 As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
