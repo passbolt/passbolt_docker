@@ -1,13 +1,15 @@
 require 'spec_helper'
 
 describe 'passbolt_api service' do
-
   before(:all) do
-    if ENV['GITLAB_CI']
-      @mysql_image = Docker::Image.create('fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest')
-    else
-      @mysql_image = Docker::Image.create('fromImage' => 'mariadb:latest')
-    end
+    @mysql_image =
+      if ENV['GITLAB_CI']
+        Docker::Image.create(
+          'fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest'
+        )
+      else
+        Docker::Image.create('fromImage' => 'mariadb:latest')
+      end
 
     @mysql = Docker::Container.create(
       'Env' => [
@@ -22,12 +24,12 @@ describe 'passbolt_api service' do
           'mysqladmin ping --silent'
         ]
       },
-      'Image' => @mysql_image.id)
+      'Image' => @mysql_image.id
+    )
+
     @mysql.start
 
-    while @mysql.json['State']['Health']['Status'] != 'healthy'
-      sleep 1
-    end
+    sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
     if ENV['GITLAB_CI']
       Docker.authenticate!(
@@ -35,13 +37,24 @@ describe 'passbolt_api service' do
         'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
         'serveraddress' => 'https://registry.gitlab.com/'
       )
-      if ENV['ROOTLESS']
-        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
-      else
-        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
-      end
+      @image =
+        if ENV['ROOTLESS'] == 'true'
+          Docker::Image.create(
+            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
+          )
+        else
+          Docker::Image.create(
+            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
+          )
+        end
     else
-      @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+      @image = Docker::Image.build_from_dir(
+        ROOT_DOCKERFILES,
+        {
+          'dockerfile' => $dockerfile,
+          'buildargs' => JSON.generate($buildargs)
+        }
+      )
     end
 
     @container = Docker::Container.create(
@@ -55,6 +68,7 @@ describe 'passbolt_api service' do
       'Image' => @image.id,
       'Binds' => $binds
     )
+
     @container.start
     @container.logs(stdout: true)
 
@@ -71,15 +85,56 @@ describe 'passbolt_api service' do
   let(:uri)               { '/healthcheck/status.json' }
   let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
 
+  let(:rootless_env_setup) do
+    # The sed command needs to create a temporary file on the same directory as the destination file (/etc/cron.d).
+    # So when running this tests on the rootless image we have to move the crontab file to tmp, execute the sed on it and copy it back to /etc/cron.d.
+    @container.exec(['cp', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server", '/tmp/passbolt-cron'])
+    @container.exec(['cp', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server", '/tmp/passbolt-cron-temporary'])
+    @container.exec(
+      [
+        'sed',
+        '-i',
+        "s\,$PASSBOLT_BASE_DIR/bin/cron.*\,/bin/bash -c \"\\.\\ /etc/environment\\ \\&\\&\\ env > /tmp/cron-test\"\,",
+        '/tmp/passbolt-cron-temporary'
+      ]
+    )
+    @container.exec(['cp', '/tmp/passbolt-cron-temporary', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server"])
+    # force reload supercronic cron file
+    @container.exec(['supervisorctl', 'restart', 'cron'])
+
+    # wait for cron
+    sleep 61
+  end
+
+  let(:cron_env_teardown) do
+    @container.exec(['mv', '/tmp/passbolt-cron', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server"])
+    @container.exec(['rm', '/tmp/passbolt-cron-temporary'])
+  end
+
+  let(:root_env_setup) do
+    @container.exec(['cp', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server", '/tmp/passbolt-cron'])
+    @container.exec(
+      [
+        'sed',
+        '-i',
+        "s\,\\.\\ /etc/environment\\ \\&\\&\\ $PASSBOLT_BASE_DIR/bin/cron\,\\.\\ /etc/environment\\ \\&\\&\\ env > /tmp/cron-test\,",
+        "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server"
+      ]
+    )
+    @container.exec(
+      [
+        'cp',
+        '/tmp/passbolt-cron-temporary', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server"
+      ]
+    )
+
+    # wait for cron
+    sleep 61
+  end
+
   describe 'php service' do
     it 'is running supervised' do
       expect(service('php-fpm')).to be_running.under('supervisor')
-    end
-  end
-
-  describe 'email cron' do
-    it 'is running supervised' do
-      expect(service('cron')).to be_running.under('supervisor')
     end
   end
 
@@ -121,4 +176,37 @@ describe 'passbolt_api service' do
     end
   end
 
+  describe 'cron service' do
+    context 'cron process' do
+      it 'is running supervised' do
+        expect(service('cron')).to be_running.under('supervisor')
+      end
+    end
+
+    # In order to be able to run this test on the rootess image
+    # you will have to add the following to the Dockerfile (debian/Dockerfile.rootless)
+    # && chown root:www-data /etc/cron.d/$PASSBOLT_PKG \
+    # && chmod 664 /etc/cron.d/$PASSBOLT_PKG
+    # And change the xit to it keyword on the test
+
+    context 'cron rootless environment' do
+      before { skip('Needs chown and chmod lines on the debian/Dockerfile.rootless to be able to run.') }
+      before(:each) { rootless_env_setup }
+      after(:each) { cron_env_teardown }
+
+      it 'is contains the correct env' do
+        expect(file('/tmp/cron-test').content).to match(/PASSBOLT_GPG_SERVER_KEY_FINGERPRINT/)
+      end
+    end
+
+    context 'cron root environment' do
+      before { skip('Rootless environment does not need this test') if ENV['ROOTLESS'] == 'true' }
+      before(:each) { root_env_setup }
+      after(:each) { cron_env_teardown }
+
+      it 'is contains the correct env' do
+        expect(file('/tmp/cron-test').content).to match(/PASSBOLT_GPG_SERVER_KEY_FINGERPRINT/)
+      end
+    end
+  end
 end

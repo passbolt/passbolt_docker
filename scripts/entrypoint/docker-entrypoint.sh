@@ -39,4 +39,6 @@ install
 
 echo -e "$deprecation_message"
 
+declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /etc/environment
+
 exec /usr/bin/supervisord -n
