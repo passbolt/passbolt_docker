@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.1...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.2...HEAD)
+
+## [3.9.2](https://github.com/passbolt/passbolt_docker/compare/v3.9.1...v3.9.2) - 2023-02-09
+
+### Fixed
+- Fix trivy entrypoint on vulnerability test jobs
 
 ## [3.9.1](https://github.com/passbolt/passbolt_docker/compare/v3.9.0...v3.9.1) - 2023-01-31
 
