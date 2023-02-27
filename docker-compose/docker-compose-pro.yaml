@@ -39,8 +39,8 @@ services:
       - 80:80
       - 443:443
     #Alternatively for non-root images:
-    # - 8080:80
-    # - 4433:433
+    # - 80:8080
+    # - 443:4433
 
 volumes:
   database_volume:
