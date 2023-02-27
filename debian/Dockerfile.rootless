@@ -3,6 +3,8 @@ FROM debian:bullseye-slim
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
 ARG SUPERCRONIC_ARCH=amd64
+ARG SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
+
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
 ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
@@ -15,8 +17,7 @@ ENV PHP_VERSION=7.4
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV SUPERCRONIC_VERSION=0.1.12
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
-    SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH} \
-    SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
+    SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH}
 ENV PASSBOLT_FLAVOUR="${PASSBOLT_FLAVOUR}"
 
 RUN apt-get update \
