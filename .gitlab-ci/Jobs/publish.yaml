@@ -18,7 +18,7 @@
     --dockerfile /dev/stdin \
     --destination "$IMAGE_NAME:latest-$PASSBOLT_IMAGE_FLAVOUR" \
     --destination "$IMAGE_NAME:$PASSBOLT_VERSION" \
-    --destination "$IMAGE_NAME:$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR" 
+    --destination "$IMAGE_NAME:$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR"
 
 .publish-command-latest: &publish-command-latest |
   echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
@@ -40,6 +40,8 @@
 
 publish-ce:
   extends: .publish
+  variables:
+    PASSBOLT_FLAVOUR: "ce"
   script:
     - *docker-authentication
     - *publish-command
@@ -48,6 +50,7 @@ publish-ce:
 publish-ce-non-root:
   extends: .publish
   variables:
+    PASSBOLT_FLAVOUR: "ce"
     DOCKER_TAG: "rootless"
     PASSBOLT_IMAGE_FLAVOUR: "ce-non-root"
   script:
@@ -57,6 +60,7 @@ publish-ce-non-root:
 publish-pro:
   extends: .publish
   variables:
+    PASSBOLT_FLAVOUR: "pro"
     PASSBOLT_IMAGE_FLAVOUR: "pro"
   script:
     - *docker-authentication
@@ -69,6 +73,7 @@ publish-pro-non-root:
   extends: .publish
   variables:
     DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "pro"
     PASSBOLT_IMAGE_FLAVOUR: "pro-non-root"
   script:
     - *docker-authentication
@@ -76,4 +81,3 @@ publish-pro-non-root:
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
-
