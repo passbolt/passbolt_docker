@@ -3,6 +3,8 @@ FROM debian:bullseye-slim
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
 ARG SUPERCRONIC_ARCH=amd64
+ARG SUPERCRONIC_SHA1SUM=2319da694833c7a147976b8e5f337cd83397d6be
+
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
 ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
@@ -13,24 +15,23 @@ ARG PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian"
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PHP_VERSION=7.4
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
-ENV SUPERCRONIC_VERSION=0.1.12
+ENV SUPERCRONIC_VERSION=0.2.2
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
-    SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH} \
-    SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
+    SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH}
 ENV PASSBOLT_FLAVOUR="${PASSBOLT_FLAVOUR}"
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
-      ca-certificates \
-      gnupg \
+    ca-certificates \
+    gnupg \
     && apt-key adv --keyserver $PASSBOLT_SERVER_KEY --recv-keys $PASSBOLT_PKG_KEY \
     && echo "deb $PASSBOLT_REPO_URL $PASSBOLT_DISTRO $PASSBOLT_COMPONENT" > /etc/apt/sources.list.d/passbolt.list \
     && apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
-      nginx \
-      $PASSBOLT_PKG \
-      supervisor \
-      curl \
+    nginx \
+    $PASSBOLT_PKG \
+    supervisor \
+    curl \
     && rm -f /etc/passbolt/jwt/* \
     && curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM} ${SUPERCRONIC}" | sha1sum -c - \
@@ -57,7 +58,7 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && sed -i "s,unix:/run/php/php$PHP_VERSION-fpm.sock,127.0.0.1:9000," /etc/nginx/sites-enabled/nginx-passbolt.conf \
     && sed -i "s,pid = /run/php/php$PHP_VERSION-fpm.pid,pid = /tmp/php$PHP_VERSION-fpm.pid," /etc/php/$PHP_VERSION/fpm/php-fpm.conf \
     && sed -i 's,/var/run/supervisor.sock,/tmp/supervisor.sock,' /etc/supervisor/supervisord.conf \
-# nginx user must own the cache and etc directory to write cache and tweak the nginx config
+    # nginx user must own the cache and etc directory to write cache and tweak the nginx config
     #&& chown -R www-data:0 /var/cache/nginx \
     #&& chmod -R g+w /var/cache/nginx \
     && chown -R www-data:0 /etc/nginx \
@@ -78,7 +79,7 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf \
     && touch /etc/environment \
     && chown www-data:www-data /etc/environment \
-    && chmod 600 /etc/environment 
+    && chmod 600 /etc/environment
 
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf

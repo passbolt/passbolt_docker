@@ -16,8 +16,6 @@ services:
     build:
       context: ..
       dockerfile: dev/Dockerfile
-      args:
-        PECL_PASSBOLT_EXTENSIONS: "redis gnupg xdebug"
     container_name: passbolt
     depends_on:
       - db
@@ -58,6 +56,55 @@ services:
     ports:
       - "1025:1025" # SMTP server
       - "9502:8025" # Web UI
+
+  openldap:
+    image: osixia/openldap:latest
+    container_name: openldap
+    command: --copy-service # needed to copy init file
+    profiles:
+      - ldap
+    environment:
+      LDAP_LOG_LEVEL: "256"
+      LDAP_ORGANISATION: "Example Inc."
+      LDAP_DOMAIN: "example.org"
+      LDAP_BASE_DN: ""
+      LDAP_ADMIN_PASSWORD: "admin"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_READONLY_USER: "false"
+      LDAP_RFC2307BIS_SCHEMA: "false"
+      LDAP_BACKEND: "mdb"
+      LDAP_TLS: "true"
+      LDAP_TLS_CRT_FILENAME: "ldap.crt"
+      LDAP_TLS_KEY_FILENAME: "ldap.key"
+      LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+      LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+      LDAP_TLS_ENFORCE: "false"
+      LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
+      LDAP_TLS_VERIFY_CLIENT: "demand"
+      LDAP_REPLICATION: "false"
+      KEEP_EXISTING_CONFIG: "false"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+      LDAP_SSL_HELPER_PREFIX: "ldap"
+    tty: true
+    stdin_open: true
+    ports:
+      - "389:389"
+      - "636:636"
+    domainname: "ldap.local"
+    hostname: "ldap-server"
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:latest
+    container_name: phpldapadmin
+    profiles:
+      - ldap
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_HTTPS: "false"
+    ports:
+      - "8080:80"
+    depends_on:
+      - openldap
 
 volumes:
   database_volume:
