@@ -2,7 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.2...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.3...HEAD)
+
+## [3.9.3](https://github.com/passbolt/passbolt_docker/compare/v3.9.2...v3.9.3) - 2023-03-17
+
+### Added
+- Allow SHA1 overwrite from build_args [#191](https://github.com/passbolt/passbolt_docker/pull/191)
+- Bumped supercronic to latest version on rootless images 0.2.2
+- Updated dev container to work with ldap
+
+### Fixed
+- Docker compose ports [#180](https://github.com/passbolt/passbolt_docker/pull/180)
 
 ## [3.9.2](https://github.com/passbolt/passbolt_docker/compare/v3.9.1...v3.9.2) - 2023-02-09
 
