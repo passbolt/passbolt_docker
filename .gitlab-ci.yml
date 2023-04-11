@@ -9,6 +9,7 @@ stages:
   - build
   - test-vulnerabilities
   - test
+  - merge-manifests
   - publish
   - upload-assets
 
@@ -21,3 +22,4 @@ include:
   - local: '/.gitlab-ci/Jobs/docker-compose-file-upload.yml'
   - local: '/.gitlab-ci/Jobs/entrypoint_test.yml'
   - local: '/.gitlab-ci/Jobs/test_compose_files.yml'
+  - local: '/.gitlab-ci/Jobs/merge-manifests.yml'

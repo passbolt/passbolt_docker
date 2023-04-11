@@ -19,7 +19,10 @@
       /kaniko/executor --context $CI_PROJECT_DIR \
         --build-arg PASSBOLT_FLAVOUR="$PASSBOLT_FLAVOUR" \
         --build-arg PASSBOLT_COMPONENT="$COMPONENT" \
+        --build-arg SUPERCRONIC_ARCH="${SUPERCRONIC_ARCH}" \
+        --build-arg SUPERCRONIC_SHA1SUM="${SUPERCRONIC_SHA1SUM}" \
         --dockerfile $CI_PROJECT_DIR/$DOCKERFILE_PATH \
+        --custom-platform $PLATFORM \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-$(date +%s) \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest
 
@@ -37,26 +40,170 @@
     PASSBOLT_FLAVOUR: "pro"
     OPPOSITE_FLAVOUR: "ce"
 
-build-stable-docker:
+build-ce-stable-docker:
   extends: .stable-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
+    SUPERCRONIC_ARCH: amd64
+    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    PLATFORM: "linux/amd64"
 
-build-stable-rootless:
+build-ce-stable-rootless:
   extends: .stable-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
+    SUPERCRONIC_ARCH: amd64
+    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    PLATFORM: "linux/amd64"
 
 build-pro-stable-docker:
   extends: .stable-build-pro
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
+    SUPERCRONIC_ARCH: amd64
+    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    PLATFORM: "linux/amd64"
 
 build-pro-stable-rootless:
   extends: .stable-build-pro
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
+    SUPERCRONIC_ARCH: amd64
+    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    PLATFORM: "linux/amd64"
+
+build-ce-stable-docker-arm64-v8:
+  tags: 
+    - arm
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root-arm64-v8"
+    PLATFORM: "linux/arm64/v8"
+    SUPERCRONIC_ARCH: arm64 
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+
+build-ce-stable-rootless-arm64-v8:
+  tags: 
+    - arm
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless-arm64-v8"
+    PLATFORM: "linux/arm64/v8"
+    SUPERCRONIC_ARCH: arm64 
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+
+build-pro-stable-docker-arm64-v8:
+  tags: 
+    - arm
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root-arm64-v8"
+    PLATFORM: "linux/arm64/v8"
+    SUPERCRONIC_ARCH: arm64 
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+
+build-pro-stable-rootless-arm64-v8:
+  tags: 
+    - arm
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless-arm64-v8"
+    PLATFORM: "linux/arm64/v8"
+    SUPERCRONIC_ARCH: arm64 
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+
+build-ce-stable-docker-arm-v5:
+  tags: 
+    - arm
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root-arm-v5"
+    PLATFORM: "linux/arm/v5"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+
+build-ce-stable-rootless-arm-v5:
+  tags: 
+    - arm
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless-arm-v5"
+    PLATFORM: "linux/arm/v5"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+
+build-pro-stable-docker-arm-v5:
+  tags: 
+    - arm
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root-arm-v5"
+    PLATFORM: "linux/arm/v5"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+
+build-pro-stable-rootless-arm-v5:
+  tags: 
+    - arm
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless-arm-v5"
+    PLATFORM: "linux/arm/v5"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+
+build-ce-stable-docker-arm-v7:
+  tags: 
+    - arm
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root-arm-v7"
+    PLATFORM: "linux/arm/v7"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+
+build-ce-stable-rootless-arm-v7:
+  tags: 
+    - arm
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless-arm-v7"
+    PLATFORM: "linux/arm/v7"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+
+build-pro-stable-docker-arm-v7:
+  tags: 
+    - arm
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile"
+    DOCKER_TAG: "root-arm-v7"
+    PLATFORM: "linux/arm/v7"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+
+build-pro-stable-rootless-arm-v7:
+  tags: 
+    - arm
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.rootless"
+    DOCKER_TAG: "rootless-arm-v7"
+    PLATFORM: "linux/arm/v7"
+    SUPERCRONIC_ARCH: arm
+    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9

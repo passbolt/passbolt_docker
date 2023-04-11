@@ -1,0 +1,68 @@
+.manifest-yaml: &manifest-yaml |
+  cat << EOF > manifests.yaml
+  image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-multiarch-latest
+  manifests:
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
+      platform:
+        architecture: amd64
+        os: linux
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm64-v8-latest
+      platform:
+        architecture: arm64
+        os: linux
+        variant: v8
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm-v7-latest
+      platform:
+        architecture: arm
+        os: linux
+        variant: v7
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm-v5-latest
+      platform:
+        architecture: arm
+        os: linux
+        variant: v5
+  EOF
+
+.merge-manifests:
+  image: debian:bullseye-slim
+  extends: .rules
+  stage: merge-manifests
+  variables:
+    MANIFEST_TOOL_VERSION: "2.0.8"
+  script:
+    - mkdir -p ~/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > ~/.docker/config.json
+    - apt update && apt install curl -y
+    - curl -fsSLO https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz > manifest.tar.gz
+    - curl -fsSLO https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz.sha256sum
+    - sha256sum -c binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz.sha256sum
+    - tar xvf binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz
+    - *manifest-yaml
+    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
+  rules: 
+    - if: "$CI_COMMIT_BRANCH"
+      when: on_success
+
+merge-manifests-ce:
+  extends: .merge-manifests
+  variables:
+    PASSBOLT_FLAVOUR: "ce"
+    DOCKER_TAG: "root"
+
+merge-manifests-ce-non-root:
+  extends: .merge-manifests
+  variables:
+    DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "ce"
+
+merge-manifests-pro:
+  extends: .merge-manifests
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+    DOCKER_TAG: "root"
+
+merge-manifests-pro-non-root:
+  extends: .merge-manifests
+  variables:
+    DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "pro"
