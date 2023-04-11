@@ -14,14 +14,14 @@
   EOF
 
 .publish-command: &publish-command |
-  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
+  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-multiarch-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
     --dockerfile /dev/stdin \
     --destination "$IMAGE_NAME:latest-$PASSBOLT_IMAGE_FLAVOUR" \
     --destination "$IMAGE_NAME:$PASSBOLT_VERSION" \
     --destination "$IMAGE_NAME:$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR"
 
 .publish-command-latest: &publish-command-latest |
-  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
+  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-multiarch-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
     --dockerfile /dev/stdin \
     --destination "$IMAGE_NAME:latest"
 
