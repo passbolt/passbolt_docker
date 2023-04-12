@@ -7,7 +7,20 @@
   variables:
     COMPONENT: "testing"
   script:
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - |
+      cat << EOF > ~/kaniko/.docker/config.json
+      {
+          "auths": {
+              "https://index.docker.io/v1/": {
+                  "auth": "${AUTH_STRING_DOCKER_HUB}"
+              },
+              "$CI_REGISTRY": {
+                  "username": "${CI_REGISTRY_USER}",
+                  "password": "${CI_REGISTRY_PASSWORD}"
+              }
+          }
+      }
+      EOF
     - |
       echo "********************************************"
       echo "Build details"
@@ -77,51 +90,51 @@ build-pro-stable-rootless:
     PLATFORM: "linux/amd64"
 
 build-ce-stable-docker-arm64-v8:
-  tags: 
+  tags:
     - arm
   extends: .stable-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root-arm64-v8"
     PLATFORM: "linux/arm64/v8"
-    SUPERCRONIC_ARCH: arm64 
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+    SUPERCRONIC_ARCH: arm64
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
 
 build-ce-stable-rootless-arm64-v8:
-  tags: 
+  tags:
     - arm
   extends: .stable-build
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless-arm64-v8"
     PLATFORM: "linux/arm64/v8"
-    SUPERCRONIC_ARCH: arm64 
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+    SUPERCRONIC_ARCH: arm64
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
 
 build-pro-stable-docker-arm64-v8:
-  tags: 
+  tags:
     - arm
   extends: .stable-build-pro
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root-arm64-v8"
     PLATFORM: "linux/arm64/v8"
-    SUPERCRONIC_ARCH: arm64 
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+    SUPERCRONIC_ARCH: arm64
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
 
 build-pro-stable-rootless-arm64-v8:
-  tags: 
+  tags:
     - arm
   extends: .stable-build-pro
   variables:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless-arm64-v8"
     PLATFORM: "linux/arm64/v8"
-    SUPERCRONIC_ARCH: arm64 
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac 
+    SUPERCRONIC_ARCH: arm64
+    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
 
 build-ce-stable-docker-arm-v5:
-  tags: 
+  tags:
     - arm
   extends: .stable-build
   variables:
@@ -132,7 +145,7 @@ build-ce-stable-docker-arm-v5:
     SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
 
 build-ce-stable-rootless-arm-v5:
-  tags: 
+  tags:
     - arm
   extends: .stable-build
   variables:
@@ -143,7 +156,7 @@ build-ce-stable-rootless-arm-v5:
     SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
 
 build-pro-stable-docker-arm-v5:
-  tags: 
+  tags:
     - arm
   extends: .stable-build-pro
   variables:
@@ -154,7 +167,7 @@ build-pro-stable-docker-arm-v5:
     SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
 
 build-pro-stable-rootless-arm-v5:
-  tags: 
+  tags:
     - arm
   extends: .stable-build-pro
   variables:
@@ -165,7 +178,7 @@ build-pro-stable-rootless-arm-v5:
     SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
 
 build-ce-stable-docker-arm-v7:
-  tags: 
+  tags:
     - arm
   extends: .stable-build
   variables:
@@ -176,7 +189,7 @@ build-ce-stable-docker-arm-v7:
     SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
 
 build-ce-stable-rootless-arm-v7:
-  tags: 
+  tags:
     - arm
   extends: .stable-build
   variables:
@@ -187,7 +200,7 @@ build-ce-stable-rootless-arm-v7:
     SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
 
 build-pro-stable-docker-arm-v7:
-  tags: 
+  tags:
     - arm
   extends: .stable-build-pro
   variables:
@@ -198,7 +211,7 @@ build-pro-stable-docker-arm-v7:
     SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
 
 build-pro-stable-rootless-arm-v7:
-  tags: 
+  tags:
     - arm
   extends: .stable-build-pro
   variables:
