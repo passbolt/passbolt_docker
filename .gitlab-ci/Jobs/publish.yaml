@@ -72,7 +72,7 @@
   variables:
     MANIFEST_TOOL_VERSION: "2.0.8"
     DOCKER_HUB_PASSBOLT_REGISTRY: "passbolt/passbolt"
-    CRANE_VERSION: "0.14.0"
+    CRANE_VERSION: "v0.14.0"
   before_script:
     - mkdir -p ~/.docker
     - *docker-authentication
