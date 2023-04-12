@@ -15,7 +15,7 @@
 
 .manifest-yaml: &manifest-yaml |
   cat << EOF > manifests.yaml
-  image: "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-$PASSBOLT_IMAGE_FLAVOUR"
+  image: "${CI_REGISTRY_IMAGE}:latest-$PASSBOLT_IMAGE_FLAVOUR"
   tags: [ "$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR" ]
   manifests:
     - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
@@ -41,7 +41,7 @@
 
 .manifest-latest-yaml: &manifest-latest-yaml |
   cat << EOF > manifests.yaml
-  image: "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-$PASSBOLT_IMAGE_FLAVOUR"
+  image: "${CI_REGISTRY_IMAGE}:latest-$PASSBOLT_IMAGE_FLAVOUR"
   tags: [ "$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR", latest ]
   manifests:
     - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
@@ -72,6 +72,7 @@
   variables:
     MANIFEST_TOOL_VERSION: "2.0.8"
     DOCKER_HUB_PASSBOLT_REGISTRY: "passbolt/passbolt"
+    CRANE_VERSION: "0.14.0"
   before_script:
     - mkdir -p ~/.docker
     - *docker-authentication
@@ -80,6 +81,8 @@
     - curl -fsSLO https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz.sha256sum
     - sha256sum -c binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz.sha256sum
     - tar xvf binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz
+    - curl -sL "https://github.com/google/go-containerregistry/releases/download/${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz" > go-containerregistry.tar.gz
+    - tar -zxvf go-containerregistry.tar.gz -C /usr/local/bin/ crane
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "ce"'
       when: on_success
@@ -93,6 +96,13 @@ publish-ce:
   script:
     - *manifest-latest-yaml
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
+    - crane auth login
+    - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane cp "${CI_REGISTRY_IMAGE}:latest" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest"
 
 publish-ce-non-root:
   extends: .publish
@@ -103,6 +113,10 @@ publish-ce-non-root:
   script:
     - *manifest-yaml
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
+    - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
 
 publish-pro:
   extends: .publish
@@ -113,6 +127,10 @@ publish-pro:
   script:
     - *manifest-yaml
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
+    - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
@@ -126,6 +144,10 @@ publish-pro-non-root:
   script:
     - *manifest-yaml
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
+    - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
+    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
