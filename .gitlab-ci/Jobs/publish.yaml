@@ -1,5 +1,5 @@
 .docker-authentication: &docker-authentication |
-  cat << EOF > /kaniko/.docker/config.json
+  cat << EOF > ~/.docker/config.json
   {
       "auths": {
           "https://index.docker.io/v1/": {
@@ -13,27 +13,73 @@
   }
   EOF
 
-.publish-command: &publish-command |
-  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-multiarch-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
-    --dockerfile /dev/stdin \
-    --destination "$IMAGE_NAME:latest-$PASSBOLT_IMAGE_FLAVOUR" \
-    --destination "$IMAGE_NAME:$PASSBOLT_VERSION" \
-    --destination "$IMAGE_NAME:$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR"
+.manifest-yaml: &manifest-yaml |
+  cat << EOF > manifests.yaml
+  image: "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-$PASSBOLT_IMAGE_FLAVOUR"
+  tags: [ "$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR" ]
+  manifests:
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
+      platform:
+        architecture: amd64
+        os: linux
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm64-v8-latest
+      platform:
+        architecture: arm64
+        os: linux
+        variant: v8
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm-v7-latest
+      platform:
+        architecture: arm
+        os: linux
+        variant: v7
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm-v5-latest
+      platform:
+        architecture: arm
+        os: linux
+        variant: v5
+  EOF
 
-.publish-command-latest: &publish-command-latest |
-  echo "FROM  $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-multiarch-latest" | /kaniko/executor --context $CI_PROJECT_DIR \
-    --dockerfile /dev/stdin \
-    --destination "$IMAGE_NAME:latest"
+.manifest-latest-yaml: &manifest-latest-yaml |
+  cat << EOF > manifests.yaml
+  image: "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-$PASSBOLT_IMAGE_FLAVOUR"
+  tags: [ "$PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR", latest ]
+  manifests:
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-latest
+      platform:
+        architecture: amd64
+        os: linux
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm64-v8-latest
+      platform:
+        architecture: arm64
+        os: linux
+        variant: v8
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm-v7-latest
+      platform:
+        architecture: arm
+        os: linux
+        variant: v7
+    - image: ${CI_REGISTRY_IMAGE}:${PASSBOLT_FLAVOUR}-${DOCKER_TAG}-arm-v5-latest
+      platform:
+        architecture: arm
+        os: linux
+        variant: v5
+  EOF
 
 .publish:
+  image: debian:bullseye-slim
+  extends: .rules
   stage: publish
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
   variables:
-    DOCKER_TAG: "root"
-    IMAGE_NAME: "passbolt/passbolt"
-    PASSBOLT_IMAGE_FLAVOUR: "ce"
+    MANIFEST_TOOL_VERSION: "2.0.8"
+    DOCKER_HUB_PASSBOLT_REGISTRY: "passbolt/passbolt"
+  before_script:
+    - mkdir -p ~/.docker
+    - *docker-authentication
+    - apt update && apt install curl -y
+    - curl -fsSLO https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz > manifest.tar.gz
+    - curl -fsSLO https://github.com/estesp/manifest-tool/releases/download/v${MANIFEST_TOOL_VERSION}/binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz.sha256sum
+    - sha256sum -c binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz.sha256sum
+    - tar xvf binaries-manifest-tool-${MANIFEST_TOOL_VERSION}.tar.gz
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "ce"'
       when: on_success
@@ -41,30 +87,32 @@
 publish-ce:
   extends: .publish
   variables:
+    DOCKER_TAG: "root"
     PASSBOLT_FLAVOUR: "ce"
+    PASSBOLT_IMAGE_FLAVOUR: "ce"
   script:
-    - *docker-authentication
-    - *publish-command
-    - *publish-command-latest
+    - *manifest-latest-yaml
+    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
 
 publish-ce-non-root:
   extends: .publish
   variables:
-    PASSBOLT_FLAVOUR: "ce"
     DOCKER_TAG: "rootless"
+    PASSBOLT_FLAVOUR: "ce"
     PASSBOLT_IMAGE_FLAVOUR: "ce-non-root"
   script:
-    - *docker-authentication
-    - *publish-command
+    - *manifest-yaml
+    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
 
 publish-pro:
   extends: .publish
   variables:
+    DOCKER_TAG: "root"
     PASSBOLT_FLAVOUR: "pro"
     PASSBOLT_IMAGE_FLAVOUR: "pro"
   script:
-    - *docker-authentication
-    - *publish-command
+    - *manifest-yaml
+    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
@@ -76,8 +124,8 @@ publish-pro-non-root:
     PASSBOLT_FLAVOUR: "pro"
     PASSBOLT_IMAGE_FLAVOUR: "pro-non-root"
   script:
-    - *docker-authentication
-    - *publish-command
+    - *manifest-yaml
+    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
