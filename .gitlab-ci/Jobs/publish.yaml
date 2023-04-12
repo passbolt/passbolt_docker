@@ -99,9 +99,6 @@ publish-ce:
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:latest" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest"
 
 publish-ce-non-root:
   extends: .publish
@@ -114,8 +111,6 @@ publish-ce-non-root:
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
 
 publish-pro:
   extends: .publish
@@ -128,8 +123,6 @@ publish-pro:
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
@@ -145,8 +138,6 @@ publish-pro-non-root:
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION-$PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
-    - crane push "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
