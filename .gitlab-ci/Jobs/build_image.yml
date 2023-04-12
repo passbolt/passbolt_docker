@@ -8,7 +8,7 @@
     COMPONENT: "testing"
   script:
     - |
-      cat << EOF > ~/kaniko/.docker/config.json
+      cat << EOF > /kaniko/.docker/config.json
       {
           "auths": {
               "https://index.docker.io/v1/": {
