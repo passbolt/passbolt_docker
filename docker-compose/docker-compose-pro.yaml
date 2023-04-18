@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   db:
-    image: mariadb:10.3
+    image: mariadb:10.10
     restart: unless-stopped
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "true"
