@@ -93,7 +93,9 @@ function install() {
     su -c "cp $passbolt_config/app.default.php $passbolt_config/app.php" -s /bin/bash www-data
   fi
 
-  if [ -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" ] && [ ! -f  "$passbolt_config/passbolt.php" ]; then
+  if [[ ( "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE}" == "true" ) || \
+      ( -z "${PASSBOLT_GPG_SERVER_KEY_FINGERPRINT+xxx}" && \
+      ! -f  "$passbolt_config/passbolt.php" ) ]]; then
     gpg_auto_fingerprint="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
     export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=$gpg_auto_fingerprint
   fi

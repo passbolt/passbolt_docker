@@ -111,6 +111,7 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_KEY_EMAIL                  | Key owner email address                                                   | passbolt@yourdomain.com
 | PASSBOLT_KEY_EXPIRATION             | Key expiration date                                                       | 0, never expires
 | PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                                                         | null
+| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE | Force calculation of GnuPG fingerprint for server key               | null
 | PASSBOLT_GPG_SERVER_KEY_PUBLIC      | Path to GnuPG public server key                                           | /etc/passbolt/gpg/serverkey.asc
 | PASSBOLT_GPG_SERVER_KEY_PRIVATE     | Path to GnuPG private server key                                          | /etc/passbolt/gpg/serverkey_private.asc
 | PASSBOLT_PLUGINS_EXPORT_ENABLED     | Enable export plugin                                                      | true
@@ -208,3 +209,10 @@ This feature is only supported for:
 This repository also provides a way to quickly setup Passbolt for development purposes. This way should never be used in production, as this would be unsafe.
 You can use the docker-compose files under [docker-compose/](./docker-compose/) to spin up Passbolt for production using docker compose.
 If you would like to setup Passbolt for development purposes, please follow the steps described [here](./dev/README.md).
+
+## Run passbolt docker tests
+
+```bash
+PASSBOLT_FLAVOUR=ce PASSBOLT_COMPONENT=stable ROOTLESS=false bundle exec rake spec
+```
+
