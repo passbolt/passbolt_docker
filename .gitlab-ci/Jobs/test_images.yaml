@@ -40,6 +40,11 @@ ce-docker-runtime-no-envs:
   variables:
     TEST_NAME: docker_runtime_no_envs
 
+ce-docker-runtime-no-envs:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_with_passbolt_php
+
 pro-docker-image:
   extends: .test-pro-images
   variables:
@@ -54,6 +59,11 @@ pro-docker-runtime-no-envs:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_runtime_no_envs
+
+pro-docker-runtime-with-passbolt-php:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_with_passbolt_php
 
 ce-non-root-docker-image:
   extends: .test-images
@@ -73,6 +83,12 @@ ce-non-root-docker-runtime-no-envs:
     TEST_NAME: docker_runtime_no_envs
     ROOTLESS: "true"
 
+ce-non-root-docker-runtime-with-passbolt-php:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_with_passbolt_php
+    ROOTLESS: "true"
+
 pro-non-root-docker-image:
   extends: .test-pro-images
   variables:
@@ -89,4 +105,10 @@ pro-non-root-docker-runtime-no-envs:
   extends: .test-pro-images
   variables:
     TEST_NAME: docker_runtime_no_envs
+    ROOTLESS: "true"
+
+pro-non-root-docker-runtime-with-passbolt-php:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_with_passbolt_php
     ROOTLESS: "true"
