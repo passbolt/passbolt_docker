@@ -2,7 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.3...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.4...HEAD)
+
+## [3.9.4](https://github.com/passbolt/passbolt_docker/compare/v3.9.3...v3.9.4) - 2023-04-18
+
+### Added
+- Update mariadb to version 10.10 [#190](https://github.com/passbolt/passbolt_docker/pull/190)
+- Added PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE env variable. Fixes [#192](https://github.com/passbolt/passbolt_docker/issues/192)
+- Arm arch support for arm64/v8, arm/v7 and arm/v5 linux architectures.
 
 ## [3.9.3](https://github.com/passbolt/passbolt_docker/compare/v3.9.2...v3.9.3) - 2023-03-17
 
