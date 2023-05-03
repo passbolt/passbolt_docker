@@ -2,14 +2,13 @@ require 'spec_helper'
 require 'json'
 
 describe 'Dockerfile' do
-
   before(:all) do
     set :env, {
-      'DATASOURCES_DEFAULT_HOST'     => '172.17.0.2',
+      'DATASOURCES_DEFAULT_HOST' => '172.17.0.2',
       'DATASOURCES_DEFAULT_PASSWORD' => 'P4ssb0lt',
       'DATASOURCES_DEFAULT_USERNAME' => 'passbolt',
       'DATASOURCES_DEFAULT_DATABASE' => 'passbolt',
-      'PASSBOLT_GPG_KEYRING'         => '/var/lib/passbolt/.gnupg'
+      'PASSBOLT_GPG_KEYRING' => '/var/lib/passbolt/.gnupg'
     }
 
     if ENV['GITLAB_CI']
@@ -18,13 +17,19 @@ describe 'Dockerfile' do
         'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
         'serveraddress' => 'https://registry.gitlab.com/'
       )
-      if ENV['ROOTLESS'] == 'true'
-        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
-      else
-        @image = Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
-      end
+      @image = if ENV['ROOTLESS'] == 'true'
+                 Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
+               else
+                 Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest")
+               end
     else
-      @image = Docker::Image.build_from_dir(ROOT_DOCKERFILES, { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) } )
+      @image = Docker::Image.build_from_dir(
+        ROOT_DOCKERFILES,
+        {
+          'dockerfile' => $dockerfile,
+          'buildargs' => JSON.generate($buildargs)
+        }
+      )
     end
     set :docker_image, @image.id
     set :docker_container_create_options, { 'Cmd' => '/bin/sh' }
@@ -34,22 +39,24 @@ describe 'Dockerfile' do
   let(:php_conf)        { '/etc/php/7.4/fpm/php.ini' }
   let(:site_conf)       { '/etc/nginx/sites-enabled/nginx-passbolt.conf' }
   let(:supervisor_conf) do
-    [ '/etc/supervisor/conf.d/nginx.conf',
-    '/etc/supervisor/conf.d/php.conf',
-    '/etc/supervisor/conf.d/cron.conf' ]
+    ['/etc/supervisor/conf.d/nginx.conf',
+     '/etc/supervisor/conf.d/php.conf',
+     '/etc/supervisor/conf.d/cron.conf']
   end
   let(:passbolt_home)   { '/usr/share/php/passbolt' }
   let(:passbolt_tmp)    { '/var/lib/passbolt/tmp' }
   let(:passbolt_image)  { "#{passbolt_home}/webroot/img/public" }
   let(:passbolt_owner)  { 'www-data' }
-  let(:exposed_ports)   { [ $http_port, $https_port ] }
-  let(:php_extensions)  { [
-    'gd', 'intl', 'json', 'mysqlnd', 'xsl', 'phar',
-    'posix', 'xml', 'zlib', 'ctype', 'pdo', 'gnupg', 'pdo_mysql'
-    ] }
+  let(:exposed_ports)   { [$http_port, $https_port] }
+  let(:php_extensions)  do
+    %w[
+      gd intl json mysqlnd xsl phar
+      posix xml zlib ctype pdo gnupg pdo_mysql
+    ]
+  end
   let(:wait_for) { '/usr/bin/wait-for.sh' }
-  jwt_conf = "#{PASSBOLT_CONFIG_PATH + '/jwt'}"
-  let(:jwt_key_pair)   { [ "#{jwt_conf}/jwt.key", "#{jwt_conf}/jwt.pem" ] }
+  let(:jwt_conf) { "#{PASSBOLT_CONFIG_PATH + '/jwt'}" }
+  let(:jwt_key_pair) { ["#{jwt_conf}/jwt.key", "#{jwt_conf}/jwt.pem"] }
 
   describe 'passbolt required php extensions' do
     it 'has php extensions installed' do
@@ -67,6 +74,14 @@ describe 'Dockerfile' do
     it 'has config files' do
       supervisor_conf.each do |config|
         expect(file(config)).to exist
+        if ENV['ROOTLESS'] == 'true'
+          expect(file(config)).to be_owned_by(passbolt_owner)
+        else
+          expect(file(config)).to be_owned_by('root')
+        end
+        expect(file(config)).to be_writable.by('owner')
+        expect(file(config)).not_to be_writable.by('group')
+        expect(file(config)).not_to be_writable.by('others')
       end
     end
   end
@@ -159,18 +174,25 @@ describe 'Dockerfile' do
     end
   end
 
-  describe file(jwt_conf) do
-    it { should be_a_directory }
-    it { should be_mode 770  }
-    it { should be_owned_by($root_user) }
-    it { should be_grouped_into($config_group) }
-  end
+  describe 'jwt configuration' do
+    it 'should have the correct permissions' do
+      expect(file(jwt_conf)).to be_a_directory
+      expect(file(jwt_conf)).to be_mode 770
+      expect(file(jwt_conf)).to be_owned_by($root_user)
+      expect(file(jwt_conf)).to be_grouped_into($config_group)
+    end
 
-  describe file("#{jwt_conf}/jwt.key") do
-    it { should_not exist }
-  end
-  describe file("#{jwt_conf}/jwt.pem") do
-    it { should_not exist }
+    describe 'JWT key file' do
+      it 'should not exist' do
+        expect(file("#{jwt_conf}/jwt.key")).not_to exist
+      end
+    end
+
+    describe 'JWT pem file' do
+      it 'should not exist' do
+        expect(file("#{jwt_conf}/jwt.pem")).not_to exist
+      end
+    end
   end
 
   describe '/etc/environment' do
@@ -178,17 +200,17 @@ describe 'Dockerfile' do
       expect(file('/etc/environment')).to exist
       if ENV['ROOTLESS'] == 'true'
         expect(file('/etc/environment')).to be_owned_by(passbolt_owner)
-        expect(file('/etc/environment')).to be_mode 600 
+        expect(file('/etc/environment')).to be_mode 600
       else
         expect(file('/etc/environment')).to be_owned_by($root_user)
-        expect(file('/etc/environment')).to be_mode 644 
+        expect(file('/etc/environment')).to be_mode 644
       end
     end
   end
 
   describe 'cron table' do
     it 'exists and executes the email job' do
-      expect(cron.table).to match(/PASSBOLT_BASE_DIR\/bin\/cron/)
+      expect(cron.table).to match(%r{PASSBOLT_BASE_DIR/bin/cron})
     end
   end
 end
