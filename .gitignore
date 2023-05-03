@@ -37,3 +37,6 @@ src
 
 # docker compose specific
 dev/.env
+
+# Vim session files
+*.vim

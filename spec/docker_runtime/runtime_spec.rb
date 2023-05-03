@@ -100,7 +100,7 @@ describe 'passbolt_api service' do
     )
     @container.exec(['cp', '/tmp/passbolt-cron-temporary', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server"])
     # force reload supercronic cron file
-    @container.exec(['supervisorctl', 'restart', 'cron'])
+    @container.exec(%w[supervisorctl restart cron])
 
     # wait for cron
     sleep 61
