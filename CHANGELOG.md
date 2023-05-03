@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.9.4...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.10.0...HEAD)
+
+## [3.10.0](https://github.com/passbolt/passbolt_docker/compare/v3.9.4...v3.10.0) - 2023-05-02
+
+### Added
+- Make rootless docker image to own the supervisor files [#197](https://github.com/passbolt/passbolt_docker/pull/197)
 
 ## [3.9.4](https://github.com/passbolt/passbolt_docker/compare/v3.9.3...v3.9.4) - 2023-04-18
 

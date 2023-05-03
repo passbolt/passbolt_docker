@@ -40,6 +40,8 @@ RUN apt-get update \
     && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 COPY conf/supervisor/cron.conf.rootless /etc/supervisor/conf.d/cron.conf
+COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
+COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 
 RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
     && sed -i 's,listen \[\:\:\]\:80;,listen \[\:\:\]\:8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
@@ -67,6 +69,9 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && chown www-data:0 /etc/passbolt/certs \
     && chown www-data:0 /etc/passbolt/jwt \
     && chown www-data:0 /var/log/supervisor \
+    && chown www-data:0 /etc/supervisor/conf.d/cron.conf \
+    && chown www-data:0 /etc/supervisor/conf.d/php.conf \
+    && chown www-data:0 /etc/supervisor/conf.d/nginx.conf \
     && chown -R www-data:0 /var/log/nginx \
     && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
     && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
@@ -81,14 +86,19 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
     && chown www-data:www-data /etc/environment \
     && chmod 600 /etc/environment
 
-COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
-COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 COPY scripts/entrypoint/docker-entrypoint.rootless.sh /docker-entrypoint.sh
 COPY scripts/entrypoint/passbolt/entrypoint-rootless.sh /passbolt/entrypoint-rootless.sh
 COPY scripts/entrypoint/passbolt/env.sh /passbolt/env.sh
 COPY scripts/entrypoint/passbolt/deprecated_paths.sh /passbolt/deprecated_paths.sh
 COPY scripts/entrypoint/passbolt/entropy.sh /passbolt/entropy.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
+
+# Docker API does not support buildkit so we
+# need to do this workaround https://github.com/docker/for-linux/issues/1136
+RUN chmod 0644 /etc/supervisor/conf.d/* \
+    && chmod 0755 /docker-entrypoint.sh \
+    && chmod 0755 /passbolt/* \
+    && chmod 0755 /usr/bin/wait-for.sh
 
 EXPOSE 8080 4433
 
