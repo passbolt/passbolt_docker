@@ -119,6 +119,9 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register                                             | false
 | PASSBOLT_SSL_FORCE                  | Redirects http to https                                                   | true
 | PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                                                          | true
+| PASSBOLT_WWW_PORT                   | Nginx HTTP port                                                           | 80
+| PASSBOLT_WWW_SSL_PORT               | Nginx HTTPS port                                                          | 443
+| PASSBOLT_PHP_FPM_PORT               | PHP-FPM port                                                              | 9000
 | SECURITY_SALT                       | CakePHP security salt                                                     | __SALT__
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
