@@ -13,6 +13,8 @@ ARG PHP_EXTENSIONS="gd \
       zip \
       intl \
       pdo_mysql \
+      pdo_pgsql \
+      pgsql \
       opcache \
       xsl \
       ldap\
@@ -24,6 +26,7 @@ ARG PECL_PASSBOLT_EXTENSIONS="gnupg \
 
 ARG PASSBOLT_DEV_PACKAGES="libgpgme11-dev \
       libpng-dev \
+      libpq-dev \
       libjpeg62-turbo-dev \
       libicu-dev \
       libxslt1-dev \
