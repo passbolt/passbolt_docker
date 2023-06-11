@@ -30,6 +30,7 @@ RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
     nginx \
     $PASSBOLT_PKG \
+    php-pgsql \
     supervisor \
     curl \
     && rm -f /etc/passbolt/jwt/* \
