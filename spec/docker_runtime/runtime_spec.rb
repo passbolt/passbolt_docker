@@ -13,10 +13,10 @@ describe 'passbolt_api service' do
 
     @mysql = Docker::Container.create(
       'Env' => [
-        'MYSQL_ROOT_PASSWORD=test',
-        'MYSQL_DATABASE=passbolt',
-        'MYSQL_USER=passbolt',
-        'MYSQL_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
+        'MARIADB_ROOT_PASSWORD=test',
+        'MARIADB_DATABASE=passbolt',
+        'MARIADB_USER=passbolt',
+        'MARIADB_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
       ],
       'Healthcheck' => {
         "Test": [
@@ -87,7 +87,8 @@ describe 'passbolt_api service' do
 
   let(:rootless_env_setup) do
     # The sed command needs to create a temporary file on the same directory as the destination file (/etc/cron.d).
-    # So when running this tests on the rootless image we have to move the crontab file to tmp, execute the sed on it and copy it back to /etc/cron.d.
+    # So when running this tests on the rootless image we have to move the crontab file to tmp, execute the sed on it
+    # and copy it back to /etc/cron.d.
     @container.exec(['cp', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server", '/tmp/passbolt-cron'])
     @container.exec(['cp', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server", '/tmp/passbolt-cron-temporary'])
     @container.exec(
