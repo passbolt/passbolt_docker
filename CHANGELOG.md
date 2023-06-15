@@ -2,7 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/v3.10.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/4.0.0...HEAD)
+
+## [4.0.0](https://github.com/passbolt/passbolt_docker/compare/v3.10.0...4.0.0) - 2023-06-15
+
+### Changed
+- bookworm as base container
+- php version set to 8.2
+- Mariadb set to 10.11
+- Updated rootless superchronic to 0.2.25
+- Supervisor php-fpm command updated to php-fpm8.2
+- Small refactor in kitchen tests
 
 ## [3.10.0](https://github.com/passbolt/passbolt_docker/compare/v3.9.4...v3.10.0) - 2023-05-02
 
