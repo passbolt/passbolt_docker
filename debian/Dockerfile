@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
@@ -9,7 +9,7 @@ ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
 ARG PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian"
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
-ENV PHP_VERSION=7.4
+ENV PHP_VERSION=8.2
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
 ENV PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server"
@@ -28,7 +28,6 @@ RUN apt-get update \
   curl \
   && rm -f /etc/passbolt/jwt/* \
   && rm /etc/nginx/sites-enabled/default \
-  && mkdir /run/php \
   && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
   && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
@@ -63,4 +62,4 @@ EXPOSE 80 443
 
 WORKDIR /usr/share/php/passbolt
 
-CMD ["//docker-entrypoint.sh"]
+CMD ["/docker-entrypoint.sh"]

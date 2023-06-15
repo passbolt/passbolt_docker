@@ -1,7 +1,7 @@
-version: '3.9'
+version: "3.9"
 services:
   db:
-    image: mariadb:10.10
+    image: mariadb:10.11
     restart: unless-stopped
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "true"
@@ -27,7 +27,15 @@ services:
     volumes:
       - gpg_volume:/etc/passbolt/gpg
       - jwt_volume:/etc/passbolt/jwt
-    command: ["/usr/bin/wait-for.sh", "-t", "0", "db:3306", "--", "/docker-entrypoint.sh"]
+    command:
+      [
+        "/usr/bin/wait-for.sh",
+        "-t",
+        "0",
+        "db:3306",
+        "--",
+        "/docker-entrypoint.sh",
+      ]
     ports:
       - 80:80
       - 443:443
