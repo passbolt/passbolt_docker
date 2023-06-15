@@ -1,4 +1,3 @@
-
 require 'spec_helper'
 
 describe 'passbolt_api service' do
@@ -14,10 +13,10 @@ describe 'passbolt_api service' do
 
     @mysql = Docker::Container.create(
       'Env' => [
-        'MYSQL_ROOT_PASSWORD=test',
-        'MYSQL_DATABASE=passbolt',
-        'MYSQL_USER=passbolt',
-        'MYSQL_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
+        'MARIADB_ROOT_PASSWORD=test',
+        'MARIADB_DATABASE=passbolt',
+        'MARIADB_USER=passbolt',
+        'MARIADB_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
       ],
       'Healthcheck' => {
         "Test": [
@@ -71,8 +70,8 @@ describe 'passbolt_api service' do
       'Binds' => $binds.append(
         "#{FIXTURES_PATH + '/passbolt-no-fingerprint.php'}:#{PASSBOLT_CONFIG_PATH + '/passbolt.php'}",
         "#{FIXTURES_PATH + '/public-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure.key'}",
-        "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}",
-      ),
+        "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}"
+      )
     )
 
     @container.start
@@ -92,5 +91,4 @@ describe 'passbolt_api service' do
       expect(file('/etc/environment').content).to match(/PASSBOLT_GPG_SERVER_KEY_FINGERPRINT/)
     end
   end
-
 end

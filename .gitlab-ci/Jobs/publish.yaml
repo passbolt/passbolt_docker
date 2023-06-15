@@ -99,7 +99,7 @@ publish-ce:
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:latest" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest"
-
+    - 'bash .gitlab-ci/scripts/bin/slack-status-messages.sh ":whale: $PASSBOLT_VERSION $PASSBOLT_IMAGE_FLAVOUR docker image has been published" "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID"'
 publish-ce-non-root:
   extends: .publish
   variables:
@@ -111,7 +111,7 @@ publish-ce-non-root:
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
-
+    - 'bash .gitlab-ci/scripts/bin/slack-status-messages.sh ":whale: $PASSBOLT_VERSION $PASSBOLT_IMAGE_FLAVOUR docker image has been published" "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID"'
 publish-pro:
   extends: .publish
   variables:
@@ -123,10 +123,10 @@ publish-pro:
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
+    - 'bash .gitlab-ci/scripts/bin/slack-status-messages.sh ":whale: $PASSBOLT_VERSION $PASSBOLT_IMAGE_FLAVOUR docker image has been published" "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID"'
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success
-
 publish-pro-non-root:
   extends: .publish
   variables:
@@ -138,6 +138,7 @@ publish-pro-non-root:
     - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
+    - 'bash .gitlab-ci/scripts/bin/slack-status-messages.sh ":whale: $PASSBOLT_VERSION $PASSBOLT_IMAGE_FLAVOUR docker image has been published" "$CI_PROJECT_URL/-/jobs/$CI_JOB_ID"'
   rules:
     - if: '$PASSBOLT_VERSION && $CI_COMMIT_BRANCH == "master" && $PASSBOLT_PUBLISH == "pro"'
       when: on_success

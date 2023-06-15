@@ -36,7 +36,7 @@ describe 'Dockerfile' do
   end
 
   let(:nginx_conf)      { '/etc/nginx/nginx.conf' }
-  let(:php_conf)        { '/etc/php/7.4/fpm/php.ini' }
+  let(:php_conf)        { '/etc/php/8.2/fpm/php.ini' }
   let(:site_conf)       { '/etc/nginx/sites-enabled/nginx-passbolt.conf' }
   let(:supervisor_conf) do
     ['/etc/supervisor/conf.d/nginx.conf',
