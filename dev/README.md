@@ -68,6 +68,15 @@ docker-compose -f dev/docker-compose-ce.yaml exec passbolt /bin/bash -c \
 
 8. Copy-paste the output in the browser and you are ready!
 
+# Enable POSTGRES
+
+A postgres service will also be stared if you use the `pgsql` profile:
+```
+docker-compose -f dev/docker-compose-dev.yaml --profile pgsql up
+```
+
+The default env variables are defined in `dev/env/pgsql.env`.
+
 # Setup LDAP
 
 1. Add an entry for `ldap.local` inside your /etc/hosts file:
