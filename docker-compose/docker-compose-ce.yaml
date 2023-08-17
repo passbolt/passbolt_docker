@@ -4,10 +4,10 @@ services:
     image: mariadb:10.11
     restart: unless-stopped
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "true"
-      MYSQL_DATABASE: "passbolt"
-      MYSQL_USER: "passbolt"
-      MYSQL_PASSWORD: "P4ssb0lt"
+      - MYSQL_ROOT_PASSWORD=you_password_here
+      - MYSQL_DATABASE=passbolt
+      - MYSQL_USER=passbolt
+      - MYSQL_PASSWORD=P4ssb0lt
     volumes:
       - database_volume:/var/lib/mysql
 
