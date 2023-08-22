@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   db:
     image: postgres:latest
@@ -20,13 +20,9 @@ services:
       - db
     environment:
       APP_FULL_BASE_URL: https://passbolt.local
-      DATASOURCES_DEFAULT_HOST: "db"
       DATASOURCES_DEFAULT_DRIVER: Cake\Database\Driver\Postgres
-      DATASOURCES_DEFAULT_PORT: 5432
-      DATASOURCES_DEFAULT_ENCODING: 'utf8'
-      DATASOURCES_DEFAULT_USERNAME: "passbolt"
-      DATASOURCES_DEFAULT_PASSWORD: "P4ssb0lt"
-      DATASOURCES_DEFAULT_DATABASE: "passbolt"
+      DATASOURCES_DEFAULT_ENCODING: "utf8"
+      DATASOURCES_DEFAULT_URL: "postgres://passbolt:P4ssb0lt@db:5432/passbolt?schema=passbolt"
       EMAIL_TRANSPORT_DEFAULT_HOST: "smtp.domain.tld"
       EMAIL_TRANSPORT_DEFAULT_PORT: 587
     volumes:
@@ -37,10 +33,7 @@ services:
       #- ./cert.pem:/etc/passbolt/certs/certificate.crt:ro
       #- ./key.pem:/etc/passbolt/certs/certificate.key:ro
     command: >
-      bash -c "echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections;
-        apt-get update;
-        apt-get install -y php-pgsql;
-        /usr/bin/wait-for.sh -t 0 db:5432 -- /docker-entrypoint.sh"
+      bash -c "/usr/bin/wait-for.sh -t 0 db:5432 -- /docker-entrypoint.sh"
     ports:
       - 80:80
       - 443:443
