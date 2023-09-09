@@ -32,7 +32,7 @@ This way gpg key creation on passbolt container will be faster.
 Usage:
 
 ```
-$ docker-compose up
+$ docker-compose -f docker-compose/docker-compose-ce.yaml up
 ```
 
 Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
