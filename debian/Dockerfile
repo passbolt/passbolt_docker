@@ -1,6 +1,13 @@
 FROM debian:bookworm-slim
 
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
+LABEL org.opencontainers.image.description="Passbolt CE Backend, a JSON API written with CakePHP"
+LABEL org.opencontainers.image.documentation=https://help.passbolt.com/
+LABEL org.opencontainers.image.authors="Passbolt SA <contact@passbolt.com>"
+LABEL org.opencontainers.image.licenses=AGPL-3.0-only
+LABEL org.opencontainers.image.source=https://github.com/passbolt/passbolt_api
+LABEL org.opencontainers.image.title=passbolt/passbolt
+LABEL org.opencontainers.image.url=https://github.com/passbolt/passbolt_docker
 
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
