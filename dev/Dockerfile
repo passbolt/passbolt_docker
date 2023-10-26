@@ -82,7 +82,7 @@ RUN apt-get update \
     && echo 'php_flag[expose_php] = off' > /usr/local/etc/php-fpm.d/expose.conf \
     && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
     && mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
-    && echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> /etc/cron.d/passbolt_email \
+    && echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cron\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> /etc/cron.d/passbolt_email \
     && crontab /etc/cron.d/passbolt_email \
     && ln -s $(which php-fpm) $(which php-fpm)7.3 \
     && touch /var/log/xdebug.log \
