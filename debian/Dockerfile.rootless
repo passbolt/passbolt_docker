@@ -12,6 +12,9 @@ ARG PASSBOLT_FLAVOUR="ce"
 ARG PASSBOLT_PKG=passbolt-$PASSBOLT_FLAVOUR-server
 ARG PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian"
 
+ARG PASSBOLT_USER_UID=33
+ARG PASSBOLT_GROUP_GID=33
+
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PHP_VERSION=8.2
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
@@ -19,6 +22,9 @@ ENV SUPERCRONIC_VERSION=0.2.25
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
     SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH}
 ENV PASSBOLT_FLAVOUR="${PASSBOLT_FLAVOUR}"
+
+RUN usermod -u $PASSBOLT_USER_UID www-data \
+    && groupmod -g $PASSBOLT_GROUP_GID www-data
 
 RUN apt-get update \
     && DEBIAN_FRONTEND=non-interactive apt-get -y install \
