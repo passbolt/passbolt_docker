@@ -5,8 +5,10 @@ LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
 ARG PASSBOLT_FLAVOUR="ce"
-ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
-ARG PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian"
+ARG PASSBOLT_SERVER_KEY="https://download.passbolt.com"
+ARG PASSBOLT_REPO_URL="https://download.passbolt.com"
+ARG PASSBOLT_REPO_KEY_PATH="/usr/share/keyrings/passbolt-repository.gpg"
+ARG PASSBOLT_SOURCES_LIST_PATH="/etc/apt/sources.list.d/passbolt.sources"
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PHP_VERSION=8.2
@@ -14,18 +16,21 @@ ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
 ENV PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server"
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
   && DEBIAN_FRONTEND=non-interactive apt-get -y install \
   ca-certificates \
   gnupg \
-  && apt-key adv --keyserver $PASSBOLT_SERVER_KEY --recv-keys $PASSBOLT_PKG_KEY \
-  && echo "deb $PASSBOLT_REPO_URL $PASSBOLT_DISTRO $PASSBOLT_COMPONENT" > /etc/apt/sources.list.d/passbolt.list \
+  curl \
+  && curl -s $PASSBOLT_SERVER_KEY/pub.key |\
+  gpg --dearmor | tee $PASSBOLT_REPO_KEY_PATH > /dev/null \
+  && chmod 644 $PASSBOLT_REPO_KEY_PATH \
+  && echo -e "Types: deb \nURIs: $PASSBOLT_REPO_URL/$PASSBOLT_FLAVOUR/debian \nSuites: $PASSBOLT_DISTRO \nComponents: $PASSBOLT_COMPONENT \nSigned-By: $PASSBOLT_REPO_KEY_PATH" > $PASSBOLT_SOURCES_LIST_PATH \
   && apt-get update \
   && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
   nginx \
   $PASSBOLT_PKG \
   supervisor \
-  curl \
   && rm -f /etc/passbolt/jwt/* \
   && rm /etc/nginx/sites-enabled/default \
   && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \

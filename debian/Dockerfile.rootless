@@ -3,88 +3,93 @@ FROM debian:bookworm-slim
 LABEL maintainer="Passbolt SA <contact@passbolt.com>"
 
 ARG SUPERCRONIC_ARCH=amd64
-ARG SUPERCRONIC_SHA1SUM=642f4f5a2b67f3400b5ea71ff24f18c0a7d77d49
+ARG SUPERCRONIC_SHA1SUM=fe1a81a8a5809deebebbd7a209a3b97e542e2bcd
 
 ARG PASSBOLT_DISTRO="buster"
 ARG PASSBOLT_COMPONENT="stable"
-ARG PASSBOLT_SERVER_KEY="hkps://keys.mailvelope.com "
+ARG PASSBOLT_SERVER_KEY="https://download.passbolt.com"
 ARG PASSBOLT_FLAVOUR="ce"
 ARG PASSBOLT_PKG=passbolt-$PASSBOLT_FLAVOUR-server
-ARG PASSBOLT_REPO_URL="https://download.passbolt.com/$PASSBOLT_FLAVOUR/debian"
+ARG PASSBOLT_REPO_URL="https://download.passbolt.com"
+ARG PASSBOLT_REPO_KEY_PATH="/usr/share/keyrings/passbolt-repository.gpg"
+ARG PASSBOLT_SOURCES_LIST_PATH="/etc/apt/sources.list.d/passbolt.sources"
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PHP_VERSION=8.2
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
-ENV SUPERCRONIC_VERSION=0.2.25
+ENV SUPERCRONIC_VERSION=0.2.28
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
-    SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH}
+  SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH}
 ENV PASSBOLT_FLAVOUR="${PASSBOLT_FLAVOUR}"
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
-    && DEBIAN_FRONTEND=non-interactive apt-get -y install \
-    ca-certificates \
-    gnupg \
-    && apt-key adv --keyserver $PASSBOLT_SERVER_KEY --recv-keys $PASSBOLT_PKG_KEY \
-    && echo "deb $PASSBOLT_REPO_URL $PASSBOLT_DISTRO $PASSBOLT_COMPONENT" > /etc/apt/sources.list.d/passbolt.list \
-    && apt-get update \
-    && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
-    nginx \
-    $PASSBOLT_PKG \
-    supervisor \
-    curl \
-    && rm -f /etc/passbolt/jwt/* \
-    && curl -fsSLO "$SUPERCRONIC_URL" \
-    && echo "${SUPERCRONIC_SHA1SUM} ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+  && DEBIAN_FRONTEND=non-interactive apt-get -y install \
+  ca-certificates \
+  gnupg \
+  curl \
+  && curl -s $PASSBOLT_SERVER_KEY/pub.key |\
+  gpg --dearmor | tee $PASSBOLT_REPO_KEY_PATH > /dev/null \
+  && chmod 644 $PASSBOLT_REPO_KEY_PATH \
+  && echo -e "Types: deb \nURIs: $PASSBOLT_REPO_URL/$PASSBOLT_FLAVOUR/debian \nSuites: $PASSBOLT_DISTRO \nComponents: $PASSBOLT_COMPONENT \nSigned-By: $PASSBOLT_REPO_KEY_PATH" > $PASSBOLT_SOURCES_LIST_PATH \
+  && apt-get update \
+  && DEBIAN_FRONTEND=non-interactive apt-get -y install --no-install-recommends \
+  nginx \
+  $PASSBOLT_PKG \
+  supervisor \
+  && rm -f /etc/passbolt/jwt/* \
+  && curl -fsSLO "$SUPERCRONIC_URL" \
+  && echo "${SUPERCRONIC_SHA1SUM} ${SUPERCRONIC}" | sha1sum -c - \
+  && chmod +x "$SUPERCRONIC" \
+  && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 COPY conf/supervisor/cron.conf.rootless /etc/supervisor/conf.d/cron.conf
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 
 RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-    && sed -i 's,listen \[\:\:\]\:80;,listen \[\:\:\]\:8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-    && rm /etc/nginx/sites-enabled/default \
-    && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
-    && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
-    && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-    && sed -i 's,listen \[\:\:\]\:443 ssl http2;,listen \[\:\:\]\:4433 ssl http2;,' /etc/nginx/snippets/passbolt-ssl.conf \
-    && sed -i '/listen \[\:\:\]\:4433 ssl http2;/a \ \ listen 4433 ssl http2;' /etc/nginx/snippets/passbolt-ssl.conf \
-    && sed -i 's,__CERT_PATH__,/etc/passbolt/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
-    && sed -i 's,__KEY_PATH__,/etc/passbolt/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
-    && sed -i '/user www-data;/d' /etc/nginx/nginx.conf \
-    && sed -i 's,/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
-    && sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf \
-    && sed -i "s,listen = /run/php/php$PHP_VERSION-fpm.sock,listen = 127.0.0.1:9000," /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
-    && sed -i "s,unix:/run/php/php$PHP_VERSION-fpm.sock,127.0.0.1:9000," /etc/nginx/sites-enabled/nginx-passbolt.conf \
-    && sed -i "s,pid = /run/php/php$PHP_VERSION-fpm.pid,pid = /tmp/php$PHP_VERSION-fpm.pid," /etc/php/$PHP_VERSION/fpm/php-fpm.conf \
-    && sed -i 's,/var/run/supervisor.sock,/tmp/supervisor.sock,' /etc/supervisor/supervisord.conf \
-    # nginx user must own the cache and etc directory to write cache and tweak the nginx config
-    #&& chown -R www-data:0 /var/cache/nginx \
-    #&& chmod -R g+w /var/cache/nginx \
-    && chown -R www-data:0 /etc/nginx \
-    && chmod -R g+w /etc/nginx \
-    && mkdir /etc/passbolt/certs \
-    && chown www-data:0 /etc/passbolt/certs \
-    && chown www-data:0 /etc/passbolt/jwt \
-    && chown www-data:0 /var/log/supervisor \
-    && chown www-data:0 /etc/supervisor/conf.d/cron.conf \
-    && chown www-data:0 /etc/supervisor/conf.d/php.conf \
-    && chown www-data:0 /etc/supervisor/conf.d/nginx.conf \
-    && chown -R www-data:0 /var/log/nginx \
-    && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
-    && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
-    && ln -sf /dev/stderr /var/log/passbolt/error.log \
-    && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log \
-    && chown -R www-data:0 /var/log/supervisor \
-    && touch /var/www/.profile \
-    && chown www-data:www-data /var/www/.profile \
-    && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG \
-    && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf \
-    && touch /etc/environment \
-    && chown www-data:www-data /etc/environment \
-    && chmod 600 /etc/environment
+  && sed -i 's,listen \[\:\:\]\:80;,listen \[\:\:\]\:8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
+  && rm /etc/nginx/sites-enabled/default \
+  && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
+  && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
+  && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
+  && sed -i 's,listen \[\:\:\]\:443 ssl http2;,listen \[\:\:\]\:4433 ssl http2;,' /etc/nginx/snippets/passbolt-ssl.conf \
+  && sed -i '/listen \[\:\:\]\:4433 ssl http2;/a \ \ listen 4433 ssl http2;' /etc/nginx/snippets/passbolt-ssl.conf \
+  && sed -i 's,__CERT_PATH__,/etc/passbolt/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
+  && sed -i 's,__KEY_PATH__,/etc/passbolt/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
+  && sed -i '/user www-data;/d' /etc/nginx/nginx.conf \
+  && sed -i 's,/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
+  && sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf \
+  && sed -i "s,listen = /run/php/php$PHP_VERSION-fpm.sock,listen = 127.0.0.1:9000," /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
+  && sed -i "s,unix:/run/php/php$PHP_VERSION-fpm.sock,127.0.0.1:9000," /etc/nginx/sites-enabled/nginx-passbolt.conf \
+  && sed -i "s,pid = /run/php/php$PHP_VERSION-fpm.pid,pid = /tmp/php$PHP_VERSION-fpm.pid," /etc/php/$PHP_VERSION/fpm/php-fpm.conf \
+  && sed -i 's,/var/run/supervisor.sock,/tmp/supervisor.sock,' /etc/supervisor/supervisord.conf \
+  # nginx user must own the cache and etc directory to write cache and tweak the nginx config
+  #&& chown -R www-data:0 /var/cache/nginx \
+  #&& chmod -R g+w /var/cache/nginx \
+  && chown -R www-data:0 /etc/nginx \
+  && chmod -R g+w /etc/nginx \
+  && mkdir /etc/passbolt/certs \
+  && chown www-data:0 /etc/passbolt/certs \
+  && chown www-data:0 /etc/passbolt/jwt \
+  && chown www-data:0 /var/log/supervisor \
+  && chown www-data:0 /etc/supervisor/conf.d/cron.conf \
+  && chown www-data:0 /etc/supervisor/conf.d/php.conf \
+  && chown www-data:0 /etc/supervisor/conf.d/nginx.conf \
+  && chown -R www-data:0 /var/log/nginx \
+  && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
+  && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
+  && ln -sf /dev/stderr /var/log/passbolt/error.log \
+  && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log \
+  && chown -R www-data:0 /var/log/supervisor \
+  && touch /var/www/.profile \
+  && chown www-data:www-data /var/www/.profile \
+  && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG \
+  && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf \
+  && touch /etc/environment \
+  && chown www-data:www-data /etc/environment \
+  && chmod 600 /etc/environment
 
 COPY scripts/entrypoint/docker-entrypoint.rootless.sh /docker-entrypoint.sh
 COPY scripts/entrypoint/passbolt/entrypoint-rootless.sh /passbolt/entrypoint-rootless.sh
@@ -96,9 +101,9 @@ COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 # Docker API does not support buildkit so we
 # need to do this workaround https://github.com/docker/for-linux/issues/1136
 RUN chmod 0644 /etc/supervisor/conf.d/* \
-    && chmod 0755 /docker-entrypoint.sh \
-    && chmod 0755 /passbolt/* \
-    && chmod 0755 /usr/bin/wait-for.sh
+  && chmod 0755 /docker-entrypoint.sh \
+  && chmod 0755 /passbolt/* \
+  && chmod 0755 /usr/bin/wait-for.sh
 
 EXPOSE 8080 4433
 
