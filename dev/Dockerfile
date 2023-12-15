@@ -2,7 +2,18 @@ FROM composer:2.4 AS composer
 
 FROM php:8.1-fpm
 
-LABEL maintainer="Passbolt SA <contact@passbolt.com>"
+ARG API_REPOSITORY="https://github.com/passbolt/passbolt_api"
+ARG IMAGE_DESCRIPTION="Passbolt CE Backend, a JSON API written with CakePHP"
+ARG BUILD_DATE=""
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.description="${IMAGE_DESCRIPTION}"
+LABEL org.opencontainers.image.documentation=https://help.passbolt.com/
+LABEL org.opencontainers.image.authors="Passbolt SA <contact@passbolt.com>"
+LABEL org.opencontainers.image.licenses=AGPL-3.0-only
+LABEL org.opencontainers.image.source="${API_REPOSITORY}"
+LABEL org.opencontainers.image.title=passbolt/passbolt
+LABEL org.opencontainers.image.url=https://github.com/passbolt/passbolt_docker
 
 ARG PASSBOLT_VERSION="3.8.3"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
@@ -82,7 +93,7 @@ RUN apt-get update \
     && echo 'php_flag[expose_php] = off' > /usr/local/etc/php-fpm.d/expose.conf \
     && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
     && mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini" \
-    && echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cake EmailQueue.sender\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> /etc/cron.d/passbolt_email \
+    && echo "* * * * * su -c \"source /etc/environment ; /var/www/passbolt/bin/cron\" -s /bin/bash www-data >> /var/log/cron.log 2>&1" >> /etc/cron.d/passbolt_email \
     && crontab /etc/cron.d/passbolt_email \
     && ln -s $(which php-fpm) $(which php-fpm)7.3 \
     && touch /var/log/xdebug.log \
