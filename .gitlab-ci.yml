@@ -1,5 +1,14 @@
 image: alpine:latest
 
+default:
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - api_failure
+      - stale_schedule
+
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_HOST: tcp://docker:2375/
@@ -13,11 +22,11 @@ stages:
   - upload-assets
 
 include:
-  - local: '/.gitlab-ci/Jobs/build_image.yml'
-  - local: '/.gitlab-ci/Jobs/rules.yml'
-  - local: '/.gitlab-ci/Jobs/test_vulnerabilities.yaml'
-  - local: '/.gitlab-ci/Jobs/test_images.yaml'
-  - local: '/.gitlab-ci/Jobs/publish.yaml'
-  - local: '/.gitlab-ci/Jobs/docker-compose-file-upload.yml'
-  - local: '/.gitlab-ci/Jobs/entrypoint_test.yml'
-  - local: '/.gitlab-ci/Jobs/test_compose_files.yml'
+  - local: "/.gitlab-ci/Jobs/build_image.yml"
+  - local: "/.gitlab-ci/Jobs/rules.yml"
+  - local: "/.gitlab-ci/Jobs/test_vulnerabilities.yaml"
+  - local: "/.gitlab-ci/Jobs/test_images.yaml"
+  - local: "/.gitlab-ci/Jobs/publish.yaml"
+  - local: "/.gitlab-ci/Jobs/docker-compose-file-upload.yml"
+  - local: "/.gitlab-ci/Jobs/entrypoint_test.yml"
+  - local: "/.gitlab-ci/Jobs/test_compose_files.yml"
