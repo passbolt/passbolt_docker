@@ -25,6 +25,9 @@ ARG PASSBOLT_REPO_URL="https://download.passbolt.com"
 ARG PASSBOLT_REPO_KEY_PATH="/usr/share/keyrings/passbolt-repository.gpg"
 ARG PASSBOLT_SOURCES_LIST_PATH="/etc/apt/sources.list.d/passbolt.sources"
 
+ARG PASSBOLT_USER_UID=33
+ARG PASSBOLT_GROUP_GID=33
+
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
 ENV PHP_VERSION=8.2
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
@@ -34,6 +37,10 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${
 ENV PASSBOLT_FLAVOUR="${PASSBOLT_FLAVOUR}"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN usermod -u $PASSBOLT_USER_UID www-data \
+  && groupmod -g $PASSBOLT_GROUP_GID www-data
+
 RUN apt-get update \
   && DEBIAN_FRONTEND=non-interactive apt-get -y install \
   ca-certificates \
