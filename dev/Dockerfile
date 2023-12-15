@@ -2,7 +2,18 @@ FROM composer:2.4 AS composer
 
 FROM php:8.1-fpm
 
-LABEL maintainer="Passbolt SA <contact@passbolt.com>"
+ARG API_REPOSITORY="https://github.com/passbolt/passbolt_api"
+ARG IMAGE_DESCRIPTION="Passbolt CE Backend, a JSON API written with CakePHP"
+ARG BUILD_DATE=""
+
+LABEL org.opencontainers.image.created="${BUILD_DATE}"
+LABEL org.opencontainers.image.description="${IMAGE_DESCRIPTION}"
+LABEL org.opencontainers.image.documentation=https://help.passbolt.com/
+LABEL org.opencontainers.image.authors="Passbolt SA <contact@passbolt.com>"
+LABEL org.opencontainers.image.licenses=AGPL-3.0-only
+LABEL org.opencontainers.image.source="${API_REPOSITORY}"
+LABEL org.opencontainers.image.title=passbolt/passbolt
+LABEL org.opencontainers.image.url=https://github.com/passbolt/passbolt_docker
 
 ARG PASSBOLT_VERSION="3.8.3"
 ARG PASSBOLT_URL="https://github.com/passbolt/passbolt_api/archive/v${PASSBOLT_VERSION}.tar.gz"
