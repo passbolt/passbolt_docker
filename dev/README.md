@@ -55,7 +55,7 @@ docker run --rm --interactive --tty --volume $PWD:/app composer install --ignore
 6. Spin-up the docker-compose containers (mariadb and passbolt server)
 ```
 cd passbolt_docker
-docker-compose -f dev/docker-compose-dev.yml up -d
+docker-compose -f dev/docker-compose-dev.yaml up -d
 ```
 
 7. Create the first user (the administrator) by replacing the below command with your own data. More details [here](https://help.passbolt.com/hosting/install/ce/docker).
