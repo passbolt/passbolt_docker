@@ -75,6 +75,10 @@ This registration command will return a single use url required to continue the
 web browser setup and finish the registration. Your passbolt instance should be
 available browsing `https://example.com`
 
+If you encounter a `DNS_PROBE_FINISHED_NXDOMAIN` error when deploying locally, you may need to manually edit the 
+hosts file on your machine so that the `passbolt.local` domain is resolved to your localhost ip address. On Linux, 
+append the line `127.0.0.1   passbolt.local` to your `/etc/hosts` file.
+
 # Configure passbolt
 
 ## Environment variables reference
