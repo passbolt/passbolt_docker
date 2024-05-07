@@ -137,4 +137,23 @@ fi
 
 install
 
+## replace nginx config
+PASSBOLT_WWW_PORT="${PASSBOLT_WWW_PORT:-80}"
+PASSBOLT_WWW_SSL_PORT="${PASSBOLT_WWW_SSL_PORT:-443}"
+NGINX_SOURCEFILE=/etc/nginx/conf.d/default.conf
+sed -i 's/listen[ \t]*80[^0-9]*$/listen 80; #www/g' "$NGINX_SOURCEFILE"
+sed -i 's/listen[ \t]*443[^0-9]*$/listen 443; #ssl/g' "$NGINX_SOURCEFILE"
+sed -i 's/listen.*#www$/listen '"$PASSBOLT_WWW_PORT"'; #www/g' "$NGINX_SOURCEFILE"
+sed -i 's/listen.*#ssl$/listen '"$PASSBOLT_WWW_SSL_PORT"'; #ssl/g' "$NGINX_SOURCEFILE"
+echo "ready - changed port from  80 to $PASSBOLT_WWW_PORT"
+echo "ready - changed port from 443 to $PASSBOLT_WWW_SSL_PORT"
+
+## replace php-fpm config
+PASSBOLT_PHP_FPM_PORT="${PASSBOLT_PHP_FPM_PORT:-9000}"
+PHPFPM_SOURCEFILE=/usr/local/etc/php-fpm.d/
+for i in ${PHPFPM_SOURCEFILE}/*; do sed -i 's/listen .*$/listen = 127.0.0.1:'"$PASSBOLT_PHP_FPM_PORT"'/g' "$i"; done
+sed -i 's/fastcgi_pass.*$/fastcgi_pass 127.0.0.1:'"$PASSBOLT_PHP_FPM_PORT"';/g' "$NGINX_SOURCEFILE"
+echo "ready - changed php-fpm port from 9000 to $PASSBOLT_WWW_PORT"
+## //
+
 exec /usr/bin/supervisord -n
