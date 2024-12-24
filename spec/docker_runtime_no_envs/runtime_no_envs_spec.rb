@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe 'passbolt_api service' do
   before(:all) do
-    if ENV['GITLAB_CI']
-      @mysql_image = Docker::Image.create('fromImage' => "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11")
-    else
-      @mysql_image = Docker::Image.create('fromImage' => 'mariadb:latest')
-    end
+    @mysql_image =
+      Docker::Image.create(
+        'fromImage' => ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX'] ? "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11" : "mariadb:10.11"
+      )
+
     @mysql = Docker::Container.create(
       'Env' => [
         'MARIADB_ROOT_PASSWORD=test',
@@ -27,11 +27,6 @@ describe 'passbolt_api service' do
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
     if ENV['GITLAB_CI']
-      Docker.authenticate!(
-        'username' => ENV['CI_REGISTRY_USER'].to_s,
-        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
-        'serveraddress' => 'https://registry.gitlab.com/'
-      )
       @image = if ENV['ROOTLESS'] == 'true'
                  Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
                else
@@ -104,7 +99,7 @@ describe 'passbolt_api service' do
 
   describe 'can not access outside webroot' do
     let(:uri) { '/vendor/autoload.php' }
-    let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+    let(:curl) { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
     it 'returns 404' do
       expect(command(curl).stdout).to eq '404'
     end

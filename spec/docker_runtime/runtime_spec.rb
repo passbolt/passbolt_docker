@@ -3,13 +3,9 @@ require 'spec_helper'
 describe 'passbolt_api service' do
   before(:all) do
     @mysql_image =
-      if ENV['GITLAB_CI']
-        Docker::Image.create(
-          'fromImage' => "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11"
-        )
-      else
-        Docker::Image.create('fromImage' => 'mariadb:latest')
-      end
+      Docker::Image.create(
+        'fromImage' => ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX'] ? "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11" : "mariadb:10.11"
+      )
 
     @mysql = Docker::Container.create(
       'Env' => [
@@ -31,31 +27,25 @@ describe 'passbolt_api service' do
 
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
-    if ENV['GITLAB_CI']
-      Docker.authenticate!(
-        'username' => ENV['CI_REGISTRY_USER'].to_s,
-        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
-        'serveraddress' => 'https://registry.gitlab.com/'
-      )
-      @image =
-        if ENV['ROOTLESS'] == 'true'
-          Docker::Image.create(
-            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
-          )
-        else
-          Docker::Image.create(
-            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
-          )
-        end
-    else
-      @image = Docker::Image.build_from_dir(
-        ROOT_DOCKERFILES,
-        {
-          'dockerfile' => $dockerfile,
-          'buildargs' => JSON.generate($buildargs)
-        }
-      )
-    end
+    @image = if ENV['GITLAB_CI']
+               if ENV['ROOTLESS'] == 'true'
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
+                 )
+               else
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
+                 )
+               end
+             else
+               Docker::Image.build_from_dir(
+                 ROOT_DOCKERFILES,
+                 {
+                   'dockerfile' => $dockerfile,
+                   'buildargs' => JSON.generate($buildargs)
+                 }
+               )
+             end
 
     @container = Docker::Container.create(
       'Env' => [
