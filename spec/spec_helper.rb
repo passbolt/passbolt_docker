@@ -30,10 +30,14 @@ Docker.options[:write_timeout] = 3600
 
 if ENV['GITLAB_CI']
   Docker.authenticate!(
-    'username' => ENV['REGISTRY_USERNAME'].to_s,
-    'password' => ENV['REGISTRY_PASSWORD'].to_s,
-    'email' => ENV['REGISTRY_EMAIL'].to_s,
-    'serveraddress' => 'https://registry.gitlab.com/'
+    'username' => ENV['CI_REGISTRY_USER'].to_s,
+    'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
+    'serveraddress' => ENV['CI_REGISTRY'].to_s
+  )
+  Docker.authenticate!(
+    'username' => ENV['CI_DEPENDENCY_PROXY_USER'].to_s,
+    'password' => ENV['CI_DEPENDENCY_PROXY_PASSWORD'].to_s,
+    'serveraddress' => ENV['CI_DEPENDENCY_PROXY_SERVER'].to_s
   )
 end
 
