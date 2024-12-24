@@ -5,7 +5,7 @@ describe 'passbolt_api service' do
     @mysql_image =
       if ENV['GITLAB_CI']
         Docker::Image.create(
-          'fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest'
+          'fromImage' => "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11"
         )
       else
         Docker::Image.create('fromImage' => 'mariadb:latest')
@@ -21,7 +21,7 @@ describe 'passbolt_api service' do
       'Healthcheck' => {
         "Test": [
           'CMD-SHELL',
-          'mysqladmin ping --silent'
+          'mariadb-admin ping --silent'
         ]
       },
       'Image' => @mysql_image.id
