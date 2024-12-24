@@ -1,7 +1,7 @@
 services:
 
   db:
-    image: mariadb:10.3
+    image: mariadb:10.11
     container_name: db
     env_file:
       - env/mysql.env
