@@ -4,7 +4,7 @@ describe 'passbolt_api service' do
   before(:all) do
     @mysql_image =
       Docker::Image.create(
-        'fromImage' => ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX'] ? "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11" : "mariadb:10.11"
+        'fromImage' => ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX'] ? "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11" : 'mariadb:10.11'
       )
 
     @mysql = Docker::Container.create(
@@ -63,7 +63,7 @@ describe 'passbolt_api service' do
 
   let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
   let(:uri)               { '/install' }
-  let(:curl)              { "curl -sk -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+  let(:curl)              { "curl -skL -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
 
   describe 'php service' do
     it 'is running supervised' do

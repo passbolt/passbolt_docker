@@ -54,7 +54,8 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
         'PASSBOLT_SSL_FORCE=true',
-        'PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE=true'
+        'PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE=true',
+        'PASSBOLT_HEALTHCHECK_ERROR=true'
       ],
       'Image' => @image.id,
       'Binds' => $binds.append(
@@ -76,9 +77,32 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
+  let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
+  let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+
   describe 'force fingerprint calculation' do
     it 'is contains fingerprint environment variable' do
       expect(file('/etc/environment').content).to match(/PASSBOLT_GPG_SERVER_KEY_FINGERPRINT/)
     end
   end
+
+  describe 'throws exception in logs' do
+    let(:uri) { 'healthcheck/error' }
+    it 'returns 500' do
+      expect(command(curl).stdout).to eq '500'
+    end
+
+    it 'shows exception in logs' do
+      expect(@container.logs(stderr: true)).to match(/^.*\[Cake\\Http\\Exception\\InternalErrorException\] Internal Server Error.*/)
+    end
+  end
+
+  describe 'can not access outside webroot' do
+    let(:uri) { 'vendor/autoload.php' }
+    let(:curl) { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+    it 'returns 404' do
+      expect(command(curl).stdout).to eq '404'
+    end
+  end
+
 end
