@@ -24,6 +24,7 @@ jobs:
         with:
           ruby-version: "3.4.1"
       - env:
+          PASSBOLT_COMPONENT: "stable"
           PASSBOLT_FLAVOUR: "ce"
           ROOTLESS: ${{ matrix.rootless }}
           TEST_NAME: ${{ matrix.test_name }}
