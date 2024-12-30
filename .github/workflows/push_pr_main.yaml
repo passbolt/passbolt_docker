@@ -4,8 +4,8 @@ on: push
 
 jobs:
   lint:
-    name: Test ce images
-    runs-on: ruby:slim-bookworm
+    name: Passbolt CE Rootless-${{ matrix.rootless}} ${{ matrix.test_name }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         test_name:
