@@ -41,11 +41,14 @@ describe 'passbolt_api service' do
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}"
       ],
-      'Binds' => $binds.append(
-        "#{FIXTURES_PATH + '/passbolt.php'}:#{PASSBOLT_CONFIG_PATH + '/passbolt.php'}",
-        "#{FIXTURES_PATH + '/public-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure.key'}",
-        "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}"
-      ),
+      'HostConfig' => {
+        'Binds' => $binds.append(
+          "#{FIXTURES_PATH + '/passbolt.php'}:#{PASSBOLT_CONFIG_PATH + '/passbolt.php'}",
+          "#{FIXTURES_PATH + '/public-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure.key'}",
+          "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}"
+        )
+      },
+
       'Image' => @image.id
     )
 
@@ -61,9 +64,7 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
-  let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
-  let(:uri)               { '/install' }
-  let(:curl)              { "curl -skL -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+  let(:passbolt_host) { @container.json['NetworkSettings']['IPAddress'] }
 
   describe 'php service' do
     it 'is running supervised' do
@@ -91,9 +92,11 @@ describe 'passbolt_api service' do
     end
   end
 
-  describe 'passbolt install' do
+  describe 'passbolt healthcheck' do
+    let(:uri)               { '/healthcheck/status.json' }
+    let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
     it 'shows correctly' do
-      expect(command(curl).stdout).to match(/.*Passbolt is not configured yet!.*/)
+      expect(command(curl).stdout).to eq '200'
     end
   end
 
