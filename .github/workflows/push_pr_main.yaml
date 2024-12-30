@@ -1,0 +1,28 @@
+name: Push & PR to the main branch
+
+on: push
+
+jobs:
+  lint:
+    name: Test ce images
+    runs-on: ruby:slim-bookworm
+    strategy:
+      matrix:
+        test_name:
+          [
+            "docker_image",
+            "docker_runtime",
+            "docker_runtime_no_envs",
+            "docker_runtime_with_passbolt_php",
+          ]
+        rootless: [true, false]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - env:
+          PASSBOLT_FLAVOUR: "ce"
+          ROOTLESS: ${{ matrix.rootless }}
+          TEST_NAME: ${{ matrix.test_name }}
+        run: |
+          bundle install
+          rake spec:$TEST_NAME
