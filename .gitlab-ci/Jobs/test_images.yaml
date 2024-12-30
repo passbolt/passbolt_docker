@@ -1,16 +1,16 @@
 services:
-  - name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/dind:latest
+  - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:dind
     alias: docker
     command: ["--tls=false"]
 
 .test-images:
   extends: .rules
   stage: test
-  image:
-    name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/ruby:latest
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/ruby:slim-bookworm
   script:
-    - bundle install
-    - rake spec:$TEST_NAME
+    - |
+      bundle install
+      rake spec:$TEST_NAME
   variables:
     PASSBOLT_COMPONENT: stable
     PASSBOLT_FLAVOUR: ce
@@ -40,7 +40,7 @@ ce-docker-runtime-no-envs:
   variables:
     TEST_NAME: docker_runtime_no_envs
 
-ce-docker-runtime-no-envs:
+ce-docker-runtime-with-passbolt-php:
   extends: .test-images
   variables:
     TEST_NAME: docker_runtime_with_passbolt_php

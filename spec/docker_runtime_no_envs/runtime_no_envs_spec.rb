@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe 'passbolt_api service' do
   before(:all) do
-    if ENV['GITLAB_CI']
-      @mysql_image = Docker::Image.create('fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest')
-    else
-      @mysql_image = Docker::Image.create('fromImage' => 'mariadb:latest')
-    end
+    @mysql_image =
+      Docker::Image.create(
+        'fromImage' => ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX'] ? "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11" : 'mariadb:10.11'
+      )
+
     @mysql = Docker::Container.create(
       'Env' => [
         'MARIADB_ROOT_PASSWORD=test',
@@ -17,7 +17,7 @@ describe 'passbolt_api service' do
       'Healthcheck' => {
         "Test": [
           'CMD-SHELL',
-          'mysqladmin ping --silent'
+          'mariadb-admin ping --silent'
         ]
       },
       'Image' => @mysql_image.id
@@ -27,11 +27,6 @@ describe 'passbolt_api service' do
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
     if ENV['GITLAB_CI']
-      Docker.authenticate!(
-        'username' => ENV['CI_REGISTRY_USER'].to_s,
-        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
-        'serveraddress' => 'https://registry.gitlab.com/'
-      )
       @image = if ENV['ROOTLESS'] == 'true'
                  Docker::Image.create('fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest")
                else
@@ -67,8 +62,8 @@ describe 'passbolt_api service' do
   end
 
   let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
-  let(:uri)               { '/healthcheck/status.json' }
-  let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+  let(:uri)               { '/install' }
+  let(:curl)              { "curl -skL -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
 
   describe 'php service' do
     it 'is running supervised' do
@@ -96,14 +91,15 @@ describe 'passbolt_api service' do
     end
   end
 
-  describe 'passbolt status' do
-    it 'returns 200' do
-      expect(command(curl).stdout).to eq '200'
+  describe 'passbolt install' do
+    it 'shows correctly' do
+      expect(command(curl).stdout).to match(/.*Passbolt is not configured yet!.*/)
     end
   end
 
   describe 'can not access outside webroot' do
     let(:uri) { '/vendor/autoload.php' }
+    let(:curl) { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
     it 'returns 404' do
       expect(command(curl).stdout).to eq '404'
     end

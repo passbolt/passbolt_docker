@@ -2,7 +2,7 @@
   extends: .rules
   stage: test-vulnerabilities
   image:
-    name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/aquasec:latest
+    name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/aquasec/trivy:latest
     entrypoint: [""]
   variables:
     TRIVY_USERNAME: $CI_REGISTRY_USER

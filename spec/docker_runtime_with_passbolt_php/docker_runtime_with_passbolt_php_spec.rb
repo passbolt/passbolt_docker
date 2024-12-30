@@ -3,13 +3,9 @@ require 'spec_helper'
 describe 'passbolt_api service' do
   before(:all) do
     @mysql_image =
-      if ENV['GITLAB_CI']
-        Docker::Image.create(
-          'fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest'
-        )
-      else
-        Docker::Image.create('fromImage' => 'mariadb:latest')
-      end
+      Docker::Image.create(
+        'fromImage' => ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX'] ? "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11" : 'mariadb:10.11'
+      )
 
     @mysql = Docker::Container.create(
       'Env' => [
@@ -21,7 +17,7 @@ describe 'passbolt_api service' do
       'Healthcheck' => {
         "Test": [
           'CMD-SHELL',
-          'mysqladmin ping --silent'
+          'mariadb-admin ping --silent'
         ]
       },
       'Image' => @mysql_image.id
@@ -31,31 +27,25 @@ describe 'passbolt_api service' do
 
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
-    if ENV['GITLAB_CI']
-      Docker.authenticate!(
-        'username' => ENV['CI_REGISTRY_USER'].to_s,
-        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
-        'serveraddress' => 'https://registry.gitlab.com/'
-      )
-      @image =
-        if ENV['ROOTLESS'] == 'true'
-          Docker::Image.create(
-            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
-          )
-        else
-          Docker::Image.create(
-            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
-          )
-        end
-    else
-      @image = Docker::Image.build_from_dir(
-        ROOT_DOCKERFILES,
-        {
-          'dockerfile' => $dockerfile,
-          'buildargs' => JSON.generate($buildargs)
-        }
-      )
-    end
+    @image = if ENV['GITLAB_CI']
+               if ENV['ROOTLESS'] == 'true'
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
+                 )
+               else
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
+                 )
+               end
+             else
+               Docker::Image.build_from_dir(
+                 ROOT_DOCKERFILES,
+                 {
+                   'dockerfile' => $dockerfile,
+                   'buildargs' => JSON.generate($buildargs)
+                 }
+               )
+             end
 
     @container = Docker::Container.create(
       'Env' => [
@@ -64,7 +54,8 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
         'PASSBOLT_SSL_FORCE=true',
-        'PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE=true'
+        'PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE=true',
+        'PASSBOLT_HEALTHCHECK_ERROR=true'
       ],
       'Image' => @image.id,
       'Binds' => $binds.append(
@@ -86,9 +77,32 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
+  let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
+  let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+
   describe 'force fingerprint calculation' do
     it 'is contains fingerprint environment variable' do
       expect(file('/etc/environment').content).to match(/PASSBOLT_GPG_SERVER_KEY_FINGERPRINT/)
     end
   end
+
+  describe 'throws exception in logs' do
+    let(:uri) { 'healthcheck/error' }
+    it 'returns 500' do
+      expect(command(curl).stdout).to eq '500'
+    end
+
+    it 'shows exception in logs' do
+      expect(@container.logs(stderr: true)).to match(/^.*\[Cake\\Http\\Exception\\InternalErrorException\] Internal Server Error.*/)
+    end
+  end
+
+  describe 'can not access outside webroot' do
+    let(:uri) { 'vendor/autoload.php' }
+    let(:curl) { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+    it 'returns 404' do
+      expect(command(curl).stdout).to eq '404'
+    end
+  end
+
 end

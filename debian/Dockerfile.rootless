@@ -35,6 +35,7 @@ ENV SUPERCRONIC_VERSION=0.2.28
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
   SUPERCRONIC=supercronic-linux-${SUPERCRONIC_ARCH}
 ENV PASSBOLT_FLAVOUR="${PASSBOLT_FLAVOUR}"
+ENV LOG_ERROR_URL="console://?levels[]=warning&levels[]=error&levels[]=critical&levels[]=alert&levels[]=emergency"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -98,8 +99,6 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
   && chown -R www-data:0 /var/log/nginx \
   && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
   && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
-  && ln -sf /dev/stderr /var/log/passbolt/error.log \
-  && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log \
   && chown -R www-data:0 /var/log/supervisor \
   && touch /var/www/.profile \
   && chown www-data:www-data /var/www/.profile \
@@ -109,6 +108,7 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
   && chown www-data:www-data /etc/environment \
   && chmod 600 /etc/environment
 
+COPY conf/php/zz-docker.conf /etc/php/$PHP_VERSION/fpm/pool.d/zz-docker.conf
 COPY scripts/entrypoint/docker-entrypoint.rootless.sh /docker-entrypoint.sh
 COPY scripts/entrypoint/passbolt/entrypoint-rootless.sh /passbolt/entrypoint-rootless.sh
 COPY scripts/entrypoint/passbolt/env.sh /passbolt/env.sh
@@ -116,8 +116,6 @@ COPY scripts/entrypoint/passbolt/deprecated_paths.sh /passbolt/deprecated_paths.
 COPY scripts/entrypoint/passbolt/entropy.sh /passbolt/entropy.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
-# Docker API does not support buildkit so we
-# need to do this workaround https://github.com/docker/for-linux/issues/1136
 RUN chmod 0644 /etc/supervisor/conf.d/* \
   && chmod 0755 /docker-entrypoint.sh \
   && chmod 0755 /passbolt/* \
