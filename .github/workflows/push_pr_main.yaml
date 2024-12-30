@@ -1,0 +1,40 @@
+name: Push & PR to the main branch
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Passbolt CE Rootless-${{ matrix.rootless}} ${{ matrix.test_name }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_name:
+          [
+            "docker_image",
+            "docker_runtime",
+            "docker_runtime_no_envs",
+            "docker_runtime_with_passbolt_php",
+          ]
+        rootless: [true, false]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Ruby ${{ matrix.ruby-version }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3.5"
+          bundler-cache: true
+      - env:
+          PASSBOLT_COMPONENT: "stable"
+          PASSBOLT_FLAVOUR: "ce"
+          ROOTLESS: ${{ matrix.rootless }}
+          TEST_NAME: ${{ matrix.test_name }}
+        run: |
+          bundle exec rake spec:$TEST_NAME

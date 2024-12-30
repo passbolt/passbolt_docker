@@ -58,11 +58,13 @@ describe 'passbolt_api service' do
         'PASSBOLT_HEALTHCHECK_ERROR=true'
       ],
       'Image' => @image.id,
-      'Binds' => $binds.append(
+      'HostConfig' => {
+        'Binds' => $binds.append(
         "#{FIXTURES_PATH + '/passbolt-no-fingerprint.php'}:#{PASSBOLT_CONFIG_PATH + '/passbolt.php'}",
         "#{FIXTURES_PATH + '/public-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure.key'}",
         "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}"
-      )
+        )
+      },
     )
 
     @container.start
