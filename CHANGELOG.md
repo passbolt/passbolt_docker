@@ -1,12 +1,26 @@
 # Change Log
+
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/4.0.0...HEAD)
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/4.1.0...HEAD)
+
+## [4.1.0](https://github.com/passbolt/passbolt_docker/compare/4.0.0...4.1.0) - 2024-12-30
+
+### Added
+
+- GitHub release notes automation
+- GitHub actions for tests
+- Error logging redirection to stderr by default
+
+### Changed
+
+- Improved automated image tests
 
 ## [4.0.0](https://github.com/passbolt/passbolt_docker/compare/v3.10.0...4.0.0) - 2023-06-15
 
 ### Changed
+
 - bookworm as base container
 - php version set to 8.2
 - Mariadb set to 10.11
@@ -17,11 +31,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.10.0](https://github.com/passbolt/passbolt_docker/compare/v3.9.4...v3.10.0) - 2023-05-02
 
 ### Added
+
 - Make rootless docker image to own the supervisor files [#197](https://github.com/passbolt/passbolt_docker/pull/197)
 
 ## [3.9.4](https://github.com/passbolt/passbolt_docker/compare/v3.9.3...v3.9.4) - 2023-04-18
 
 ### Added
+
 - Update mariadb to version 10.10 [#190](https://github.com/passbolt/passbolt_docker/pull/190)
 - Added PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE env variable. Fixes [#192](https://github.com/passbolt/passbolt_docker/issues/192)
 - Arm arch support for arm64/v8, arm/v7 and arm/v5 linux architectures.
@@ -29,21 +45,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [3.9.3](https://github.com/passbolt/passbolt_docker/compare/v3.9.2...v3.9.3) - 2023-03-17
 
 ### Added
+
 - Allow SHA1 overwrite from build_args [#191](https://github.com/passbolt/passbolt_docker/pull/191)
 - Bumped supercronic to latest version on rootless images 0.2.2
 - Updated dev container to work with ldap
 
 ### Fixed
+
 - Docker compose ports [#180](https://github.com/passbolt/passbolt_docker/pull/180)
 
 ## [3.9.2](https://github.com/passbolt/passbolt_docker/compare/v3.9.1...v3.9.2) - 2023-02-09
 
 ### Fixed
+
 - Fix trivy entrypoint on vulnerability test jobs
 
 ## [3.9.1](https://github.com/passbolt/passbolt_docker/compare/v3.9.0...v3.9.1) - 2023-01-31
 
 ### Fixed
+
 - Github actions on new path for development composer files
 
 ## [3.9.0](https://github.com/passbolt/passbolt_docker/compare/v3.8.1...v3.9.0) - 2023-01-31
@@ -106,12 +126,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Add pro dependencies
 
 ### Changed
+
 - Default key length from 2048 to 3072
 - Bump php version to 8 on dev Dockerfile
 - PB-14373 fix composer files
 - PB-14373 use relative paths on build field
 - PB-14373 bump php version to 7.4
-- PB-14111: Set https://passbolt.local as APP_FULL_BASE_URL
+- PB-14111: Set <https://passbolt.local> as APP_FULL_BASE_URL
 - PB-13681 add subaltname parameter on the automatic certs
 - PB-13552 check jwt variable before executing create_jwt_keys
 - PB-13533 add create_jwt_keys in the entrypoint
@@ -333,6 +354,7 @@ Sync release. See release notes on [https://github.com/passbolt/passbolt_api](pa
 - Updated path for images volume. [#101](https://github.com/passbolt/passbolt_docker/pull/101)
 
 ### Changed
+
 - Run passbolt migrate task instead of cake migrations migrate
 
 ## [2.0.2](https://github.com/passbolt/passbolt_docker/compare/v2.0.1...v2.0.2) - 2018-04-17
@@ -348,7 +370,7 @@ Sync release. See release notes on [https://github.com/passbolt/passbolt_api](pa
 
 ## [2.0.1](https://github.com/passbolt/passbolt_docker/compare/v2.0.0...v2.0.1) - 2018-04-09
 
-- Decrypt bug fix. Check https://github.com/passbolt/passbolt_api
+- Decrypt bug fix. Check <https://github.com/passbolt/passbolt_api>
 
 ## [2.0.0](https://github.com/passbolt/passbolt_docker/compare/v2.0.0-rc2...v2.0.0) - 2018-04-09
 
@@ -376,6 +398,7 @@ Sync release. See release notes on [https://github.com/passbolt/passbolt_api](pa
 The container base image has been migrated from alpine to debian. The reason behind this change
 is that we have detected slower performance in alpine based images. Changing the image introduced a few changes
 in the structure of the container:
+
 - Bigger images
 - www user is now www-data user
 - cron jobs are managed as crontabs in /var/spool/cron/crontabs/root
@@ -436,22 +459,22 @@ and fixes.
 - Set the default MySQL port to 3306 [#77](https://github.com/passbolt/passbolt_docker/pull/77)
 - Add environment variable to set email client [#81](https://github.com/passbolt/passbolt_docker/pull/81)
 
-
 ## [1.6.5+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.5...v1.6.5+1) - 2017-11-14
 
 ### Fixed
 
 - Introduce EMAIL_AUTH=false Environment variable [#71](https://github.com/passbolt/passbolt_docker/pull/71)
-- Fixed https in App.fullBaseUrl for SSL=false. [#73]( https://github.com/passbolt/passbolt_docker/pull/73)
+- Fixed https in App.fullBaseUrl for SSL=false. [#73](https://github.com/passbolt/passbolt_docker/pull/73)
 
 ## [1.6.5](https://github.com/passbolt/passbolt_docker/compare/v1.6.3...v1.6.5) - 2017-09-14
 
 - Refer to [passbolt_api CHANGELOG](https://github.com/passbolt/passbolt_api/blob/master/CHANGELOG.md) for a list of new features and fixes.
 
 ### Fixed
+
 - PASSBOLT-2406: change to LABEL, add docker-compose file for testing [#69](https://github.com/passbolt/passbolt_docker/pull/69)
 - PASSBOLT-2407: Check for email cron before setting it [#63](https://github.com/passbolt/passbolt_docker/issues/63)
-- PASSBOLT-2408: Strict Transport Security (HSTS)	Invalid Server provided more than one HSTS header [#65](https://github.com/passbolt/passbolt_docker/issues/65)
+- PASSBOLT-2408: Strict Transport Security (HSTS) Invalid Server provided more than one HSTS header [#65](https://github.com/passbolt/passbolt_docker/issues/65)
 - PASSBOLT-2410: nginx config sub optimal [#66](https://github.com/passbolt/passbolt_docker/issues/66)
 
 ## [1.6.3](https://github.com/passbolt/passbolt_docker/compare/v1.6.2+1...v1.6.3) - 2017-08-31
@@ -461,6 +484,7 @@ and fixes.
 ## [1.6.2+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.2...v1.6.2+1) - 2017-08-16
 
 ### Fixed
+
 - PASSBOLT-2295: Added environment variable DB_PORT for non standard database ports (reopened) [#43](https://github.com/passbolt/passbolt_docker/issues/43)
 
 ## [1.6.2](https://github.com/passbolt/passbolt_docker/compare/v1.6.1+1...v1.6.2) - 2017-08-16
@@ -471,27 +495,33 @@ and fixes.
 - PASSBOLT-2321: Upgraded passbolt container to latest stable alpine (3.6)
 
 ### Fixed
+
 - PASSBOLT-2319: Fullbaseurl parameter was not changing when specifying URL [#50](https://github.com/passbolt/passbolt_docker/issues/50)
 - PASSBOLT-2320: TLS value on email.php should not be quoted PR[#53](https://github.com/passbolt/passbolt_docker/pull/53)
 
 ## [1.6.1+1](https://github.com/passbolt/passbolt_docker/compare/v1.6.1...v1.6.1+1) - 2017-07-31
 
 ### Notes
+
 This release aims to distribute passbolt-1.6.1 and include most relevant community contributions
 The most notable change from user perspective is the switch from lowercase to uppercase environment variables. Users will
 have to review their previous scripts and update any environment variable to match the new naming convention. Please refer to PR#39
 
 ### Added
+
 - PASSBOLT-2276: ENV-Variable uppercase convention PR[#39](https://github.com/passbolt/passbolt_docker/pull/39)
 - PASSBOLT-2279: Allow Config files to be symbolic links PR[#32](https://github.com/passbolt/passbolt_docker/pull/32)
 - PASSBOLT-2278: Allow no db environment variable setting PR[#20](https://github.com/passbolt/passbolt_docker/pull/20)
 - PASSBOLT-2280: On MacOS systems note you should access it using https PR[#35](https://github.com/passbolt/passbolt_docker/pull/35)
 
 ### Fixed
+
 - PASSBOLT-2159: Added registration env support PR[#37](https://github.com/passbolt/passbolt_docker/pull/37)
 
 ## [1.6.1](https://github.com/passbolt/passbolt_docker/compare/v1.6.0...v1.6.1) - 2017-06-29
+
 ### Fixed
+
 - PASSBOLT-2158: corrected management of fullbaseurl throug url env variable.
 - PASSBOLT-2164: corrected typo on email_transport env variable. [#24](https://github.com/passbolt/passbolt_docker/issues/24)
 - PASSBOLT-2166: http to https redirection fixed. [#19](https://github.com/passbolt/passbolt_docker/issues/19)
@@ -502,13 +532,16 @@ have to review their previous scripts and update any environment variable to mat
 - PASSBOLT-2165: Added TLS support through email_tls env variable. [#25](https://github.com/passbolt/passbolt_docker/issues/25)
 
 ## [1.6.0](https://github.com/passbolt/passbolt_docker/compare/v1.5.1...v1.6.0) - 2017-06-23
+
 ### Added
+
 - Added email set up support though environment variables
 - Added cronjob to send queued emails
 - Automated builds on the docker hub
 - Updated README documentation
 
 ### Fixed
+
 - Image build fails when using alpine:latest. Switched to alpine:3.5
 - Deletion of passwords on docker image
 - Avoid importing already imported secret keys on the gpg keyring
