@@ -26,6 +26,7 @@ ENV PHP_VERSION=8.2
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
 ENV PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server"
+ENV LOG_ERROR_URL="console://?levels[]=warning&levels[]=error&levels[]=critical&levels[]=alert&levels[]=emergency"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
@@ -53,13 +54,13 @@ RUN apt-get update \
   && sed -i 's,www-data.*$,root su -s /bin/bash -c ". /etc/environment \&\& $PASSBOLT_BASE_DIR/bin/cron" www-data >/proc/1/fd/1 2>\&1,' /etc/cron.d/$PASSBOLT_PKG \
   && sed -i 's/# server_tokens/server_tokens/' /etc/nginx/nginx.conf \
   && ln -sf /dev/stdout /var/log/nginx/passbolt-access.log \
-  && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
-  && ln -sf /dev/stderr /var/log/passbolt/error.log \
-  && ln -sf /dev/stderr /var/log/php$PHP_VERSION-fpm.log
+  && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log
 
 COPY conf/supervisor/cron.conf /etc/supervisor/conf.d/cron.conf
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
+COPY conf/php/zz-docker.conf /etc/php/$PHP_VERSION/fpm/pool.d/zz-docker.conf
+
 COPY scripts/entrypoint/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/entrypoint/passbolt/entrypoint.sh /passbolt/entrypoint.sh
 COPY scripts/entrypoint/passbolt/env.sh /passbolt/env.sh
@@ -67,8 +68,6 @@ COPY scripts/entrypoint/passbolt/deprecated_paths.sh /passbolt/deprecated_paths.
 COPY scripts/entrypoint/passbolt/entropy.sh /passbolt/entropy.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
-# Docker API does not support buildkit so we
-# need to do this workaround https://github.com/docker/for-linux/issues/1136
 RUN chmod 0644 /etc/supervisor/conf.d/* \
   && chmod 0700 /docker-entrypoint.sh \
   && chmod 0700 /passbolt/* \
