@@ -5,7 +5,7 @@ on: push
 jobs:
   lint:
     name: Passbolt CE Rootless-${{ matrix.rootless}} ${{ matrix.test_name }}
-    runs-on: ruby/setup-ruby@v1
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         test_name:
@@ -19,12 +19,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Ruby ${{ matrix.ruby-version }}
+        uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+        with:
+          ruby-version: "3.4.1"
       - env:
           PASSBOLT_FLAVOUR: "ce"
           ROOTLESS: ${{ matrix.rootless }}
           TEST_NAME: ${{ matrix.test_name }}
-        with:
-          ruby-version: "3.4.1"
         run: |
           bundle install
           bundle exec rake spec:$TEST_NAME
