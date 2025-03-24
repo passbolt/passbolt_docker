@@ -193,7 +193,7 @@ As an alternative to passing sensitive information via environment variables, _F
 $ docker run --name passsbolt -e DATASOURCES_DEFAULT_PASSWORD_FILE=/run/secrets/db-password -d passbolt/passbolt
 ```
 
-Currently, this is only supported for DATASOURCES_DEFAULT_PASSWORD, DATASOURCES_DEFAULT_HOST, DATASOURCES_DEFAULT_USERNAME, DATASOURCES_DEFAULT_DATABASE
+Currently, this is only supported for DATASOURCES_DEFAULT_PASSWORD, DATASOURCES_DEFAULT_HOST, DATASOURCES_DEFAULT_USERNAME, DATASOURCES_DEFAULT_DATABASE, EMAIL_TRANSPORT_DEFAULT_PASSWORD, EMAIL_TRANSPORT_DEFAULT_USERNAME
 
 Following the behaviour we use to mount docker secrets as environment variables, it is also posible to mount docker secrets as a file inside the passbolt container. So, for some secret files the user can store them using docker secrets and then inject them into the container with a env variable and the entrypoint script will create a symlink to the proper path.
 

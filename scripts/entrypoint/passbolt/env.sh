@@ -36,6 +36,7 @@ function manage_docker_env() {
   env_from_file 'DATASOURCES_DEFAULT_HOST'
   env_from_file 'DATASOURCES_DEFAULT_DATABASE'
   env_from_file 'EMAIL_TRANSPORT_DEFAULT_PASSWORD'
+  env_from_file 'EMAIL_TRANSPORT_DEFAULT_USERNAME'
   
   # Get docker secrets values if exist and set them on new paths
   secret_file_to_path 'PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE' "$gpg_public_key"
