@@ -9,6 +9,7 @@
   (c) 2023 Passbolt SA
   https://www.passbolt.com
 ```
+
 [![Docker Pulls](https://img.shields.io/docker/pulls/passbolt/passbolt.svg?style=flat-square)](https://hub.docker.com/r/passbolt/passbolt/tags/)
 [![GitHub release](https://img.shields.io/github/release/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/releases)
 [![license](https://img.shields.io/github/license/passbolt/passbolt_docker.svg?style=flat-square)](https://github.com/passbolt/passbolt_docker/LICENSE)
@@ -21,8 +22,6 @@ store and share credentials securely.
 
 # Requirements
 
-* rng-tools or haveged might be required on host machine to speed up entropy generation on containers.
-This way gpg key creation on passbolt container will be faster.
 * mariadb/mysql >= 5.0
 
 # Usage
@@ -32,7 +31,7 @@ This way gpg key creation on passbolt container will be faster.
 Usage:
 
 ```
-$ docker-compose -f docker-compose/docker-compose-ce.yaml up
+docker-compose -f docker-compose/docker-compose-ce.yaml up
 ```
 
 Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
@@ -68,15 +67,21 @@ $ docker run --name passbolt \
 Once the container is running create your first admin user:
 
 ```bash
-$ docker exec passbolt su -m -c "bin/cake passbolt register_user -u your@email.com -f yourname -l surname -r admin" -s /bin/sh www-data
+docker exec passbolt su -m -c "bin/cake passbolt register_user -u your@email.com -f yourname -l surname -r admin" -s /bin/sh www-data
+```
+
+Or alternatively for non-root image:
+
+```bash
+docker exec passbolt bin/cake passbolt register_user -u your@email.com -f yourname -l surname -r admin
 ```
 
 This registration command will return a single use url required to continue the
 web browser setup and finish the registration. Your passbolt instance should be
 available browsing `https://example.com`
 
-If you encounter a `DNS_PROBE_FINISHED_NXDOMAIN` error when deploying locally, you may need to manually edit the 
-hosts file on your machine so that the `passbolt.local` domain is resolved to your localhost ip address. On Linux, 
+If you encounter a `DNS_PROBE_FINISHED_NXDOMAIN` error when deploying locally, you may need to manually edit the
+hosts file on your machine so that the `passbolt.local` domain is resolved to your localhost ip address. On Linux,
 append the line `127.0.0.1   passbolt.local` to your `/etc/hosts` file.
 
 # Configure passbolt
@@ -112,7 +117,7 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_KEY_LENGTH                 | Gpg desired key length                                                    | 3072
 | PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length                                                 | 3072
 | PASSBOLT_KEY_NAME                   | Key owner name                                                            | Passbolt default user
-| PASSBOLT_KEY_EMAIL                  | Key owner email address                                                   | passbolt@yourdomain.com
+| PASSBOLT_KEY_EMAIL                  | Key owner email address                                                   | <passbolt@yourdomain.com>
 | PASSBOLT_KEY_EXPIRATION             | Key expiration date                                                       | 0, never expires
 | PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                                                         | null
 | PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE | Force calculation of GnuPG fingerprint for server key               | null
@@ -121,9 +126,9 @@ Passbolt docker image provides several environment variables to configure differ
 | PASSBOLT_PLUGINS_EXPORT_ENABLED     | Enable export plugin                                                      | true
 | PASSBOLT_PLUGINS_IMPORT_ENABLED     | Enable import plugin                                                      | true
 | PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register                                             | false
-| PASSBOLT_SSL_FORCE                  | Redirects http to https                                                   | true
+| PASSBOLT_SSL_FORCE                  | Redirects http to https                                                   | false
 | PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                                                          | true
-| SECURITY_SALT                       | CakePHP security salt                                                     | __SALT__
+| SECURITY_SALT                       | CakePHP security salt                                                     | **SALT**
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
 and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
@@ -144,27 +149,30 @@ It it possible to mount the desired configuration files as volumes.
 It is also possible to mount a ssl certificate on the following paths:
 
 For **image: passbolt/passbolt:latest-ce-non-root**
+
 * /etc/passbolt/certs/certificate.crt
 * /etc/passbolt/certs/certificate.key
 
 For **image: passbolt/passbolt:latest-ce**
+
 * /etc/ssl/certs/certificate.crt
 * /etc/ssl/certs/certificate.key
 
 ### Database SSL certificate files
 
 If Database SSL certs provided, you must mount mysql/mariadb specific conf on the following paths:
+
 * /etc/mysql/conf.d # if using mysql
 * /etc/mysql/mariadb.conf.d/ #if using mariadb
 
 Example:
+
 ```
 [client]
 ssl-ca=/etc/mysql/ssl/ca-cert.pem
 ssl-cert=/etc/mysql/ssl/server-cert.pem
 ssl-key=/etc/mysql/ssl/server-key.pem
 ```
-
 
 ### CLI healthcheck
 
@@ -173,16 +181,16 @@ In order to run the healthcheck from the CLI on the container:
 On a root docker image:
 
 ```
-$ su -s /bin/bash www-data
-$ export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
-$ bin/cake passbolt healthcheck
+su -s /bin/bash www-data
+export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
+bin/cake passbolt healthcheck
 ```
 
 Non root image:
 
 ```
-$ export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
-$ bin/cake passbolt healthcheck
+export PASSBOLT_GPG_SERVER_KEY_FINGERPRINT="$(su -c "gpg --homedir $GNUPGHOME --list-keys --with-colons ${PASSBOLT_KEY_EMAIL:-passbolt@yourdomain.com} |grep fpr |head -1| cut -f10 -d:" -ls /bin/bash www-data)"
+bin/cake passbolt healthcheck
 ```
 
 ## Docker secrets support
@@ -190,7 +198,7 @@ $ bin/cake passbolt healthcheck
 As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
 
 ```
-$ docker run --name passsbolt -e DATASOURCES_DEFAULT_PASSWORD_FILE=/run/secrets/db-password -d passbolt/passbolt
+docker run --name passsbolt -e DATASOURCES_DEFAULT_PASSWORD_FILE=/run/secrets/db-password -d passbolt/passbolt
 ```
 
 Currently, this is only supported for DATASOURCES_DEFAULT_PASSWORD, DATASOURCES_DEFAULT_HOST, DATASOURCES_DEFAULT_USERNAME, DATASOURCES_DEFAULT_DATABASE
@@ -198,15 +206,15 @@ Currently, this is only supported for DATASOURCES_DEFAULT_PASSWORD, DATASOURCES_
 Following the behaviour we use to mount docker secrets as environment variables, it is also posible to mount docker secrets as a file inside the passbolt container. So, for some secret files the user can store them using docker secrets and then inject them into the container with a env variable and the entrypoint script will create a symlink to the proper path.
 
 ```
-$ docker run --name passsbolt -e PASSBOLT_SSL_SERVER_CERT_FILE=/run/secrets/ssl-cert -d passbolt/passbolt
+docker run --name passsbolt -e PASSBOLT_SSL_SERVER_CERT_FILE=/run/secrets/ssl-cert -d passbolt/passbolt
 ```
 
 This feature is only supported for:
 
-- PASSBOLT_SSL_SERVER_CERT_FILE that points to /etc/ssl/certs/certificate.crt
-- PASSBOLT_SSL_SERVER_KEY_FILE that points to /etc/ssl/certs/certificate.key
-- PASSBOLT_GPG_SERVER_KEY_PRIVATE_FILE that points to /etc/passbolt/gpg/serverkey_private.asc
-- PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE that points to /etc/passbolt/gpg/serverkey.asc
+* PASSBOLT_SSL_SERVER_CERT_FILE that points to /etc/ssl/certs/certificate.crt
+* PASSBOLT_SSL_SERVER_KEY_FILE that points to /etc/ssl/certs/certificate.key
+* PASSBOLT_GPG_SERVER_KEY_PRIVATE_FILE that points to /etc/passbolt/gpg/serverkey_private.asc
+* PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE that points to /etc/passbolt/gpg/serverkey.asc
 
 ## Develop on Passbolt
 
@@ -219,4 +227,3 @@ If you would like to setup Passbolt for development purposes, please follow the 
 ```bash
 PASSBOLT_FLAVOUR=ce PASSBOLT_COMPONENT=stable ROOTLESS=false bundle exec rake spec
 ```
-
