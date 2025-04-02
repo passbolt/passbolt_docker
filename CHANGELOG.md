@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/4.1.0...HEAD)
+- Add EMAIL_TRANSPORT_DEFAULT_PASSWORD and EMAIL_TRANSPORT_DEFAULT_PASSWORD to docker secrets. 
 
 ## [4.1.0](https://github.com/passbolt/passbolt_docker/compare/4.0.0...4.1.0) - 2024-12-30
 
