@@ -65,7 +65,6 @@ COPY scripts/entrypoint/docker-entrypoint.sh /docker-entrypoint.sh
 COPY scripts/entrypoint/passbolt/entrypoint.sh /passbolt/entrypoint.sh
 COPY scripts/entrypoint/passbolt/env.sh /passbolt/env.sh
 COPY scripts/entrypoint/passbolt/deprecated_paths.sh /passbolt/deprecated_paths.sh
-COPY scripts/entrypoint/passbolt/entropy.sh /passbolt/entropy.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
 
 RUN chmod 0644 /etc/supervisor/conf.d/* \

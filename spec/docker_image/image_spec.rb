@@ -105,7 +105,6 @@ describe 'Dockerfile' do
         expect(file('/passbolt/entrypoint.sh')).to exist and be_readable.by(passbolt_owner)
       end
       expect(file('/passbolt/env.sh')).to exist and be_readable.by(passbolt_owner)
-      expect(file('/passbolt/entropy.sh')).to exist and be_readable.by(passbolt_owner)
       expect(file('/passbolt/deprecated_paths.sh')).to exist and be_readable.by(passbolt_owner)
     end
   end
