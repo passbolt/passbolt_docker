@@ -3,8 +3,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/4.1.0...HEAD)
-- Add EMAIL_TRANSPORT_DEFAULT_PASSWORD and EMAIL_TRANSPORT_DEFAULT_PASSWORD to docker secrets. 
+## [Unreleased](https://github.com/passbolt/passbolt_docker/compare/4.1.1...HEAD)
+
+## [4.1.1](https://github.com/passbolt/passbolt_docker/compare/4.1.0...4.1.1) - 2025-04-02
+
+### Added
+
+- Support EMAIL_TRANSPORT_DEFAULT_PASSWORD and EMAIL_TRANSPORT_DEFAULT_PASSWORD to docker secrets.
+
+### Fixed
+
+- Readme requirements no longer contain rng/tools or haveged mentions. Kernels newer than 5.12 should not require such tools for entropy generation
+- Readme instructions for non-root first user creation added
+- Readme PASSBOLT_SSL_FORCE default value updated to false
+
+### Changed
+
+- Entrypoint no longer checks for entropy_avail size. Fixes #229
 
 ## [4.1.0](https://github.com/passbolt/passbolt_docker/compare/4.0.0...4.1.0) - 2024-12-30
 
