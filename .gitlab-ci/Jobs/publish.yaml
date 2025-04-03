@@ -95,7 +95,7 @@ publish-ce:
     PASSBOLT_IMAGE_FLAVOUR: "ce"
   script:
     - *manifest-latest-yaml
-    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml --type oci
+    - ./manifest-tool-linux-amd64 push --type oci from-spec manifests.yaml
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:latest" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest"
