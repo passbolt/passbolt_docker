@@ -70,9 +70,9 @@
   extends: .rules
   stage: publish
   variables:
-    MANIFEST_TOOL_VERSION: "2.0.8"
+    MANIFEST_TOOL_VERSION: "2.1.9"
     DOCKER_HUB_PASSBOLT_REGISTRY: "docker.io/passbolt/passbolt"
-    CRANE_VERSION: "v0.14.0"
+    CRANE_VERSION: "v0.20.3"
   before_script:
     - mkdir -p ~/.docker
     - *docker-authentication
@@ -95,7 +95,7 @@ publish-ce:
     PASSBOLT_IMAGE_FLAVOUR: "ce"
   script:
     - *manifest-latest-yaml
-    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml
+    - ./manifest-tool-linux-amd64 push from-spec manifests.yaml --type oci
     - crane cp "${CI_REGISTRY_IMAGE}:latest-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}" "${DOCKER_HUB_PASSBOLT_REGISTRY}:${PASSBOLT_VERSION}-${PASSBOLT_IMAGE_FLAVOUR}"
     - crane cp "${CI_REGISTRY_IMAGE}:latest" "${DOCKER_HUB_PASSBOLT_REGISTRY}:latest"
