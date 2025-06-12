@@ -53,7 +53,8 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
-        'PASSBOLT_SSL_FORCE=true'
+        'PASSBOLT_SSL_FORCE=true',
+        'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true'
       ],
       'Image' => @image.id,
       'Binds' => $binds
@@ -74,6 +75,8 @@ describe 'passbolt_api service' do
   let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
   let(:uri)               { '/healthcheck/status.json' }
   let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+  let(:jwt_conf)          { "#{PASSBOLT_CONFIG_PATH + '/jwt'}" }
+  let(:jwt_key_pair)      { ["#{jwt_conf}/jwt.key", "#{jwt_conf}/jwt.pem"] }
 
   let(:rootless_env_setup) do
     # The sed command needs to create a temporary file on the same directory as the destination file (/etc/cron.d).
@@ -167,6 +170,28 @@ describe 'passbolt_api service' do
     end
   end
 
+  describe 'jwt configuration' do
+    it 'should have the correct permissions' do
+      expect(file(jwt_conf)).to be_a_directory
+      expect(file(jwt_conf)).to be_mode 550
+      expect(file(jwt_conf)).to be_owned_by($root_user)
+      expect(file(jwt_conf)).to be_grouped_into($config_group)
+    end
+
+    describe 'JWT key file' do
+      it 'should exist' do
+        expect(file("#{jwt_conf}/jwt.key")).to exist
+        expect(file("#{jwt_conf}/jwt.key")).to be_mode 440
+      end
+    end
+
+    describe 'JWT pem file' do
+      it 'should exist' do
+        expect(file("#{jwt_conf}/jwt.pem")).to exist
+        expect(file("#{jwt_conf}/jwt.pem")).to be_mode 440
+      end
+    end
+  end
   describe 'cron service' do
     context 'cron process' do
       it 'is running supervised' do
