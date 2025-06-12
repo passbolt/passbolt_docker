@@ -176,7 +176,7 @@ describe 'Dockerfile' do
   describe 'jwt configuration' do
     it 'should have the correct permissions' do
       expect(file(jwt_conf)).to be_a_directory
-      expect(file(jwt_conf)).to be_mode 770
+      expect(file(jwt_conf)).to be_mode 750
       expect(file(jwt_conf)).to be_owned_by($root_user)
       expect(file(jwt_conf)).to be_grouped_into($config_group)
     end

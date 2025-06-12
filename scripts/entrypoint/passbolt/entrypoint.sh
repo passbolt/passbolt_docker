@@ -76,9 +76,11 @@ function migrate_command() {
 
 function jwt_keys_creation() {
   if [[ $PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED == "true" && (! -f $passbolt_config/jwt/jwt.key || ! -f $passbolt_config/jwt/jwt.pem) ]]; then
+    chmod 770 "$passbolt_config/jwt"
     su -c '/usr/share/php/passbolt/bin/cake passbolt create_jwt_keys' -s /bin/bash www-data
-    chmod 640 "$passbolt_config/jwt/jwt.key" && chown root:www-data "$passbolt_config/jwt/jwt.key"
-    chmod 640 "$passbolt_config/jwt/jwt.pem" && chown root:www-data "$passbolt_config/jwt/jwt.pem"
+    chmod 440 "$passbolt_config/jwt/jwt.key" && chown root:www-data "$passbolt_config/jwt/jwt.key"
+    chmod 440 "$passbolt_config/jwt/jwt.pem" && chown root:www-data "$passbolt_config/jwt/jwt.pem"
+    chmod 550 "$passbolt_config/jwt"
   fi
 }
 
