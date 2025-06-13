@@ -61,7 +61,7 @@ docker-compose -f dev/docker-compose-dev.yaml up -d
 7. Create the first user (the administrator) by replacing the below command with your own data. More details [here](https://help.passbolt.com/hosting/install/ce/docker).
 ```
 cd passbolt_docker
-docker-compose -f dev/docker-compose-ce.yaml exec passbolt /bin/bash -c \
+docker-compose -f dev/docker-compose-dev.yaml exec passbolt /bin/bash -c \
   'su -m -c "/var/www/passbolt/bin/cake passbolt register_user -u myuser@passbolt.local \
    -f name  -l lastname  -r admin" -s /bin/sh www-data'
 ```
