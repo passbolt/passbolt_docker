@@ -19,6 +19,8 @@ services:
       - db
     environment:
       APP_FULL_BASE_URL: https://passbolt.local
+      #If you don't want to mount the subscription key, you can use the environment variable below instead
+      #SUBSCRIPTION_KEY: ""
       DATASOURCES_DEFAULT_HOST: "db"
       DATASOURCES_DEFAULT_USERNAME: "passbolt"
       DATASOURCES_DEFAULT_PASSWORD: "P4ssb0lt"

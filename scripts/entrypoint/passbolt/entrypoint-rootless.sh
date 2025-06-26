@@ -56,6 +56,11 @@ function import_subscription() {
     echo "Subscription file found: $SUBSCRIPTION_FILE"
     /usr/share/php/passbolt/bin/cake passbolt subscription_import --file "$SUBSCRIPTION_FILE"
   fi
+
+  if [ -n "$SUBSCRIPTION_KEY" ]; then
+    echo "Using SUBSCRIPTION_KEY environment variable"
+    /usr/share/php/passbolt/bin/cake passbolt subscription_import --text "$SUBSCRIPTION_KEY"
+  fi
 }
 
 function install_command() {
@@ -96,7 +101,6 @@ function install() {
   fi
 
   import_subscription || true
-
   jwt_keys_creation
   install_command || migrate_command && echo "Enjoy! ☮"
   check_fullbase_url

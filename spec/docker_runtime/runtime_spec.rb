@@ -27,35 +27,49 @@ describe 'passbolt_api service' do
 
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
-    @image = if ENV['GITLAB_CI']
-               if ENV['ROOTLESS'] == 'true'
-                 Docker::Image.create(
-                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
-                 )
-               else
-                 Docker::Image.create(
-                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
-                 )
-               end
-             else
-               Docker::Image.build_from_dir(
-                 ROOT_DOCKERFILES,
-                 {
-                   'dockerfile' => $dockerfile,
-                   'buildargs' => JSON.generate($buildargs)
-                 }
-               )
-             end
+@image = if ENV['GITLAB_CI']
+           # Check if we have a timestamped image from this pipeline's build job
+           if ENV['USE_TIMESTAMPED_IMAGE'] == 'true' && ENV['IMAGE_TAG']
+             # Use fresh image from build artifact
+             Docker::Image.create(
+               'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['IMAGE_TAG']}"
+             )
+           elsif ENV['ROOTLESS'] == 'true'
+             # Fallback to rootless latest
+             Docker::Image.create(
+               'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
+             )
+           else
+             # Fallback to root latest
+             Docker::Image.create(
+               'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
+             )
+           end
+         else
+           Docker::Image.build_from_dir(
+             ROOT_DOCKERFILES,
+             {
+               'dockerfile' => $dockerfile,
+               'buildargs' => JSON.generate($buildargs)
+             }
+           )
+         end
+
+    container_env = [
+      "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
+      'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
+      'DATASOURCES_DEFAULT_USERNAME=passbolt',
+      'DATASOURCES_DEFAULT_DATABASE=passbolt',
+      'PASSBOLT_SSL_FORCE=true',
+      'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true'
+    ]
+
+    if ENV['PASSBOLT_FLAVOUR'] == 'pro' && !ENV['SUBSCRIPTION_KEY'].to_s.empty?
+      container_env << "SUBSCRIPTION_KEY=#{ENV['SUBSCRIPTION_KEY']}"
+    end
 
     @container = Docker::Container.create(
-      'Env' => [
-        "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
-        'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
-        'DATASOURCES_DEFAULT_USERNAME=passbolt',
-        'DATASOURCES_DEFAULT_DATABASE=passbolt',
-        'PASSBOLT_SSL_FORCE=true',
-        'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true'
-      ],
+      'Env' => container_env,
       'Image' => @image.id,
       'HostConfig' => {
         'Binds' => $binds
@@ -167,7 +181,7 @@ describe 'passbolt_api service' do
       expect(command("#{curl} | grep 'X-Powered-By: PHP'").stdout).to be_empty
     end
 
-    it 'returns 200' do 
+    it 'returns 200' do
       expect(command(curl).stdout).to contain 'HTTP/2 200'
     end
 
@@ -261,6 +275,67 @@ describe 'passbolt_api service' do
       expect(output).to include('[PASS] No error found')
     end
   end
+
+
+ describe 'subscription import' do
+   before { skip('Only relevant for PRO images') unless ENV['PASSBOLT_FLAVOUR'] == 'pro' }
+
+   context 'subscription key behavior in CI' do
+     it 'imports subscription successfully when SUBSCRIPTION_KEY is provided' do
+       skip('SUBSCRIPTION_KEY not provided in CI') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
+       skip('Not running in CI environment') unless ENV['GITLAB_CI']
+
+       logs = @container.logs(stdout: true, stderr: true)
+
+       expect(logs).to match(/Using SUBSCRIPTION_KEY environment variable/)
+       expect(logs).not_to match(/Subscription key could not be found/)
+     end
+
+     it 'shows expected behavior when subscription key is not provided' do
+       skip('SUBSCRIPTION_KEY is provided, testing without key not possible') unless ENV['SUBSCRIPTION_KEY'].to_s.empty?
+       skip('Not running in CI environment') unless ENV['GITLAB_CI']
+
+       logs = @container.logs(stdout: true, stderr: true)
+
+       expect(logs).to match(/Subscription key could not be found/)
+       expect(@container.json['State']['Running']).to be true
+     end
+   end
+
+   context 'invalid subscription key handling' do
+     before(:all) do
+       skip('Only test invalid key behavior in CI') unless ENV['GITLAB_CI']
+
+       @invalid_key_container = Docker::Container.create(
+         'Env' => [
+           "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
+           'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
+           'DATASOURCES_DEFAULT_USERNAME=passbolt',
+           'DATASOURCES_DEFAULT_DATABASE=passbolt',
+           'PASSBOLT_SSL_FORCE=true',
+           'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true',
+           'SUBSCRIPTION_KEY=invalid-not-base64-!@#$'
+         ],
+         'Image' => @image.id,
+         'Binds' => $binds
+       )
+       @invalid_key_container.start
+       sleep 15
+     end
+
+     after(:all) do
+       @invalid_key_container.kill if @invalid_key_container
+     end
+
+     it 'fails gracefully with invalid SUBSCRIPTION_KEY' do
+       logs = @invalid_key_container.logs(stdout: true, stderr: true)
+
+       expect(logs).to match(/Using SUBSCRIPTION_KEY environment variable/)
+       expect(logs).to match(/error|Error|failed|Failed|invalid|Invalid/i)
+       expect(@invalid_key_container.json['State']['Running']).to be true
+     end
+   end
+ end
 
   describe 'jwt configuration' do
     it 'should have the correct permissions' do
