@@ -399,7 +399,7 @@ end
   describe 'jwt configuration' do
     it 'should have the correct permissions' do
       expect(file(jwt_conf)).to be_a_directory
-      expect(file(jwt_conf)).to be_mode 550
+      expect(file(jwt_conf)).to be_mode 750
       expect(file(jwt_conf)).to be_owned_by($root_user)
       expect(file(jwt_conf)).to be_grouped_into($config_group)
     end
@@ -407,14 +407,14 @@ end
     describe 'JWT key file' do
       it 'should exist' do
         expect(file("#{jwt_conf}/jwt.key")).to exist
-        expect(file("#{jwt_conf}/jwt.key")).to be_mode 440
+        expect(file("#{jwt_conf}/jwt.key")).to be_mode 640
       end
     end
 
     describe 'JWT pem file' do
       it 'should exist' do
         expect(file("#{jwt_conf}/jwt.pem")).to exist
-        expect(file("#{jwt_conf}/jwt.pem")).to be_mode 440
+        expect(file("#{jwt_conf}/jwt.pem")).to be_mode 640
       end
     end
   end
