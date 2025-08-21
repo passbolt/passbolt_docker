@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 ARG API_REPOSITORY="https://github.com/passbolt/passbolt_api"
 ARG IMAGE_DESCRIPTION="Passbolt CE Backend, a JSON API written with CakePHP"
@@ -29,7 +29,7 @@ ARG PASSBOLT_USER_UID=33
 ARG PASSBOLT_GROUP_GID=33
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
-ENV PHP_VERSION=8.2
+ENV PHP_VERSION=8.4
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV SUPERCRONIC_VERSION=0.2.28
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v${SUPERCRONIC_VERSION}/supercronic-linux-${SUPERCRONIC_ARCH} \
