@@ -170,6 +170,94 @@ describe 'passbolt_api service' do
     end
   end
 
+  describe 'gpg key generation' do
+    let(:gpg_dir) { '/etc/passbolt/gpg' }
+    let(:gpg_private_key) { "#{gpg_dir}/serverkey_private.asc" }
+    let(:gpg_public_key) { "#{gpg_dir}/serverkey.asc" }
+    let(:gnupghome) { '/var/lib/passbolt/.gnupg' }
+
+    let(:list_keys_cmd) do
+       if ENV['ROOTLESS'] == 'true'
+         ['gpg', '--homedir', gnupghome, '--list-keys', '--with-colons']
+       else
+         ['su', '-s', '/bin/bash', '-c', "gpg --homedir #{gnupghome} --list-keys --with-colons", 'www-data']
+       end
+     end
+
+     let(:healthcheck_cmd) do
+       if ENV['ROOTLESS'] == 'true'
+         ['bash', '-c', 'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --gpg']
+       else
+         ['su', '-s', '/bin/bash', '-c', 'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --gpg', 'www-data']
+       end
+     end
+
+    describe 'generated keys' do
+      it 'should have created private key file' do
+        expect(file(gpg_private_key)).to exist
+        expect(file(gpg_private_key)).to be_file
+        expect(file(gpg_private_key)).to be_readable
+        expect(file(gpg_private_key)).to be_owned_by('www-data')
+        expect(file(gpg_private_key)).to be_grouped_into('www-data')
+      end
+
+      it 'should have created public key file' do
+        expect(file(gpg_public_key)).to exist
+        expect(file(gpg_public_key)).to be_file
+        expect(file(gpg_public_key)).to be_readable
+        expect(file(gpg_public_key)).to be_owned_by('www-data')
+        expect(file(gpg_public_key)).to be_grouped_into('www-data')
+      end
+
+      it 'should have correct key usage for primary key' do
+        output = @container.exec(list_keys_cmd)[0].join
+        pub_line = output.lines.find { |line| line.start_with?('pub:') }
+        expect(pub_line).not_to be_nil
+
+        fields = pub_line.split(':')
+        usage_flags = fields[11]
+
+        expect(usage_flags).to include('s')
+        expect(usage_flags).to include('c')
+        expect(usage_flags).not_to include('e')
+
+      end
+
+
+      it 'should have correct key usage for subkey' do
+        output = @container.exec(list_keys_cmd)[0].join
+        sub_line = output.lines.find { |line| line.start_with?('sub:') }
+        expect(sub_line).not_to be_nil
+
+        fields = sub_line.split(':')
+        usage_flags = fields[11]
+
+        expect(usage_flags).to include('e')
+        expect(usage_flags).not_to include('s')
+        expect(usage_flags).not_to include('c')
+      end
+    end
+
+      it 'should pass all GPG checks' do
+        output = @container.exec(healthcheck_cmd)[0].join
+
+        expect(output).to include('[PASS] PHP GPG Module is installed and loaded')
+        expect(output).to include('[PASS] The environment variable GNUPGHOME is set')
+        expect(output).to include('[PASS] The server OpenPGP key is not the default one')
+        expect(output).to include('[PASS] The public key file is defined')
+        expect(output).to include('[PASS] The private key file is defined')
+
+        pass_count = output.scan(/\[PASS\]/).count
+        fail_count = output.scan(/\[FAIL\]/).count
+
+        expect(pass_count).to be >= 10
+        expect(fail_count).to eq(0)
+
+        expect(output).to include('[PASS] No error found')
+      end
+  end
+
+
   describe 'jwt configuration' do
     it 'should have the correct permissions' do
       expect(file(jwt_conf)).to be_a_directory

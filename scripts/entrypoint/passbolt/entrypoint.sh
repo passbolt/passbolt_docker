@@ -6,10 +6,12 @@ function gpg_gen_key() {
   expiration="${PASSBOLT_KEY_EXPIRATION:-0}"
 
   su -c "gpg --homedir $GNUPGHOME --batch --no-tty --gen-key <<EOF
-    Key-Type: default
+    Key-Type: RSA
 		Key-Length: $key_length
-		Subkey-Type: default
+		Key-Usage: sign,cert
+		Subkey-Type: RSA
 		Subkey-Length: $subkey_length
+		Subkey-Usage: encrypt
     Name-Real: $key_name
     Name-Email: $key_email
     Expire-Date: $expiration
