@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 ARG API_REPOSITORY="https://github.com/passbolt/passbolt_api"
 ARG IMAGE_DESCRIPTION="Passbolt CE Backend, a JSON API written with CakePHP"
@@ -22,7 +22,7 @@ ARG PASSBOLT_REPO_KEY_PATH="/usr/share/keyrings/passbolt-repository.gpg"
 ARG PASSBOLT_SOURCES_LIST_PATH="/etc/apt/sources.list.d/passbolt.sources"
 
 ENV PASSBOLT_PKG_KEY=0xDE8B853FC155581D
-ENV PHP_VERSION=8.2
+ENV PHP_VERSION=8.4
 ENV GNUPGHOME=/var/lib/passbolt/.gnupg
 ENV PASSBOLT_FLAVOUR=$PASSBOLT_FLAVOUR
 ENV PASSBOLT_PKG="passbolt-$PASSBOLT_FLAVOUR-server"
