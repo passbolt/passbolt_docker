@@ -66,7 +66,7 @@ build-ce-stable-docker:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: 642f4f5a2b67f3400b5ea71ff24f18c0a7d77d49
+    SUPERCRONIC_SHA1SUM: e8631edc1775000d119b70fd40339a7238eece14
     PLATFORM: "linux/amd64"
 
 build-ce-stable-rootless:
@@ -75,7 +75,7 @@ build-ce-stable-rootless:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: fe1a81a8a5809deebebbd7a209a3b97e542e2bcd
+    SUPERCRONIC_SHA1SUM: e8631edc1775000d119b70fd40339a7238eece14
     PLATFORM: "linux/amd64"
 
 build-pro-stable-docker:
@@ -84,7 +84,7 @@ build-pro-stable-docker:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: 642f4f5a2b67f3400b5ea71ff24f18c0a7d77d49
+    SUPERCRONIC_SHA1SUM: e8631edc1775000d119b70fd40339a7238eece14
     PLATFORM: "linux/amd64"
 
 build-pro-stable-rootless:
@@ -93,7 +93,7 @@ build-pro-stable-rootless:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: fe1a81a8a5809deebebbd7a209a3b97e542e2bcd
+    SUPERCRONIC_SHA1SUM: e8631edc1775000d119b70fd40339a7238eece14
     PLATFORM: "linux/amd64"
 
 build-ce-stable-docker-arm64-v8:
@@ -105,7 +105,7 @@ build-ce-stable-docker-arm64-v8:
     DOCKER_TAG: "root-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: 6f2247cb06a0845e3e4ae1b5c95e4d0ed0dcfedd
+    SUPERCRONIC_SHA1SUM: 4ab6343b52bf9da592e8b4bb7ae6eb5a8e21b71e
 
 build-ce-stable-rootless-arm64-v8:
   tags:
@@ -116,7 +116,7 @@ build-ce-stable-rootless-arm64-v8:
     DOCKER_TAG: "rootless-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: 6f2247cb06a0845e3e4ae1b5c95e4d0ed0dcfedd
+    SUPERCRONIC_SHA1SUM: 4ab6343b52bf9da592e8b4bb7ae6eb5a8e21b71e
 
 build-pro-stable-docker-arm64-v8:
   tags:
@@ -127,7 +127,7 @@ build-pro-stable-docker-arm64-v8:
     DOCKER_TAG: "root-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: 6f2247cb06a0845e3e4ae1b5c95e4d0ed0dcfedd
+    SUPERCRONIC_SHA1SUM: 4ab6343b52bf9da592e8b4bb7ae6eb5a8e21b71e
 
 build-pro-stable-rootless-arm64-v8:
   tags:
@@ -138,7 +138,7 @@ build-pro-stable-rootless-arm64-v8:
     DOCKER_TAG: "rootless-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: 6f2247cb06a0845e3e4ae1b5c95e4d0ed0dcfedd
+    SUPERCRONIC_SHA1SUM: 4ab6343b52bf9da592e8b4bb7ae6eb5a8e21b71e
 
 build-ce-stable-docker-arm-v5:
   tags:
@@ -149,7 +149,7 @@ build-ce-stable-docker-arm-v5:
     DOCKER_TAG: "root-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
 
 build-ce-stable-rootless-arm-v5:
   tags:
@@ -160,7 +160,7 @@ build-ce-stable-rootless-arm-v5:
     DOCKER_TAG: "rootless-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
 
 build-pro-stable-docker-arm-v5:
   tags:
@@ -171,7 +171,7 @@ build-pro-stable-docker-arm-v5:
     DOCKER_TAG: "root-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
 
 build-pro-stable-rootless-arm-v5:
   tags:
@@ -182,7 +182,7 @@ build-pro-stable-rootless-arm-v5:
     DOCKER_TAG: "rootless-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
 
 build-ce-stable-docker-arm-v7:
   tags:
@@ -193,7 +193,7 @@ build-ce-stable-docker-arm-v7:
     DOCKER_TAG: "root-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
 
 build-ce-stable-rootless-arm-v7:
   tags:
@@ -204,7 +204,7 @@ build-ce-stable-rootless-arm-v7:
     DOCKER_TAG: "rootless-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
 
 build-pro-stable-docker-arm-v7:
   tags:
@@ -215,7 +215,7 @@ build-pro-stable-docker-arm-v7:
     DOCKER_TAG: "root-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
 
 build-pro-stable-rootless-arm-v7:
   tags:
@@ -226,4 +226,4 @@ build-pro-stable-rootless-arm-v7:
     DOCKER_TAG: "rootless-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: 57cf7d4f0b85255bc45150ff6603358ffdfc3a00
+    SUPERCRONIC_SHA1SUM: 4ba4cd0da62082056b6def085fa9377d965fbe01
