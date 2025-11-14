@@ -36,7 +36,7 @@ describe 'Dockerfile' do
   end
 
   let(:nginx_conf)      { '/etc/nginx/nginx.conf' }
-  let(:php_conf)        { '/etc/php/7.4/fpm/php.ini' }
+  let(:php_conf)        { '/etc/php/8.4/fpm/php.ini' }
   let(:site_conf)       { '/etc/nginx/sites-enabled/nginx-passbolt.conf' }
   let(:supervisor_conf) do
     ['/etc/supervisor/conf.d/nginx.conf',
@@ -105,7 +105,6 @@ describe 'Dockerfile' do
         expect(file('/passbolt/entrypoint.sh')).to exist and be_readable.by(passbolt_owner)
       end
       expect(file('/passbolt/env.sh')).to exist and be_readable.by(passbolt_owner)
-      expect(file('/passbolt/entropy.sh')).to exist and be_readable.by(passbolt_owner)
       expect(file('/passbolt/deprecated_paths.sh')).to exist and be_readable.by(passbolt_owner)
     end
   end
@@ -177,7 +176,7 @@ describe 'Dockerfile' do
   describe 'jwt configuration' do
     it 'should have the correct permissions' do
       expect(file(jwt_conf)).to be_a_directory
-      expect(file(jwt_conf)).to be_mode 770
+      expect(file(jwt_conf)).to be_mode 750
       expect(file(jwt_conf)).to be_owned_by($root_user)
       expect(file(jwt_conf)).to be_grouped_into($config_group)
     end

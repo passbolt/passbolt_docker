@@ -55,18 +55,27 @@ docker run --rm --interactive --tty --volume $PWD:/app composer install --ignore
 6. Spin-up the docker-compose containers (mariadb and passbolt server)
 ```
 cd passbolt_docker
-docker-compose -f dev/docker-compose-dev.yml up -d
+docker-compose -f dev/docker-compose-dev.yaml up -d
 ```
 
 7. Create the first user (the administrator) by replacing the below command with your own data. More details [here](https://help.passbolt.com/hosting/install/ce/docker).
 ```
 cd passbolt_docker
-docker-compose -f dev/docker-compose-ce.yaml exec passbolt /bin/bash -c \
+docker-compose -f dev/docker-compose-dev.yaml exec passbolt /bin/bash -c \
   'su -m -c "/var/www/passbolt/bin/cake passbolt register_user -u myuser@passbolt.local \
    -f name  -l lastname  -r admin" -s /bin/sh www-data'
 ```
 
 8. Copy-paste the output in the browser and you are ready!
+
+# Enable POSTGRES
+
+A postgres service will also be stared if you use the `pgsql` profile:
+```
+docker-compose -f dev/docker-compose-dev.yaml --profile pgsql up
+```
+
+The default env variables are defined in `dev/env/pgsql.env`.
 
 # Setup LDAP
 

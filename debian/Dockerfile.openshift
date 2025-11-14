@@ -84,9 +84,6 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
   && sed -i "s,unix:/run/php/php$PHP_VERSION-fpm.sock,127.0.0.1:9000," /etc/nginx/sites-enabled/nginx-passbolt.conf \
   && sed -i "s,pid = /run/php/php$PHP_VERSION-fpm.pid,pid = /tmp/php$PHP_VERSION-fpm.pid," /etc/php/$PHP_VERSION/fpm/php-fpm.conf \
   && sed -i 's,/var/run/supervisor.sock,/tmp/supervisor.sock,' /etc/supervisor/supervisord.conf \
-  # nginx user must own the cache and etc directory to write cache and tweak the nginx config
-  #&& chown -R www-data:0 /var/cache/nginx \
-  #&& chmod -R g+w /var/cache/nginx \
   && chown -R www-data:0 /etc/nginx \
   && chmod -R g+w /etc/nginx \
   && mkdir /etc/passbolt/certs \
@@ -101,16 +98,16 @@ RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.
   && ln -sf /dev/stderr /var/log/nginx/passbolt-error.log \
   && chown -R www-data:0 /var/log/supervisor \
   && touch /var/www/.profile \
-  && chown www-data:www-data /var/www/.profile \
+  && chown www-data:0 /var/www/.profile \
   && sed -i 's,www-data\s,,' /etc/cron.d/$PASSBOLT_PKG \
   && sed -i "s,__PASSBOLT_PACKAGE__,$PASSBOLT_PKG," /etc/supervisor/conf.d/cron.conf \
   && touch /etc/environment \
-  && chown www-data:www-data /etc/environment \
+  && chown www-data:0 /etc/environment \
   && chmod 600 /etc/environment
 
 COPY conf/php/zz-docker.conf /etc/php/$PHP_VERSION/fpm/pool.d/zz-docker.conf
-COPY scripts/entrypoint/docker-entrypoint.rootless.sh /docker-entrypoint.sh
-COPY scripts/entrypoint/passbolt/entrypoint-rootless.sh /passbolt/entrypoint-rootless.sh
+COPY scripts/entrypoint/docker-entrypoint.openshift.sh /docker-entrypoint.sh
+COPY scripts/entrypoint/passbolt/entrypoint-openshift.sh /passbolt/entrypoint-openshift.sh
 COPY scripts/entrypoint/passbolt/env.sh /passbolt/env.sh
 COPY scripts/entrypoint/passbolt/deprecated_paths.sh /passbolt/deprecated_paths.sh
 COPY scripts/wait-for.sh /usr/bin/wait-for.sh
@@ -119,6 +116,18 @@ RUN chmod 0644 /etc/supervisor/conf.d/* \
   && chmod 0755 /docker-entrypoint.sh \
   && chmod 0755 /passbolt/* \
   && chmod 0755 /usr/bin/wait-for.sh
+
+# Changes ownership of some files for Openshift compatibility  
+RUN chgrp -R 0   /var/lib/passbolt /etc/passbolt /etc/supervisor /etc/environment /var/log/supervisor /var/log/nginx && \
+  chmod -R g=u /var/lib/passbolt /etc/passbolt /etc/supervisor /etc/environment /var/log/supervisor /var/log/nginx && \
+  chgrp 0 /var/run  && \ 
+  chmod g=u /var/run && \ 
+  mkdir /var/run/php && \
+  chgrp -R 0 /var/run/php  && \ 
+  chmod -R g=u /var/run/php
+
+# Openshift uses a random UID which is added to the root group. This mimics the functionality with the default user we provide.
+RUN usermod -a -G root www-data
 
 EXPOSE 8080 4433
 

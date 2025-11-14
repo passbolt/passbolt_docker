@@ -1,6 +1,6 @@
 .upload-files:
   stage: upload-assets
-  image: registry.gitlab.com/passbolt/passbolt-ci-docker-images/gcloud
+  image: gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
   variables:
     BUCKET: "gs://download.passbolt.com"
     PREFIX: "ce/docker"

@@ -3,25 +3,21 @@ require 'spec_helper'
 describe 'passbolt_api service' do
   before(:all) do
     @mysql_image =
-      if ENV['GITLAB_CI']
-        Docker::Image.create(
-          'fromImage' => 'registry.gitlab.com/passbolt/passbolt-ci-docker-images/mariadb-10.3:latest'
-        )
-      else
-        Docker::Image.create('fromImage' => 'mariadb:latest')
-      end
+      Docker::Image.create(
+        'fromImage' => ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX'] ? "#{ENV['CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX']}/mariadb:10.11" : 'mariadb:10.11'
+      )
 
     @mysql = Docker::Container.create(
       'Env' => [
-        'MYSQL_ROOT_PASSWORD=test',
-        'MYSQL_DATABASE=passbolt',
-        'MYSQL_USER=passbolt',
-        'MYSQL_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
+        'MARIADB_ROOT_PASSWORD=test',
+        'MARIADB_DATABASE=passbolt',
+        'MARIADB_USER=passbolt',
+        'MARIADB_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?'
       ],
       'Healthcheck' => {
         "Test": [
           'CMD-SHELL',
-          'mysqladmin ping --silent'
+          'mariadb-admin ping --silent'
         ]
       },
       'Image' => @mysql_image.id
@@ -31,31 +27,25 @@ describe 'passbolt_api service' do
 
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
-    if ENV['GITLAB_CI']
-      Docker.authenticate!(
-        'username' => ENV['CI_REGISTRY_USER'].to_s,
-        'password' => ENV['CI_REGISTRY_PASSWORD'].to_s,
-        'serveraddress' => 'https://registry.gitlab.com/'
-      )
-      @image =
-        if ENV['ROOTLESS'] == 'true'
-          Docker::Image.create(
-            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
-          )
-        else
-          Docker::Image.create(
-            'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
-          )
-        end
-    else
-      @image = Docker::Image.build_from_dir(
-        ROOT_DOCKERFILES,
-        {
-          'dockerfile' => $dockerfile,
-          'buildargs' => JSON.generate($buildargs)
-        }
-      )
-    end
+    @image = if ENV['GITLAB_CI']
+               if ENV['ROOTLESS'] == 'true'
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
+                 )
+               else
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
+                 )
+               end
+             else
+               Docker::Image.build_from_dir(
+                 ROOT_DOCKERFILES,
+                 {
+                   'dockerfile' => $dockerfile,
+                   'buildargs' => JSON.generate($buildargs)
+                 }
+               )
+             end
 
     @container = Docker::Container.create(
       'Env' => [
@@ -63,10 +53,13 @@ describe 'passbolt_api service' do
         'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
-        'PASSBOLT_SSL_FORCE=true'
+        'PASSBOLT_SSL_FORCE=true',
+        'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true'
       ],
       'Image' => @image.id,
-      'Binds' => $binds
+      'HostConfig' => {
+        'Binds' => $binds
+      }
     )
 
     @container.start
@@ -83,11 +76,14 @@ describe 'passbolt_api service' do
 
   let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
   let(:uri)               { '/healthcheck/status.json' }
-  let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
+  let(:curl)              { "curl -sLk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}#{uri}" }
+  let(:jwt_conf)          { "#{PASSBOLT_CONFIG_PATH + '/jwt'}" }
+  let(:jwt_key_pair)      { ["#{jwt_conf}/jwt.key", "#{jwt_conf}/jwt.pem"] }
 
   let(:rootless_env_setup) do
     # The sed command needs to create a temporary file on the same directory as the destination file (/etc/cron.d).
-    # So when running this tests on the rootless image we have to move the crontab file to tmp, execute the sed on it and copy it back to /etc/cron.d.
+    # So when running this tests on the rootless image we have to move the crontab file to tmp, execute the sed on it
+    # and copy it back to /etc/cron.d.
     @container.exec(['cp', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server", '/tmp/passbolt-cron'])
     @container.exec(['cp', "/etc/cron.d/passbolt-#{ENV['PASSBOLT_FLAVOUR']}-server", '/tmp/passbolt-cron-temporary'])
     @container.exec(
@@ -166,9 +162,13 @@ describe 'passbolt_api service' do
   end
 
   describe 'hide information' do
-    let(:curl) { "curl -Isk -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/" }
+    let(:curl) { "curl -skL -D - -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}#{uri} -o /dev/null" }
     it 'hides php version' do
       expect(command("#{curl} | grep 'X-Powered-By: PHP'").stdout).to be_empty
+    end
+
+    it 'returns 200' do 
+      expect(command(curl).stdout).to contain 'HTTP/2 200'
     end
 
     it 'hides nginx version' do
@@ -176,6 +176,114 @@ describe 'passbolt_api service' do
     end
   end
 
+  describe 'gpg key generation' do
+    let(:gpg_dir) { '/etc/passbolt/gpg' }
+    let(:gpg_private_key) { "#{gpg_dir}/serverkey_private.asc" }
+    let(:gpg_public_key) { "#{gpg_dir}/serverkey.asc" }
+    let(:gnupghome) { '/var/lib/passbolt/.gnupg' }
+
+    let(:list_keys_cmd) do
+      if ENV['ROOTLESS'] == 'true'
+        ['gpg', '--homedir', gnupghome, '--list-keys', '--with-colons']
+      else
+        ['su', '-s', '/bin/bash', '-c', "gpg --homedir #{gnupghome} --list-keys --with-colons", 'www-data']
+      end
+    end
+
+    let(:healthcheck_cmd) do
+      if ENV['ROOTLESS'] == 'true'
+        ['bash', '-c', 'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --gpg']
+      else
+        ['su', '-s', '/bin/bash', '-c',
+         'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --gpg', 'www-data']
+      end
+    end
+
+    describe 'generated keys' do
+      it 'should have created private key file' do
+        expect(file(gpg_private_key)).to exist
+        expect(file(gpg_private_key)).to be_file
+        expect(file(gpg_private_key)).to be_readable
+        expect(file(gpg_private_key)).to be_owned_by('www-data')
+        expect(file(gpg_private_key)).to be_grouped_into('www-data')
+      end
+
+      it 'should have created public key file' do
+        expect(file(gpg_public_key)).to exist
+        expect(file(gpg_public_key)).to be_file
+        expect(file(gpg_public_key)).to be_readable
+        expect(file(gpg_public_key)).to be_owned_by('www-data')
+        expect(file(gpg_public_key)).to be_grouped_into('www-data')
+      end
+
+      it 'should have correct key usage for primary key' do
+        output = @container.exec(list_keys_cmd)[0].join
+        pub_line = output.lines.find { |line| line.start_with?('pub:') }
+        expect(pub_line).not_to be_nil
+
+        fields = pub_line.split(':')
+        usage_flags = fields[11]
+
+        expect(usage_flags).to include('s')
+        expect(usage_flags).to include('c')
+        expect(usage_flags).not_to include('e')
+      end
+
+      it 'should have correct key usage for subkey' do
+        output = @container.exec(list_keys_cmd)[0].join
+        sub_line = output.lines.find { |line| line.start_with?('sub:') }
+        expect(sub_line).not_to be_nil
+
+        fields = sub_line.split(':')
+        usage_flags = fields[11]
+
+        expect(usage_flags).to include('e')
+        expect(usage_flags).not_to include('s')
+        expect(usage_flags).not_to include('c')
+      end
+    end
+
+    it 'should pass all GPG checks' do
+      output = @container.exec(healthcheck_cmd)[0].join
+
+      expect(output).to include('[PASS] PHP GPG Module is installed and loaded')
+      expect(output).to include('[PASS] The environment variable GNUPGHOME is set')
+      expect(output).to include('[PASS] The server OpenPGP key is not the default one')
+      expect(output).to include('[PASS] The public key file is defined')
+      expect(output).to include('[PASS] The private key file is defined')
+
+      pass_count = output.scan(/\[PASS\]/).count
+      fail_count = output.scan(/\[FAIL\]/).count
+
+      expect(pass_count).to be >= 10
+      expect(fail_count).to eq(0)
+
+      expect(output).to include('[PASS] No error found')
+    end
+  end
+
+  describe 'jwt configuration' do
+    it 'should have the correct permissions' do
+      expect(file(jwt_conf)).to be_a_directory
+      expect(file(jwt_conf)).to be_mode 550
+      expect(file(jwt_conf)).to be_owned_by($root_user)
+      expect(file(jwt_conf)).to be_grouped_into($config_group)
+    end
+
+    describe 'JWT key file' do
+      it 'should exist' do
+        expect(file("#{jwt_conf}/jwt.key")).to exist
+        expect(file("#{jwt_conf}/jwt.key")).to be_mode 440
+      end
+    end
+
+    describe 'JWT pem file' do
+      it 'should exist' do
+        expect(file("#{jwt_conf}/jwt.pem")).to exist
+        expect(file("#{jwt_conf}/jwt.pem")).to be_mode 440
+      end
+    end
+  end
   describe 'cron service' do
     context 'cron process' do
       it 'is running supervised' do

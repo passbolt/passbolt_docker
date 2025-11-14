@@ -6,6 +6,8 @@
     entrypoint: [""]
   variables:
     COMPONENT: "testing"
+    API_IMAGE_SOURCE: "https://github.com/passbolt/passbolt_api"
+    IMAGE_DESCRIPTION: "Passbolt CE Backend, a JSON API written with CakePHP"
   script:
     - |
       cat << EOF > /kaniko/.docker/config.json
@@ -30,8 +32,11 @@
       echo "********************************************"
     - |
       /kaniko/executor --context $CI_PROJECT_DIR \
-        --build-arg PASSBOLT_FLAVOUR="$PASSBOLT_FLAVOUR" \
+        --build-arg API_REPOSITORY="${API_IMAGE_SOURCE}" \
+        --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+        --build-arg IMAGE_DESCRIPTION="${IMAGE_DESCRIPTION}" \
         --build-arg PASSBOLT_COMPONENT="$COMPONENT" \
+        --build-arg PASSBOLT_FLAVOUR="$PASSBOLT_FLAVOUR" \
         --build-arg SUPERCRONIC_ARCH="${SUPERCRONIC_ARCH}" \
         --build-arg SUPERCRONIC_SHA1SUM="${SUPERCRONIC_SHA1SUM}" \
         --dockerfile $CI_PROJECT_DIR/$DOCKERFILE_PATH \
@@ -49,7 +54,9 @@
 .stable-build-pro:
   extends: .build
   variables:
+    API_IMAGE_SOURCE: "https://bitbucket.org/passbolt_pro/passbolt_pro_api"
     COMPONENT: "stable"
+    IMAGE_DESCRIPTION: "Passbolt PRO Backend, a JSON API written with CakePHP"
     PASSBOLT_FLAVOUR: "pro"
     OPPOSITE_FLAVOUR: "ce"
 
@@ -59,7 +66,7 @@ build-ce-stable-docker:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    SUPERCRONIC_SHA1SUM: c98bbf82c5f648aaac8708c182cc83046fe48423
     PLATFORM: "linux/amd64"
 
 build-ce-stable-rootless:
@@ -68,7 +75,7 @@ build-ce-stable-rootless:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    SUPERCRONIC_SHA1SUM: c98bbf82c5f648aaac8708c182cc83046fe48423
     PLATFORM: "linux/amd64"
 
 build-pro-stable-docker:
@@ -77,7 +84,7 @@ build-pro-stable-docker:
     DOCKERFILE_PATH: "debian/Dockerfile"
     DOCKER_TAG: "root"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    SUPERCRONIC_SHA1SUM: c98bbf82c5f648aaac8708c182cc83046fe48423
     PLATFORM: "linux/amd64"
 
 build-pro-stable-rootless:
@@ -86,7 +93,7 @@ build-pro-stable-rootless:
     DOCKERFILE_PATH: "debian/Dockerfile.rootless"
     DOCKER_TAG: "rootless"
     SUPERCRONIC_ARCH: amd64
-    SUPERCRONIC_SHA1SUM: 2319da694833c7a147976b8e5f337cd83397d6be
+    SUPERCRONIC_SHA1SUM: c98bbf82c5f648aaac8708c182cc83046fe48423
     PLATFORM: "linux/amd64"
 
 build-ce-stable-docker-arm64-v8:
@@ -98,7 +105,7 @@ build-ce-stable-docker-arm64-v8:
     DOCKER_TAG: "root-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
+    SUPERCRONIC_SHA1SUM: 5ef4ccc3d43f12d0f6c3763758bc37cc4e5af76e
 
 build-ce-stable-rootless-arm64-v8:
   tags:
@@ -109,7 +116,7 @@ build-ce-stable-rootless-arm64-v8:
     DOCKER_TAG: "rootless-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
+    SUPERCRONIC_SHA1SUM: 5ef4ccc3d43f12d0f6c3763758bc37cc4e5af76e
 
 build-pro-stable-docker-arm64-v8:
   tags:
@@ -120,7 +127,7 @@ build-pro-stable-docker-arm64-v8:
     DOCKER_TAG: "root-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
+    SUPERCRONIC_SHA1SUM: 5ef4ccc3d43f12d0f6c3763758bc37cc4e5af76e
 
 build-pro-stable-rootless-arm64-v8:
   tags:
@@ -131,7 +138,7 @@ build-pro-stable-rootless-arm64-v8:
     DOCKER_TAG: "rootless-arm64-v8"
     PLATFORM: "linux/arm64/v8"
     SUPERCRONIC_ARCH: arm64
-    SUPERCRONIC_SHA1SUM: c7d51b610d96a9a58d5eef0308922acc8be62eac
+    SUPERCRONIC_SHA1SUM: 5ef4ccc3d43f12d0f6c3763758bc37cc4e5af76e
 
 build-ce-stable-docker-arm-v5:
   tags:
@@ -142,7 +149,7 @@ build-ce-stable-docker-arm-v5:
     DOCKER_TAG: "root-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
 
 build-ce-stable-rootless-arm-v5:
   tags:
@@ -153,7 +160,7 @@ build-ce-stable-rootless-arm-v5:
     DOCKER_TAG: "rootless-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
 
 build-pro-stable-docker-arm-v5:
   tags:
@@ -164,7 +171,7 @@ build-pro-stable-docker-arm-v5:
     DOCKER_TAG: "root-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
 
 build-pro-stable-rootless-arm-v5:
   tags:
@@ -175,7 +182,7 @@ build-pro-stable-rootless-arm-v5:
     DOCKER_TAG: "rootless-arm-v5"
     PLATFORM: "linux/arm/v5"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
 
 build-ce-stable-docker-arm-v7:
   tags:
@@ -186,7 +193,7 @@ build-ce-stable-docker-arm-v7:
     DOCKER_TAG: "root-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
 
 build-ce-stable-rootless-arm-v7:
   tags:
@@ -197,7 +204,7 @@ build-ce-stable-rootless-arm-v7:
     DOCKER_TAG: "rootless-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
 
 build-pro-stable-docker-arm-v7:
   tags:
@@ -208,7 +215,7 @@ build-pro-stable-docker-arm-v7:
     DOCKER_TAG: "root-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
 
 build-pro-stable-rootless-arm-v7:
   tags:
@@ -219,4 +226,22 @@ build-pro-stable-rootless-arm-v7:
     DOCKER_TAG: "rootless-arm-v7"
     PLATFORM: "linux/arm/v7"
     SUPERCRONIC_ARCH: arm
-    SUPERCRONIC_SHA1SUM: f6a61efbdd9a223e750aa03d16bbc417113a64d9
+    SUPERCRONIC_SHA1SUM: 8c3dbef8175e3f579baefe4e55978f2a27cb76b5
+
+build-ce-stable-openshift:
+  extends: .stable-build
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.openshift"
+    DOCKER_TAG: "openshift"
+    SUPERCRONIC_ARCH: amd64
+    SUPERCRONIC_SHA1SUM: c98bbf82c5f648aaac8708c182cc83046fe48423
+    PLATFORM: "linux/amd64"
+
+build-pro-stable-openshift:
+  extends: .stable-build-pro
+  variables:
+    DOCKERFILE_PATH: "debian/Dockerfile.openshift"
+    DOCKER_TAG: "openshift"
+    SUPERCRONIC_ARCH: amd64
+    SUPERCRONIC_SHA1SUM: c98bbf82c5f648aaac8708c182cc83046fe48423
+    PLATFORM: "linux/amd64"

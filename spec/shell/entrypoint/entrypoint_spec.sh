@@ -1,3 +1,25 @@
+Describe "host header warning message"
+  Include "./entrypoint/passbolt/env.sh"
+  It "should show a warning message"
+    
+    When call check_fullbase_url 
+    The status should be success
+    The output should match pattern "*APP_FULL_BASE_URL is not set.*"
+  End
+
+  function environment() {
+    export APP_FULL_BASE_URL="https://passbolt.local"
+  }
+  Before "environment"
+  Include "./entrypoint/passbolt/env.sh"
+  It "should not show a warning message"
+    
+    When call check_fullbase_url 
+    The status should be success
+    The output should be blank
+  End
+End
+
 Describe "secret_file_to_path function"
   # Mocks
   function mkdir() {

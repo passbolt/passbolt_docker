@@ -1,16 +1,16 @@
 services:
-  - name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/dind:latest
+  - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:28.5.2-dind-rootless
     alias: docker
     command: ["--tls=false"]
 
 .test-images:
   extends: .rules
   stage: test
-  image:
-    name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/ruby:latest
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/ruby:slim-bookworm
   script:
-    - bundle install
-    - rake spec:$TEST_NAME
+    - |
+      bundle install
+      rake spec:$TEST_NAME
   variables:
     PASSBOLT_COMPONENT: stable
     PASSBOLT_FLAVOUR: ce
@@ -40,7 +40,7 @@ ce-docker-runtime-no-envs:
   variables:
     TEST_NAME: docker_runtime_no_envs
 
-ce-docker-runtime-no-envs:
+ce-docker-runtime-with-passbolt-php:
   extends: .test-images
   variables:
     TEST_NAME: docker_runtime_with_passbolt_php
@@ -108,6 +108,54 @@ pro-non-root-docker-runtime-no-envs:
     ROOTLESS: "true"
 
 pro-non-root-docker-runtime-with-passbolt-php:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_with_passbolt_php
+    ROOTLESS: "true"
+
+ce-openshift-docker-image:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_image
+    ROOTLESS: "true"
+
+ce-openshift-docker-runtime:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime
+    ROOTLESS: "true"
+
+ce-openshift-docker-runtime-no-envs:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_no_envs
+    ROOTLESS: "true"
+
+ce-openshift-docker-runtime-with-passbolt-php:
+  extends: .test-images
+  variables:
+    TEST_NAME: docker_runtime_with_passbolt_php
+    ROOTLESS: "true"
+
+pro-openshift-docker-image:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_image
+    ROOTLESS: "true"
+
+pro-openshift-docker-runtime:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_runtime
+    ROOTLESS: "true"
+
+pro-openshift-docker-runtime-no-envs:
+  extends: .test-pro-images
+  variables:
+    TEST_NAME: docker_runtime_no_envs
+    ROOTLESS: "true"
+
+pro-openshift-docker-runtime-with-passbolt-php:
   extends: .test-images
   variables:
     TEST_NAME: docker_runtime_with_passbolt_php

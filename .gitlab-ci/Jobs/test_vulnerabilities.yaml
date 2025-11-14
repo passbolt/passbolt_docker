@@ -2,7 +2,7 @@
   extends: .rules
   stage: test-vulnerabilities
   image:
-    name: registry.gitlab.com/passbolt/passbolt-ci-docker-images/aquasec:latest
+    name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/aquasec/trivy:latest
     entrypoint: [""]
   variables:
     TRIVY_USERNAME: $CI_REGISTRY_USER
@@ -36,3 +36,17 @@ docker-pro-rootless:
     PASSBOLT_FLAVOUR: "pro"
     DOCKER_TAG: "rootless"
     OPPOSITE_FLAVOUR: "ce"
+
+docker-pro-openshift:
+  extends: .test-vulnerabilities
+  variables:
+    PASSBOLT_FLAVOUR: "pro"
+    DOCKER_TAG: "openshift"
+    OPPOSITE_FLAVOUR: "ce"
+
+docker-ce-openshift:
+  extends: .test-vulnerabilities
+  variables:
+    PASSBOLT_FLAVOUR: "ce"
+    DOCKER_TAG: "openshift"
+    OPPOSITE_FLAVOUR: "pro"

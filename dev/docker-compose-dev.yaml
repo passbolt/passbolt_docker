@@ -1,8 +1,7 @@
-version: '3.9'
 services:
 
   db:
-    image: mariadb:10.3
+    image: mariadb:10.11
     container_name: db
     env_file:
       - env/mysql.env
@@ -19,6 +18,7 @@ services:
     container_name: passbolt
     depends_on:
       - db
+      - pgsql
       - mailhog
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -45,6 +45,17 @@ services:
       - "9501:8080"
     depends_on:
       - db
+      - pgsql
+
+  pgsql:
+    image: postgres:12.2-alpine
+    env_file:
+      - env/pgsql.env
+    volumes:
+      - pgsql_volume:/var/lib/pgsql
+    ports:
+      - "5432:5432"
+    profiles: ["pgsql"]
 
   mailhog:
     image: mailhog/mailhog:latest
@@ -108,5 +119,6 @@ services:
 
 volumes:
   database_volume:
+  pgsql_volume:
   gpg_volume:
   images_volume:
