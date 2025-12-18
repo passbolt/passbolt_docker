@@ -131,7 +131,7 @@ pro-non-root-docker-runtime-no-envs:
     ROOTLESS: "true"
 
 pro-non-root-docker-runtime-with-passbolt-php:
-  extends: .test-pro-images
+  extends: .test-images
   variables:
     TEST_NAME: docker_runtime_with_passbolt_php
     ROOTLESS: "true"

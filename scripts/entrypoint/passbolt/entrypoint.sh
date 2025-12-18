@@ -55,11 +55,15 @@ function import_subscription() {
   if get_subscription_file; then
     echo "Subscription file found: $SUBSCRIPTION_FILE"
     su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file $SUBSCRIPTION_FILE" -s /bin/bash www-data
+    return
   fi
 
   if [ -n "$SUBSCRIPTION_KEY" ]; then
     echo "Using SUBSCRIPTION_KEY environment variable"
-    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --text $SUBSCRIPTION_KEY" -s /bin/bash www-data
+    echo "$SUBSCRIPTION_KEY" > /etc/passbolt/subscription_key.txt
+    chown www-data:www-data /etc/passbolt/subscription_key.txt
+    chmod 640 /etc/passbolt/subscription_key.txt
+    echo "Subscription key file created at /etc/passbolt/subscription_key.txt"
   fi
 }
 
