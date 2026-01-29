@@ -194,6 +194,34 @@ describe 'Dockerfile' do
     end
   end
 
+  describe '/var/log/passbolt' do
+    it 'exists and is a directory' do
+      expect(file('/var/log/passbolt')).to exist
+      expect(file('/var/log/passbolt')).to be_a_directory
+    end
+
+    it 'has the correct ownership' do
+      expect(file('/var/log/passbolt')).to be_owned_by(passbolt_owner)
+      if ENV['ROOTLESS'] == 'true'
+        expect(file('/var/log/passbolt')).to be_grouped_into('0')
+      else
+        expect(file('/var/log/passbolt')).to be_grouped_into($config_group)
+      end
+    end
+
+    it 'is writable by the owner' do
+      expect(file('/var/log/passbolt')).to be_writable.by('owner')
+    end
+
+    it 'is writable by the group' do
+      if ENV['ROOTLESS'] == 'true'
+        expect(file('/var/log/passbolt')).to be_writable.by('group')
+      else
+        skip 'Group writability only required for rootless/openshift images'
+      end
+    end
+  end
+
   describe '/etc/environment' do
     it 'exists and has the correct permissions' do
       expect(file('/etc/environment')).to exist
