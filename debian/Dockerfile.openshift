@@ -118,8 +118,8 @@ RUN chmod 0644 /etc/supervisor/conf.d/* \
   && chmod 0755 /usr/bin/wait-for.sh
 
 # Changes ownership of some files for Openshift compatibility  
-RUN chgrp -R 0   /var/lib/passbolt /etc/passbolt /etc/supervisor /etc/environment /var/log/supervisor /var/log/nginx && \
-  chmod -R g=u /var/lib/passbolt /etc/passbolt /etc/supervisor /etc/environment /var/log/supervisor /var/log/nginx && \
+RUN chgrp -R 0   /var/lib/passbolt /etc/passbolt /etc/supervisor /etc/environment /var/log/supervisor /var/log/nginx /var/log/passbolt && \
+  chmod -R g=u /var/lib/passbolt /etc/passbolt /etc/supervisor /etc/environment /var/log/supervisor /var/log/nginx /var/log/passbolt && \
   chgrp 0 /var/run  && \ 
   chmod g=u /var/run && \ 
   mkdir /var/run/php && \
