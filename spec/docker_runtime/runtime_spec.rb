@@ -27,7 +27,7 @@ describe 'passbolt_api service' do
 
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
-@image = if ENV['GITLAB_CI']
+    @image = if ENV['GITLAB_CI']
            # Check if we have a timestamped image from this pipeline's build job
            if ENV['USE_TIMESTAMPED_IMAGE'] == 'true' && ENV['IMAGE_TAG']
              # Use fresh image from build artifact
@@ -55,7 +55,7 @@ describe 'passbolt_api service' do
            )
          end
 
-    container_env = [
+    container_base_env = [
       "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
       'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
       'DATASOURCES_DEFAULT_USERNAME=passbolt',
@@ -63,6 +63,7 @@ describe 'passbolt_api service' do
       'PASSBOLT_SSL_FORCE=true',
       'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true'
     ]
+    container_env = container_base_env
 
     if ENV['PASSBOLT_FLAVOUR'] == 'pro' && !ENV['SUBSCRIPTION_KEY'].to_s.empty?
       container_env << "SUBSCRIPTION_KEY=#{ENV['SUBSCRIPTION_KEY']}"
@@ -306,16 +307,11 @@ describe 'passbolt_api service' do
      before(:all) do
        skip('Only test invalid key behavior in CI') unless ENV['GITLAB_CI']
 
+       container_env = container_baseenv
+       container_env << 'SUBSCRIPTION_KEY=invalid-not-base64-!@#$'
+
        @invalid_key_container = Docker::Container.create(
-         'Env' => [
-           "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
-           'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
-           'DATASOURCES_DEFAULT_USERNAME=passbolt',
-           'DATASOURCES_DEFAULT_DATABASE=passbolt',
-           'PASSBOLT_SSL_FORCE=true',
-           'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true',
-           'SUBSCRIPTION_KEY=invalid-not-base64-!@#$'
-         ],
+         'Env' => container_env,
          'Image' => @image.id
        )
        @invalid_key_container.start
