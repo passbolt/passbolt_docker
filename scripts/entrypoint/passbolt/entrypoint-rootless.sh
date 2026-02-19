@@ -55,7 +55,6 @@ function import_subscription() {
   if [ -n "$SUBSCRIPTION_KEY" ]; then
     echo "Using SUBSCRIPTION_KEY environment variable"
     echo "$SUBSCRIPTION_KEY" > /etc/passbolt/subscription_key.txt
-    chown www-data:www-data /etc/passbolt/subscription_key.txt
     chmod 640 /etc/passbolt/subscription_key.txt
     echo "Subscription key file created at /etc/passbolt/subscription_key.txt"
   fi
