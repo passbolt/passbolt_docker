@@ -23,6 +23,11 @@ describe 'passbolt_api service' do
       'Image' => @mysql_image.id
     )
 
+    @binds = []
+    if ENV['PASSBOLT_FLAVOUR'] == 'pro' && File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
+      @binds << "#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"
+    end
+
     @mysql.start
 
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
@@ -59,7 +64,7 @@ describe 'passbolt_api service' do
       ],
       'Image' => @image.id,
       'HostConfig' => {
-        'Binds' => $binds.append(
+        'Binds' => @binds.append(
         "#{FIXTURES_PATH + '/passbolt-no-fingerprint.php'}:#{PASSBOLT_CONFIG_PATH + '/passbolt.php'}",
         "#{FIXTURES_PATH + '/public-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure.key'}",
         "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}"

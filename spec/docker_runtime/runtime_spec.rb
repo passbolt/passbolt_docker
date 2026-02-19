@@ -278,10 +278,9 @@ describe 'passbolt_api service' do
  describe 'subscription import' do
    before { skip('Only relevant for PRO images') unless ENV['PASSBOLT_FLAVOUR'] == 'pro' }
 
-   context 'subscription key behavior in CI' do
+   context 'subscription key behavior' do
      it 'imports subscription successfully when SUBSCRIPTION_KEY is provided' do
-       skip('SUBSCRIPTION_KEY not provided in CI') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
-       skip('Not running in CI environment') unless ENV['GITLAB_CI']
+       skip('SUBSCRIPTION_KEY not provided') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
 
        logs = @container.logs(stdout: true, stderr: true)
 
@@ -289,14 +288,25 @@ describe 'passbolt_api service' do
        expect(logs).not_to match(/Subscription key could not be found/)
      end
 
-     it 'shows expected behavior when subscription key is not provided' do
-       skip('SUBSCRIPTION_KEY is provided, testing without key not possible') unless ENV['SUBSCRIPTION_KEY'].to_s.empty?
-       skip('Not running in CI environment') unless ENV['GITLAB_CI']
+     context 'missing subscription key handling' do
+      before(:all) do
+        @missing_key_container = Docker::Container.create(
+          'Env' => @container_env,
+          'Image' => @image.id
+        )
+        @missing_key_container.start
+        sleep 15
+      end
 
-       logs = @container.logs(stdout: true, stderr: true)
+     after(:all) do
+       @missing_key_container.kill if @missing_key_container
+     end
+
+     it 'fails gracefully with missing SUBSCRIPTION_KEY' do
+       logs = @missing_key_container.logs(stdout: true, stderr: true)
 
        expect(logs).to match(/Subscription key could not be found/)
-       expect(@container.json['State']['Running']).to be true
+       expect(@missing_key_container.json['State']['Running']).to be true
      end
    end
 
@@ -327,8 +337,7 @@ describe 'passbolt_api service' do
 
    context 'file subscription key handling' do
      before(:all) do
-       skip('Only test subcription key behavior in CI') unless ENV['GITLAB_CI']
-
+       skip('LOCAL_SUBSCRIPTION_KEY_PATH doesn\'t exist but is needed') unless File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
        @file_key_container = Docker::Container.create(
          'Env' => @container_env,
          'Image' => @image.id,
@@ -353,6 +362,7 @@ describe 'passbolt_api service' do
      end
    end
  end
+end
 
   describe 'jwt configuration' do
     it 'should have the correct permissions' do
