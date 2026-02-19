@@ -225,6 +225,6 @@ If you would like to setup Passbolt for development purposes, please follow the 
 
 ## Run passbolt docker tests
 
-````bash
-PASSBOLT_FLAVOUR=ce PASSBOLT_COMPONENT=stable ROOTLESS=false bundle exec rake spec```
-````
+```bash
+PASSBOLT_FLAVOUR=ce PASSBOLT_COMPONENT=stable ROOTLESS=false bundle exec rake spec
+```
