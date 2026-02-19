@@ -63,7 +63,7 @@ describe 'passbolt_api service' do
       'PASSBOLT_SSL_FORCE=true',
       'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true'
     ]
-    container_env = @container_env
+    container_env = @container_env.clone
 
     if ENV['PASSBOLT_FLAVOUR'] == 'pro' && !ENV['SUBSCRIPTION_KEY'].to_s.empty?
       container_env << "SUBSCRIPTION_KEY=#{ENV['SUBSCRIPTION_KEY']}"
@@ -302,9 +302,7 @@ describe 'passbolt_api service' do
 
    context 'invalid subscription key handling' do
      before(:all) do
-       skip('Only test invalid key behavior in CI') unless ENV['GITLAB_CI']
-
-       container_env = @container_env
+       container_env = @container_env.clone
        container_env << 'SUBSCRIPTION_KEY=invalid-not-base64-!@#$'
 
        @invalid_key_container = Docker::Container.create(
