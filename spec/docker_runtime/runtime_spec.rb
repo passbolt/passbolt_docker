@@ -335,6 +335,38 @@ describe 'passbolt_api service' do
      end
    end
 
+   context 'file subscription key and subscription variable precedence handling' do
+     before(:all) do
+       skip('SUBSCRIPTION_KEY not provided') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
+       skip('LOCAL_SUBSCRIPTION_KEY_PATH doesn\'t exist but is needed') unless File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
+
+       container_env = @container_env.clone
+       container_env << "SUBSCRIPTION_KEY=#{ENV['SUBSCRIPTION_KEY']}"
+
+       @file_and_variable_key_container = Docker::Container.create(
+         'Env' => container_env,
+         'Image' => @image.id,
+         'HostConfig' => {
+           'Binds' => ["#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"]
+         }
+       )
+       @file_and_variable_key_container.start
+       sleep 15
+     end
+
+     after(:all) do
+       @file_and_variable_key_container.kill if @file_and_variable_key_container
+     end
+
+     it 'uses the subcription key file' do
+       logs = @file_and_variable_key_container.logs(stdout: true, stderr: true)
+
+       expect(logs).to match(/Subscription file found: \/etc\/passbolt\/subscription_key.txt/)
+       expect(logs).not_to match(/Using SUBSCRIPTION_KEY environment variable/)
+       expect(@file_and_variable_key_container.json['State']['Running']).to be true
+     end
+   end
+
    context 'file subscription key handling' do
      before(:all) do
        skip('LOCAL_SUBSCRIPTION_KEY_PATH doesn\'t exist but is needed') unless File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
