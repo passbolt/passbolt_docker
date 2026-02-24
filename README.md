@@ -134,6 +134,19 @@ Passbolt docker image provides several environment variables to configure differ
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
 and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
 
+### Subscription key precedence
+
+On the PRO version, the subscription key can be provided as a file, using a
+[Docker bind mount](https://docs.docker.com/engine/storage/bind-mounts/),
+or using an environment variable named `SUBSCRIPTION_KEY`.
+
+If both are provided at the same time, only the file will be read and the
+environment variable will be ignored.
+
+> ⚠️ As this behavior may change in the future, we **strongly** advise to only
+use one method for providing the subscription key, either using the environment
+variable or the bind mount method, but not both at the same time.
+
 ### Configuration files
 
 What if you already have a set of gpg keys and custom configuration files for passbolt?
