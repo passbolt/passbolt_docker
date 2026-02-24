@@ -36,10 +36,6 @@ function gen_ssl_cert() {
 }
 
 function get_subscription_file() {
-  if [ "${PASSBOLT_FLAVOUR}" == 'ce' ]; then
-    return 1
-  fi
-
   # Look for subscription key on possible paths
   for path in "${subscription_key_file_paths[@]}"; do
     if [ -f "${path}" ]; then
@@ -52,17 +48,20 @@ function get_subscription_file() {
 }
 
 function import_subscription() {
-  if [ -n "$SUBSCRIPTION_KEY" ]; then
-    echo "Using SUBSCRIPTION_KEY environment variable"
-    echo "$SUBSCRIPTION_KEY" > /etc/passbolt/subscription_key.txt
-    chown www-data:www-data /etc/passbolt/subscription_key.txt
-    chmod 640 /etc/passbolt/subscription_key.txt
-    echo "Subscription key file created at /etc/passbolt/subscription_key.txt"
+  if [ "${PASSBOLT_FLAVOUR}" == 'ce' ]; then
+    return
   fi
-  
+
   if get_subscription_file; then
-    echo "Subscription file found: $SUBSCRIPTION_FILE"
-    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file $SUBSCRIPTION_FILE" -s /bin/bash www-data
+    echo "Subscription file found: ${SUBSCRIPTION_FILE}"
+    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file ${SUBSCRIPTION_FILE}" -s /bin/bash www-data
+  elif [ -n "${SUBSCRIPTION_KEY}" ]; then
+    echo "Using SUBSCRIPTION_KEY environment variable"
+    echo "${SUBSCRIPTION_KEY}" > "${subscription_key_file_paths[0]}"
+    chown www-data:www-data ${subscription_key_file_paths[0]}
+    chmod 640 ${subscription_key_file_paths[0]}
+    echo "Subscription key file created at ${subscription_key_file_paths[0]}"
+    su -c "/usr/share/php/passbolt/bin/cake passbolt subscription_import --file \"${subscription_key_file_paths[0]}\"" -s /bin/bash www-data
   fi
 }
 
