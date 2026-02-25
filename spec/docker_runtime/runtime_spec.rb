@@ -60,8 +60,7 @@ describe 'passbolt_api service' do
       'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
       'DATASOURCES_DEFAULT_USERNAME=passbolt',
       'DATASOURCES_DEFAULT_DATABASE=passbolt',
-      'PASSBOLT_SSL_FORCE=true',
-      'PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED=true'
+      'PASSBOLT_SSL_FORCE=true'
     ]
     container_env = @container_env.clone
 
