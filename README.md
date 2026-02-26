@@ -22,7 +22,7 @@ store and share credentials securely.
 
 # Requirements
 
-* mariadb/mysql >= 5.0
+- mariadb/mysql >= 5.0
 
 # Usage
 
@@ -90,59 +90,73 @@ append the line `127.0.0.1   passbolt.local` to your `/etc/hosts` file.
 
 Passbolt docker image provides several environment variables to configure different aspects:
 
-| Variable name                       | Description                                                               | Default value
-| ----------------------------------- | --------------------------------                                          | -------------------
-| APP_BASE                            | In case you want to run Passbolt in a subdirectory (e.g. `https://example.com/passbolt`), set this to the path to the subdirectory (e.g. `/passbolt`). Make sure this does **not** end in a trailing slash! | null
-| APP_FULL_BASE_URL                   | The hostname where your server is reachable, including `https://` (or `http://`). Make sure this does **not** end in a trailing slash! And in case you are running Passbolt from a subdirectory (e.g. `https://example.com/passbolt`), please include the subdirectory in this variable, too. | false
-| DATASOURCES_DEFAULT_HOST            | Database hostname                                                         | localhost
-| DATASOURCES_DEFAULT_PORT            | Database port                                                             | 3306
-| DATASOURCES_DEFAULT_USERNAME        | Database username                                                         | ''
-| DATASOURCES_DEFAULT_PASSWORD        | Database password                                                         | ''
-| DATASOURCES_DEFAULT_DATABASE        | Database name                                                             | ''
-| DATASOURCES_DEFAULT_SSL_KEY         | Database SSL Key                                                          | ''
-| DATASOURCES_DEFAULT_SSL_CERT        | Database SSL Cert                                                         | ''
-| DATASOURCES_DEFAULT_SSL_CA          | Database SSL CA                                                           | ''
-| EMAIL_TRANSPORT_DEFAULT_CLASS_NAME  | Email classname                                                           | Smtp
-| EMAIL_DEFAULT_FROM                  | From email address                                                        | you@localhost
-| EMAIL_DEFAULT_TRANSPORT             | Sets transport method                                                     | default
-| EMAIL_TRANSPORT_DEFAULT_HOST        | Server hostname                                                           | localhost
-| EMAIL_TRANSPORT_DEFAULT_PORT        | Server port                                                               | 25
-| EMAIL_TRANSPORT_DEFAULT_TIMEOUT     | Timeout                                                                   | 30
-| EMAIL_TRANSPORT_DEFAULT_USERNAME    | Username for email server auth                                            | null
-| EMAIL_TRANSPORT_DEFAULT_PASSWORD    | Password for email server auth                                            | null
-| EMAIL_TRANSPORT_DEFAULT_CLIENT      | Client                                                                    | null
-| EMAIL_TRANSPORT_DEFAULT_TLS         | Set tls                                                                   | null
-| EMAIL_TRANSPORT_DEFAULT_URL         | Set url                                                                   | null
-| GNUPGHOME                           | path to gnupghome directory                                               | /var/lib/passbolt/.gnupg
-| PASSBOLT_KEY_LENGTH                 | Gpg desired key length                                                    | 3072
-| PASSBOLT_SUBKEY_LENGTH              | Gpg desired subkey length                                                 | 3072
-| PASSBOLT_KEY_NAME                   | Key owner name                                                            | Passbolt default user
-| PASSBOLT_KEY_EMAIL                  | Key owner email address                                                   | <passbolt@yourdomain.com>
-| PASSBOLT_KEY_EXPIRATION             | Key expiration date                                                       | 0, never expires
-| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint                                                         | null
-| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE | Force calculation of GnuPG fingerprint for server key               | null
-| PASSBOLT_GPG_SERVER_KEY_PUBLIC      | Path to GnuPG public server key                                           | /etc/passbolt/gpg/serverkey.asc
-| PASSBOLT_GPG_SERVER_KEY_PRIVATE     | Path to GnuPG private server key                                          | /etc/passbolt/gpg/serverkey_private.asc
-| PASSBOLT_PLUGINS_EXPORT_ENABLED     | Enable export plugin                                                      | true
-| PASSBOLT_PLUGINS_IMPORT_ENABLED     | Enable import plugin                                                      | true
-| PASSBOLT_REGISTRATION_PUBLIC        | Defines if users can register                                             | false
-| PASSBOLT_SSL_FORCE                  | Redirects http to https                                                   | false
-| PASSBOLT_SECURITY_SET_HEADERS       | Send CSP Headers                                                          | true
-| SECURITY_SALT                       | CakePHP security salt                                                     | **SALT**
+| Variable name | Description | Default value
+|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| -------------------
+| APP_BASE | In case you want to run Passbolt in a subdirectory (e.g. `https://example.com/passbolt`), set this to the path to the subdirectory (e.g. `/passbolt`). Make sure this does **not** end in a trailing slash! | null
+| APP_FULL_BASE_URL | The hostname where your server is reachable, including `https://` (or `http://`). Make sure this does **not** end in a trailing slash! And in case you are running Passbolt from a subdirectory (e.g. `https://example.com/passbolt`), please include the subdirectory in this variable, too. | false
+| DATASOURCES_DEFAULT_HOST | Database hostname | localhost
+| DATASOURCES_DEFAULT_PORT | Database port | 3306
+| DATASOURCES_DEFAULT_USERNAME | Database username | ''
+| DATASOURCES_DEFAULT_PASSWORD | Database password | ''
+| DATASOURCES_DEFAULT_DATABASE | Database name | ''
+| DATASOURCES_DEFAULT_SSL_KEY | Database SSL Key | ''
+| DATASOURCES_DEFAULT_SSL_CERT | Database SSL Cert | ''
+| DATASOURCES_DEFAULT_SSL_CA | Database SSL CA | ''
+| EMAIL_TRANSPORT_DEFAULT_CLASS_NAME | Email classname | Smtp
+| EMAIL_DEFAULT_FROM | From email address | you@localhost
+| EMAIL_DEFAULT_TRANSPORT | Sets transport method | default
+| EMAIL_TRANSPORT_DEFAULT_HOST | Server hostname | localhost
+| EMAIL_TRANSPORT_DEFAULT_PORT | Server port | 25
+| EMAIL_TRANSPORT_DEFAULT_TIMEOUT | Timeout | 30
+| EMAIL_TRANSPORT_DEFAULT_USERNAME | Username for email server auth | null
+| EMAIL_TRANSPORT_DEFAULT_PASSWORD | Password for email server auth | null
+| EMAIL_TRANSPORT_DEFAULT_CLIENT | Client | null
+| EMAIL_TRANSPORT_DEFAULT_TLS | Set tls | null
+| EMAIL_TRANSPORT_DEFAULT_URL | Set url | null
+| GNUPGHOME | path to gnupghome directory | /var/lib/passbolt/.gnupg
+| PASSBOLT_KEY_LENGTH | Gpg desired key length | 3072
+| PASSBOLT_SUBKEY_LENGTH | Gpg desired subkey length | 3072
+| PASSBOLT_KEY_NAME | Key owner name | Passbolt default user
+| PASSBOLT_KEY_EMAIL | Key owner email address | <passbolt@yourdomain.com>
+| PASSBOLT_KEY_EXPIRATION | Key expiration date | 0, never expires
+| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT | GnuPG fingerprint | null
+| PASSBOLT_GPG_SERVER_KEY_FINGERPRINT_FORCE | Force calculation of GnuPG fingerprint for server key | null
+| PASSBOLT_GPG_SERVER_KEY_PUBLIC | Path to GnuPG public server key | /etc/passbolt/gpg/serverkey.asc
+| PASSBOLT_GPG_SERVER_KEY_PRIVATE | Path to GnuPG private server key | /etc/passbolt/gpg/serverkey_private.asc
+| PASSBOLT_PLUGINS_EXPORT_ENABLED | Enable export plugin | true
+| PASSBOLT_PLUGINS_IMPORT_ENABLED | Enable import plugin | true
+| PASSBOLT_REGISTRATION_PUBLIC | Defines if users can register | false
+| PASSBOLT_SSL_FORCE | Redirects http to https | false
+| PASSBOLT_SECURITY_SET_HEADERS | Send CSP Headers | true
+| SECURITY_SALT | CakePHP security salt | **SALT**
+| SUBSCRIPTION_KEY | The base64-encoded subscription key for Passbolt PRO | null
 
 For more env variables supported please check [default.php](https://github.com/passbolt/passbolt_api/blob/master/config/default.php)
 and [app.default.php](https://github.com/passbolt/passbolt_api/blob/master/config/app.default.php)
+
+### Subscription key precedence
+
+On the PRO version, the subscription key can be provided as a file, using a
+[Docker bind mount](https://docs.docker.com/engine/storage/bind-mounts/),
+or using an environment variable named `SUBSCRIPTION_KEY`.
+
+If both are provided at the same time, only the file will be read and the
+environment variable will be ignored.
+
+> ⚠️ As this behavior may change in the future, we **strongly** advise to only
+use one method for providing the subscription key, either using the environment
+variable or the bind mount method, but not both at the same time.
 
 ### Configuration files
 
 What if you already have a set of gpg keys and custom configuration files for passbolt?
 It it possible to mount the desired configuration files as volumes.
 
-* /etc/passbolt/app.php
-* /etc/passbolt/passbolt.php
-* /etc/passbolt/gpg/serverkey.asc
-* /etc/passbolt/gpg/serverkey_private.asc
-* /usr/share/php/passbolt/webroot/img/public/images
+- /etc/passbolt/app.php
+- /etc/passbolt/passbolt.php
+- /etc/passbolt/gpg/serverkey.asc
+- /etc/passbolt/gpg/serverkey_private.asc
+- /usr/share/php/passbolt/webroot/img/public/images
 
 ### SSL certificate files
 
@@ -150,20 +164,20 @@ It is also possible to mount a ssl certificate on the following paths:
 
 For **image: passbolt/passbolt:latest-ce-non-root**
 
-* /etc/passbolt/certs/certificate.crt
-* /etc/passbolt/certs/certificate.key
+- /etc/passbolt/certs/certificate.crt
+- /etc/passbolt/certs/certificate.key
 
 For **image: passbolt/passbolt:latest-ce**
 
-* /etc/ssl/certs/certificate.crt
-* /etc/ssl/certs/certificate.key
+- /etc/ssl/certs/certificate.crt
+- /etc/ssl/certs/certificate.key
 
 ### Database SSL certificate files
 
 If Database SSL certs provided, you must mount mysql/mariadb specific conf on the following paths:
 
-* /etc/mysql/conf.d # if using mysql
-* /etc/mysql/mariadb.conf.d/ #if using mariadb
+- /etc/mysql/conf.d # if using mysql
+- /etc/mysql/mariadb.conf.d/ #if using mariadb
 
 Example:
 
@@ -195,7 +209,7 @@ bin/cake passbolt healthcheck
 
 ## Docker secrets support
 
-As an alternative to passing sensitive information via environment variables, _FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/<secret_name> files. For example:
+As an alternative to passing sensitive information via environment variables, \_FILE may be appended to the previously listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in /run/secrets/\<secret_name> files. For example:
 
 ```
 docker run --name passsbolt -e DATASOURCES_DEFAULT_PASSWORD_FILE=/run/secrets/db-password -d passbolt/passbolt
@@ -211,10 +225,10 @@ docker run --name passsbolt -e PASSBOLT_SSL_SERVER_CERT_FILE=/run/secrets/ssl-ce
 
 This feature is only supported for:
 
-* PASSBOLT_SSL_SERVER_CERT_FILE that points to /etc/ssl/certs/certificate.crt
-* PASSBOLT_SSL_SERVER_KEY_FILE that points to /etc/ssl/certs/certificate.key
-* PASSBOLT_GPG_SERVER_KEY_PRIVATE_FILE that points to /etc/passbolt/gpg/serverkey_private.asc
-* PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE that points to /etc/passbolt/gpg/serverkey.asc
+- PASSBOLT_SSL_SERVER_CERT_FILE that points to /etc/ssl/certs/certificate.crt
+- PASSBOLT_SSL_SERVER_KEY_FILE that points to /etc/ssl/certs/certificate.key
+- PASSBOLT_GPG_SERVER_KEY_PRIVATE_FILE that points to /etc/passbolt/gpg/serverkey_private.asc
+- PASSBOLT_GPG_SERVER_KEY_PUBLIC_FILE that points to /etc/passbolt/gpg/serverkey.asc
 
 ## Develop on Passbolt
 

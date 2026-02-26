@@ -8,9 +8,28 @@ services:
   stage: test
   image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/ruby:slim-bookworm
   script:
+    - bundle install
     - |
-      bundle install
-      rake spec:$TEST_NAME
+      # Determine which artifact file to look for
+      DOCKER_TAG_VARIANT="root"
+      if [ "$ROOTLESS" = "true" ]; then
+        DOCKER_TAG_VARIANT="rootless"
+      fi
+      
+      ARTIFACT_FILE="build_timestamp_${PASSBOLT_FLAVOUR}_${DOCKER_TAG_VARIANT}.env"
+      
+      # Source artifact if it exists (optional - won't break if missing)
+      if [ -f "${ARTIFACT_FILE}" ]; then
+        echo "✓ Found artifact: ${ARTIFACT_FILE}"
+        source "${ARTIFACT_FILE}"
+        echo "  BUILD_TIMESTAMP: ${BUILD_TIMESTAMP}"
+        echo "  IMAGE_TAG: ${IMAGE_TAG}"
+        export USE_TIMESTAMPED_IMAGE=true
+      else
+        echo "⚠ No artifact found, using latest images"
+        export USE_TIMESTAMPED_IMAGE=false
+      fi
+    - rake spec:$TEST_NAME
   variables:
     PASSBOLT_COMPONENT: stable
     PASSBOLT_FLAVOUR: ce
@@ -24,6 +43,7 @@ services:
     PASSBOLT_COMPONENT: stable
     PASSBOLT_FLAVOUR: pro
     OPPOSITE_FLAVOUR: ce
+
 
 ce-docker-image:
   extends: .test-images
@@ -61,7 +81,7 @@ pro-docker-runtime-no-envs:
     TEST_NAME: docker_runtime_no_envs
 
 pro-docker-runtime-with-passbolt-php:
-  extends: .test-images
+  extends: .test-pro-images
   variables:
     TEST_NAME: docker_runtime_with_passbolt_php
 

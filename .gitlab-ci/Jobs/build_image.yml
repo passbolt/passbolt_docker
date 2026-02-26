@@ -24,11 +24,20 @@
       }
       EOF
     - |
+      BUILD_TIMESTAMP=$(date +%s)
+      ARTIFACT_FILE="build_timestamp_${PASSBOLT_FLAVOUR}_${DOCKER_TAG}.env"
+      
+      echo "BUILD_TIMESTAMP=${BUILD_TIMESTAMP}" > ${ARTIFACT_FILE}
+      echo "IMAGE_TAG=${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-${BUILD_TIMESTAMP}" >> ${ARTIFACT_FILE}
+      
       echo "********************************************"
       echo "Build details"
       echo "============================================"
       echo "Flavour ${PASSBOLT_FLAVOUR:-local}"
+      echo "Docker Tag ${DOCKER_TAG}"
       echo "Commit  ${UPSTREAM_COMMIT_SHA:-latest}"
+      echo "Timestamp ${BUILD_TIMESTAMP}"
+      echo "Artifact File ${ARTIFACT_FILE}"
       echo "********************************************"
     - |
       /kaniko/executor --context $CI_PROJECT_DIR \
@@ -43,6 +52,12 @@
         --custom-platform $PLATFORM \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-$(date +%s) \
         --destination $CI_REGISTRY_IMAGE:${PASSBOLT_FLAVOUR:-local}-${DOCKER_TAG}-latest
+  artifacts:
+    reports:
+      dotenv: build_timestamp_${PASSBOLT_FLAVOUR}_${DOCKER_TAG}.env
+    paths:
+      - build_timestamp_*.env
+    expire_in: 1 hour
 
 .stable-build:
   extends: .build

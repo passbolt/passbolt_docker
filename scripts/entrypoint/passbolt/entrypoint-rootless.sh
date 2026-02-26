@@ -36,10 +36,6 @@ function gen_ssl_cert() {
 }
 
 function get_subscription_file() {
-  if [ "${PASSBOLT_FLAVOUR}" == 'ce' ]; then
-    return 1
-  fi
-
   # Look for subscription key on possible paths
   for path in "${subscription_key_file_paths[@]}"; do
     if [ -f "${path}" ]; then
@@ -52,9 +48,19 @@ function get_subscription_file() {
 }
 
 function import_subscription() {
+  if [ "${PASSBOLT_FLAVOUR}" == 'ce' ]; then
+    return
+  fi
+
   if get_subscription_file; then
-    echo "Subscription file found: $SUBSCRIPTION_FILE"
-    /usr/share/php/passbolt/bin/cake passbolt subscription_import --file "$SUBSCRIPTION_FILE"
+    echo "Subscription file found: ${SUBSCRIPTION_FILE}"
+    /usr/share/php/passbolt/bin/cake passbolt subscription_import --file "${SUBSCRIPTION_FILE}"
+  elif [ -n "${SUBSCRIPTION_KEY}" ]; then
+    echo "Using SUBSCRIPTION_KEY environment variable"
+    echo "${SUBSCRIPTION_KEY}" > "${subscription_key_file_paths[0]}"
+    chmod 640 ${subscription_key_file_paths[0]}
+    echo "Subscription key file created at ${subscription_key_file_paths[0]}"
+    /usr/share/php/passbolt/bin/cake passbolt subscription_import --file "${subscription_key_file_paths[0]}"
   fi
 }
 
@@ -96,7 +102,6 @@ function install() {
   fi
 
   import_subscription || true
-
   jwt_keys_creation
   install_command || migrate_command && echo "Enjoy! ☮"
   check_fullbase_url

@@ -37,12 +37,17 @@ describe 'passbolt_api service' do
                                             { 'dockerfile' => $dockerfile, 'buildargs' => JSON.generate($buildargs) })
     end
 
+    @binds = []
+    if ENV['PASSBOLT_FLAVOUR'] == 'pro' && File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
+      @binds << "#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"
+    end
+
     @container = Docker::Container.create(
       'Env' => [
         "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}"
       ],
       'HostConfig' => {
-        'Binds' => $binds.append(
+        'Binds' => @binds.append(
           "#{FIXTURES_PATH + '/passbolt.php'}:#{PASSBOLT_CONFIG_PATH + '/passbolt.php'}",
           "#{FIXTURES_PATH + '/public-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure.key'}",
           "#{FIXTURES_PATH + '/private-test.key'}:#{PASSBOLT_CONFIG_PATH + 'gpg/unsecure_private.key'}"

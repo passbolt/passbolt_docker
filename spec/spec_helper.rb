@@ -15,14 +15,11 @@ $http_port = '80'
 $https_port = '443'
 $root_user = 'root'
 $config_group = 'www-data'
-$binds = []
 
 $buildargs = {
   PASSBOLT_FLAVOUR: ENV['PASSBOLT_FLAVOUR'].to_s,
   PASSBOLT_COMPONENT: ENV['PASSBOLT_COMPONENT'].to_s
 }
-
-$binds = ["#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"] if ENV['PASSBOLT_FLAVOUR'] == 'pro'
 
 set :backend, :docker
 Docker.options[:read_timeout]  = 3600
