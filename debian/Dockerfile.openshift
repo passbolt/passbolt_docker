@@ -69,17 +69,17 @@ COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 
 RUN rm /etc/nginx/sites-enabled/default \
   && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
-  && sed -i -E 's/listen (|\[\:\:\]\:)80/listen \18080/g' /etc/nginx/sites-enabled/nginx-passbolt.conf \
+  && sed -i -E 's/listen (|\[\:\:\]\:)80/listen \18080/g' /etc/nginx/sites-available/nginx-passbolt.conf \
   && sed -i -E 's/listen (|\[\:\:\]\:)443/listen \14433/g' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
-  && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
+  && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-available/nginx-passbolt.conf \
   && sed -i 's,__CERT_PATH__,/etc/passbolt/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,__KEY_PATH__,/etc/passbolt/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i '/user www-data;/d' /etc/nginx/nginx.conf \
   && sed -i 's,/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf \
   && sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" /etc/nginx/nginx.conf \
   && sed -i "s,listen = /run/php/php$PHP_VERSION-fpm.sock,listen = 127.0.0.1:9000," /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
-  && sed -i "s,unix:/run/php/php$PHP_VERSION-fpm.sock,127.0.0.1:9000," /etc/nginx/sites-enabled/nginx-passbolt.conf \
+  && sed -i "s,unix:/run/php/php$PHP_VERSION-fpm.sock,127.0.0.1:9000," /etc/nginx/sites-available/nginx-passbolt.conf \
   && sed -i "s,pid = /run/php/php$PHP_VERSION-fpm.pid,pid = /tmp/php$PHP_VERSION-fpm.pid," /etc/php/$PHP_VERSION/fpm/php-fpm.conf \
   && sed -i 's,/var/run/supervisor.sock,/tmp/supervisor.sock,' /etc/supervisor/supervisord.conf \
   && chown -R www-data:0 /etc/nginx \
