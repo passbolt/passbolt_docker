@@ -156,6 +156,10 @@ describe 'Dockerfile' do
       expect(file(site_conf)).to exist
     end
 
+    it 'is a symbolic link' do
+      expect(file(site_conf)).to be_symlink
+    end
+
     it 'has the correct permissions' do
       expect(file(site_conf)).to be_owned_by $root_user
     end
