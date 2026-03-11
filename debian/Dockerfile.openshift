@@ -67,14 +67,12 @@ COPY conf/supervisor/cron.conf.rootless /etc/supervisor/conf.d/cron.conf
 COPY conf/supervisor/nginx.conf /etc/supervisor/conf.d/nginx.conf
 COPY conf/supervisor/php.conf /etc/supervisor/conf.d/php.conf
 
-RUN sed -i 's,listen 80;,listen 8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-  && sed -i 's,listen \[\:\:\]\:80;,listen \[\:\:\]\:8080;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-  && rm /etc/nginx/sites-enabled/default \
+RUN rm /etc/nginx/sites-enabled/default \
   && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
+  && sed -i -E 's/listen (|\[\:\:\]\:)80/listen \18080/g' /etc/nginx/sites-enabled/nginx-passbolt.conf \
+  && sed -i -E 's/listen (|\[\:\:\]\:)443/listen \14433/g' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
   && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-  && sed -i 's,listen \[\:\:\]\:443 ssl;,listen \[\:\:\]\:4433 ssl;,' /etc/nginx/snippets/passbolt-ssl.conf \
-  && sed -i '/listen \[\:\:\]\:4433 ssl;/a \ \ listen 4433 ssl;' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,__CERT_PATH__,/etc/passbolt/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,__KEY_PATH__,/etc/passbolt/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i '/user www-data;/d' /etc/nginx/nginx.conf \

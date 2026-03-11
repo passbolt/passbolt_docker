@@ -48,7 +48,6 @@ RUN apt-get update \
   && cp /usr/share/passbolt/examples/nginx-passbolt-ssl.conf /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,;clear_env = no,clear_env = no,' /etc/php/$PHP_VERSION/fpm/pool.d/www.conf \
   && sed -i 's,# include __PASSBOLT_SSL__,include /etc/nginx/snippets/passbolt-ssl.conf;,' /etc/nginx/sites-enabled/nginx-passbolt.conf \
-  && sed -i '/listen \[\:\:\]\:443 ssl;/a listen 443 ssl;' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,__CERT_PATH__,/etc/ssl/certs/certificate.crt;,' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,__KEY_PATH__,/etc/ssl/certs/certificate.key;,' /etc/nginx/snippets/passbolt-ssl.conf \
   && sed -i 's,www-data.*$,root su -s /bin/bash -c ". /etc/environment \&\& $PASSBOLT_BASE_DIR/bin/cron" www-data >/proc/1/fd/1 2>\&1,' /etc/cron.d/$PASSBOLT_PKG \
