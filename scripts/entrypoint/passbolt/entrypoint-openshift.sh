@@ -112,8 +112,7 @@ function install() {
   fi
 
   import_subscription || true
-
-  jwt_keys_creation
+  jwt_keys_creation  || true
   install_command || migrate_command && echo "Enjoy! ☮"
   check_fullbase_url
 }
