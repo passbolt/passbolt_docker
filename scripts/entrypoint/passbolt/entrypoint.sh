@@ -95,6 +95,12 @@ function jwt_keys_creation() {
     chown www-data:www-data "$passbolt_config/jwt"
     su -c '/usr/share/php/passbolt/bin/cake passbolt create_jwt_keys' -s /bin/bash www-data
   fi
+}
+
+function jwt_keys_permissions_adjustments() {
+  if [[ "${PASSBOLT_PLUGINS_JWT_AUTHENTICATION_ENABLED}" == "false" ]]; then
+    return 0
+  fi
 
   if [[ -f "$passbolt_config/jwt/jwt.key" && -f "$passbolt_config/jwt/jwt.pem" ]]; then
     chmod 640 "$passbolt_config/jwt/jwt.key"
@@ -117,7 +123,8 @@ function install() {
   fi
 
   import_subscription || true
-  jwt_keys_creation || true
+  jwt_keys_creation
+  jwt_keys_permissions_adjustments || echo "[WARN] An attempt to adjust the JWT keypair permission failed. This may be expected if you mount your own keypair as read-only and may be fine as long as the Passbolt server can read said keypair. You can use the health-check command to find any issue with your instance: https://www.passbolt.com/docs/hosting/troubleshooting/logs/#api" >&2
   install_command || migrate_command && echo "Enjoy! ☮"
   check_fullbase_url
 }
