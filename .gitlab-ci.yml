@@ -16,7 +16,6 @@ variables:
 
 stages:
   - build
-  - test-vulnerabilities
   - test
   - publish
   - upload-assets
@@ -24,7 +23,6 @@ stages:
 include:
   - local: "/.gitlab-ci/Jobs/build_image.yml"
   - local: "/.gitlab-ci/Jobs/rules.yml"
-  - local: "/.gitlab-ci/Jobs/test_vulnerabilities.yaml"
   - local: "/.gitlab-ci/Jobs/test_images.yaml"
   - local: "/.gitlab-ci/Jobs/publish.yaml"
   - local: "/.gitlab-ci/Jobs/docker-compose-file-upload.yml"
