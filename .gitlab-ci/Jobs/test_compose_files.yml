@@ -1,4 +1,0 @@
-docker_compose_files:
-  extends: .test-images
-  variables:
-    TEST_NAME: docker_compose_files

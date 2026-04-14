@@ -1,4 +1,0 @@
-.rules:
-  rules:
-    - if: "$CI_COMMIT_BRANCH && $PASSBOLT_PUBLISH != $OPPOSITE_FLAVOUR"
-      when: on_success

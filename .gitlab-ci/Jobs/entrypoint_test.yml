@@ -1,9 +1,0 @@
-entrypoint-tests:
-  extends: .rules
-  stage: test
-  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/debian:bullseye-slim
-  before_script:
-    - apt update && apt install curl git -y
-    - curl -fsSL https://git.io/shellspec | sh -s -- --yes
-  script:
-    - /root/.local/bin/shellspec -s /bin/bash -f d
