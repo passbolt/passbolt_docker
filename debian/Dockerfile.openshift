@@ -1,4 +1,4 @@
-FROM debian:trixie-slim
+FROM debian:trixie-slim@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8
 
 ARG API_REPOSITORY="https://github.com/passbolt/passbolt_api"
 ARG IMAGE_DESCRIPTION="Passbolt CE Backend, a JSON API written with CakePHP"
