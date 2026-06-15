@@ -11,7 +11,7 @@ services:
       - database_volume:/var/lib/mysql
 
   passbolt:
-    image: passbolt/passbolt:latest-pro@sha256:f7bb6051fb1d18fcfa2b9c9961607493ce5707c07027ac20c7d369e7ed51d513
+    image: passbolt/passbolt:latest-pro@sha256:7f953ea8f408d920e6b34ea65f22228b3aa5c0465176ea335184e1351bcf896a
     #Alternatively you can use rootless:
     #image: passbolt/passbolt:latest-pro-non-root
     restart: unless-stopped
