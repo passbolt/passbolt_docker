@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:10.11@sha256:5a5c675881ef3fd1c1da9b0a3bfd6ee82edbe39cd9e32e06be18034c37235e0e
+    image: mariadb:10.11@sha256:be981e4113326ada8d6004174dd09eeaefc03094037f811182a52d4f2e737350
     restart: unless-stopped
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "true"
@@ -11,7 +11,7 @@ services:
       - database_volume:/var/lib/mysql
 
   passbolt:
-    image: passbolt/passbolt:latest-pro@sha256:7f953ea8f408d920e6b34ea65f22228b3aa5c0465176ea335184e1351bcf896a
+    image: passbolt/passbolt:latest-pro@sha256:28b277b8954a5b9b860348fae7c8903aa4313674e4211b13919906df72fced30
     #Alternatively you can use rootless:
     #image: passbolt/passbolt:latest-pro-non-root
     restart: unless-stopped
