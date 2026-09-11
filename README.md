@@ -26,17 +26,21 @@ store and share credentials securely.
 
 # Usage
 
-### docker-compose
+You can deploy Passbolt using the docker-compose/docker-compose-ce.yaml file or by creating the containers individually.
 
-Usage:
+## docker-compose
+
+This will launch a Passbolt instance with default variable values and passbolt:latest-ce image. You can change the variable values or the Passbolt image in docker-compose-ce.yaml before running the below command.
 
 ```
 docker-compose -f docker-compose/docker-compose-ce.yaml up
 ```
 
-Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
+The above command will already start the Passbolt instance. You can jump to "Admin user creation" once you complete this step. Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
 
-## Start passbolt instance
+Alternatively, you can use the below steps to setup Passbolt.
+
+## Start passbolt instance manually
 
 Passbolt requires mysql to be running. The following example use mysql official
 docker image with the default passbolt credentials.
@@ -50,7 +54,7 @@ $ docker run -e MYSQL_ROOT_PASSWORD=<root_password> \
 ```
 
 Then you can start passbolt just by providing the database container's IP address in the
-`DATASOURCES_DEFAULT_HOST` environment variable.
+`DATASOURCES_DEFAULT_HOST` environment variable. Change the image tag as per your requirements.
 
 ```bash
 $ docker run --name passbolt \
@@ -63,6 +67,8 @@ $ docker run --name passbolt \
              -e APP_FULL_BASE_URL=https://example.com \
              passbolt/passbolt:develop-debian
 ```
+
+## Admin user creation
 
 Once the container is running create your first admin user:
 
