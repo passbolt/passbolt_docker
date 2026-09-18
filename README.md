@@ -26,17 +26,31 @@ store and share credentials securely.
 
 # Usage
 
-### docker-compose
+You can deploy Passbolt using the docker-compose/docker-compose-ce.yaml file or manually by creating the docker image from the repo using the Dockerfile.
 
-Usage:
+## docker-compose
+
+This will launch a Passbolt instance with default variable values and passbolt:latest-ce image. You can change the variable values or the Passbolt image in docker-compose-ce.yaml before running the below command.
 
 ```
 docker-compose -f docker-compose/docker-compose-ce.yaml up
 ```
 
+The above command will already start the Passbolt instance. You can jump to "Admin user creation" once you complete this step.
+
 Users are encouraged to use [official docker image from the docker hub](https://hub.docker.com/r/passbolt/passbolt/).
 
-## Start passbolt instance
+Alternatively, you can run it manually by following the below steps.
+
+## Deploy passbolt instance manually
+
+### Build the docker image
+
+```bash
+$ docker build -f debian/Dockerfile . -t passbolt-develop-debian
+```
+
+### Start mariadb
 
 Passbolt requires mysql to be running. The following example use mysql official
 docker image with the default passbolt credentials.
@@ -48,6 +62,8 @@ $ docker run -e MYSQL_ROOT_PASSWORD=<root_password> \
              -e MYSQL_PASSWORD=<mariadb_password> \
              mariadb
 ```
+
+### Start Passbolt using the docker image you built
 
 Then you can start passbolt just by providing the database container's IP address in the
 `DATASOURCES_DEFAULT_HOST` environment variable.
@@ -61,8 +77,10 @@ $ docker run --name passbolt \
              -e DATASOURCES_DEFAULT_USERNAME=<mariadb_user> \
              -e DATASOURCES_DEFAULT_DATABASE=<mariadb_database> \
              -e APP_FULL_BASE_URL=https://example.com \
-             passbolt/passbolt:develop-debian
+             passbolt-develop-debian
 ```
+
+## Admin user creation
 
 Once the container is running create your first admin user:
 
