@@ -1,4 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>passbolt/passbolt-ops/renovate"]
+  "description": "Managed by Pulumi (gitlab-permissions-as-code). Do not edit by hand; hand edits are reverted on the next apply.",
+  "extends": [
+    "local>passbolt/passbolt-ops/renovate"
+  ]
 }
