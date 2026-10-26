@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:latest@sha256:74935e72241653ca55e0414067e6d8763aceb8a810eb51b452253ec3dcfc4336
+    image: postgres:latest@sha256:edb0c08dc33befd0262ab3b5cf1c4f3f8cfd8b09e88c05b45adee29d6761ddb6
     restart: unless-stopped
     environment:
       POSTGRES_DB: "passbolt"
@@ -10,7 +10,7 @@ services:
       - database_volume:/var/lib/postgresql/data
 
   passbolt:
-    image: passbolt/passbolt:latest@sha256:dc7298c2847e406154beea5c4c82062828e0b1690d1d9869b2dbeae6f6e70bfc
+    image: passbolt/passbolt:latest@sha256:0aba6fe11e0df3b8ecc927932af2965decccc7beb8769a8cb56ee2c7021aa108
     #Alternatively you can use rootless:
     #image: passbolt/passbolt:latest-ce-non-root
     restart: unless-stopped
