@@ -1,2 +1,10 @@
-[SRE]
-* @passbolt/groups/sre-group @lovallat_passbolt
+# Managed by Pulumi (gitlab-permissions-as-code). Do not edit by hand.
+# Ownership is declared in IaC; hand edits are reverted on the next apply.
+
+[Owners]
+* @passbolt/groups/sre-group
+
+[Governance]
+/CODEOWNERS         @passbolt/groups/sre-group
+/.gitlab/CODEOWNERS @passbolt/groups/sre-group
+/docs/CODEOWNERS    @passbolt/groups/sre-group
