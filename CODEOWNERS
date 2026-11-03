@@ -2,7 +2,7 @@
 # Ownership is declared in IaC; hand edits are reverted on the next apply.
 
 [Owners]
-* @passbolt/groups/sre-group
+* @passbolt/groups/sre-group @lovallat_passbolt
 
 [Governance]
 /CODEOWNERS         @passbolt/groups/sre-group
