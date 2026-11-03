@@ -3,5 +3,14 @@
   "description": "Managed by Pulumi (gitlab-permissions-as-code). Do not edit by hand; hand edits are reverted on the next apply.",
   "extends": [
     "local>passbolt/passbolt-ops/renovate"
+  ],
+  "packageRules": [
+    {
+      "description": ".pre-commit-config.yaml is managed by IaC, so its revs are bumped in the hook catalogue",
+      "matchFileNames": [
+        ".pre-commit-config.yaml"
+      ],
+      "enabled": false
+    }
   ]
 }
