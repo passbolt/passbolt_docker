@@ -18,6 +18,7 @@ repos:
       - id: check-added-large-files
         args: [--maxkb=500]
       - id: check-json
+        exclude: '(^|/)(\.vscode/[^/]*\.json|[^/]*devcontainer\.json|[jt]sconfig[^/]*\.json)$'
       - id: check-toml
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.38.0
