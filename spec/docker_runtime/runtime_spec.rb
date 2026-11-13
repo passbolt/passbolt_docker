@@ -28,35 +28,35 @@ describe 'passbolt_api service' do
     sleep 1 while @mysql.json['State']['Health']['Status'] != 'healthy'
 
     @image = if ENV['GITLAB_CI']
-           # Check if we have a timestamped image from this pipeline's build job
-           if ENV['USE_TIMESTAMPED_IMAGE'] == 'true' && ENV['IMAGE_TAG']
-             # Use fresh image from build artifact
-             Docker::Image.create(
-               'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['IMAGE_TAG']}"
-             )
-           elsif ENV['ROOTLESS'] == 'true'
-             # Fallback to rootless latest
-             Docker::Image.create(
-               'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
-             )
-           else
-             # Fallback to root latest
-             Docker::Image.create(
-               'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
-             )
-           end
-         else
-           Docker::Image.build_from_dir(
-             ROOT_DOCKERFILES,
-             {
-               'dockerfile' => $dockerfile,
-               'buildargs' => JSON.generate($buildargs)
-             }
-           )
-         end
+               # Check if we have a timestamped image from this pipeline's build job
+               if ENV['USE_TIMESTAMPED_IMAGE'] == 'true' && ENV['IMAGE_TAG']
+                 # Use fresh image from build artifact
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['IMAGE_TAG']}"
+                 )
+               elsif ENV['ROOTLESS'] == 'true'
+                 # Fallback to rootless latest
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-rootless-latest"
+                 )
+               else
+                 # Fallback to root latest
+                 Docker::Image.create(
+                   'fromImage' => "#{ENV['CI_REGISTRY_IMAGE']}:#{ENV['PASSBOLT_FLAVOUR']}-root-latest"
+                 )
+               end
+             else
+               Docker::Image.build_from_dir(
+                 ROOT_DOCKERFILES,
+                 {
+                   'dockerfile' => $dockerfile,
+                   'buildargs' => JSON.generate($buildargs)
+                 }
+               )
+             end
 
     @container_env = [
-      "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
+      "DATASOURCES_DEFAULT_HOST=#{container_ip(@mysql)}",
       'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
       'DATASOURCES_DEFAULT_USERNAME=passbolt',
       'DATASOURCES_DEFAULT_DATABASE=passbolt',
@@ -85,7 +85,7 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
-  let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
+  let(:passbolt_host)     { container_ip(@container) }
   let(:uri)               { '/healthcheck/status.json' }
   let(:curl)              { "curl -sLk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}#{uri}" }
   let(:jwt_conf)          { "#{PASSBOLT_CONFIG_PATH + '/jwt'}" }
@@ -203,10 +203,10 @@ describe 'passbolt_api service' do
 
     let(:healthcheck_cmd) do
       if ENV['ROOTLESS'] == 'true'
-        ['bash', '-c', 'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --gpg']
+        ['bash', '-c', 'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --filter gpg']
       else
         ['su', '-s', '/bin/bash', '-c',
-         'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --gpg', 'www-data']
+         'source /etc/environment && /usr/share/php/passbolt/bin/cake passbolt healthcheck --filter gpg', 'www-data']
       end
     end
 
@@ -273,127 +273,130 @@ describe 'passbolt_api service' do
     end
   end
 
+  describe 'subscription import' do
+    before { skip('Only relevant for PRO images') unless ENV['PASSBOLT_FLAVOUR'] == 'pro' }
 
- describe 'subscription import' do
-   before { skip('Only relevant for PRO images') unless ENV['PASSBOLT_FLAVOUR'] == 'pro' }
+    context 'subscription key behavior' do
+      it 'imports subscription successfully when SUBSCRIPTION_KEY is provided' do
+        skip('SUBSCRIPTION_KEY not provided') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
 
-   context 'subscription key behavior' do
-     it 'imports subscription successfully when SUBSCRIPTION_KEY is provided' do
-       skip('SUBSCRIPTION_KEY not provided') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
+        logs = @container.logs(stdout: true, stderr: true)
 
-       logs = @container.logs(stdout: true, stderr: true)
-
-       expect(logs).to match(/Using SUBSCRIPTION_KEY environment variable/)
-       expect(logs).not_to match(/Subscription key could not be found/)
-     end
-
-     context 'missing subscription key handling' do
-      before(:all) do
-        @missing_key_container = Docker::Container.create(
-          'Env' => @container_env,
-          'Image' => @image.id
-        )
-        @missing_key_container.start
-        sleep 15
+        expect(logs).to match(/Using SUBSCRIPTION_KEY environment variable/)
+        expect(logs).not_to match(/Subscription key could not be found/)
       end
 
-     after(:all) do
-       @missing_key_container.kill if @missing_key_container
-     end
+      context 'missing subscription key handling' do
+        before(:all) do
+          @missing_key_container = Docker::Container.create(
+            'Env' => @container_env,
+            'Image' => @image.id
+          )
+          @missing_key_container.start
+          sleep 15
+        end
 
-     it 'fails gracefully with missing SUBSCRIPTION_KEY' do
-       logs = @missing_key_container.logs(stdout: true, stderr: true)
+        after(:all) do
+          @missing_key_container.kill if @missing_key_container
+        end
 
-       expect(logs).to match(/Subscription key could not be found/)
-       expect(@missing_key_container.json['State']['Running']).to be true
-     end
-   end
+        it 'fails gracefully with missing SUBSCRIPTION_KEY' do
+          logs = @missing_key_container.logs(stdout: true, stderr: true)
 
-   context 'invalid subscription key handling' do
-     before(:all) do
-       container_env = @container_env.clone
-       container_env << 'SUBSCRIPTION_KEY=invalid-not-base64-!@#$'
+          expect(logs).to match(/Subscription key could not be found/)
+          expect(@missing_key_container.json['State']['Running']).to be true
+        end
+      end
 
-       @invalid_key_container = Docker::Container.create(
-         'Env' => container_env,
-         'Image' => @image.id
-       )
-       @invalid_key_container.start
-       sleep 15
-     end
+      context 'invalid subscription key handling' do
+        before(:all) do
+          container_env = @container_env.clone
+          container_env << 'SUBSCRIPTION_KEY=invalid-not-base64-!@#$'
 
-     after(:all) do
-       @invalid_key_container.kill if @invalid_key_container
-     end
+          @invalid_key_container = Docker::Container.create(
+            'Env' => container_env,
+            'Image' => @image.id
+          )
+          @invalid_key_container.start
+          sleep 15
+        end
 
-     it 'fails gracefully with invalid SUBSCRIPTION_KEY' do
-       logs = @invalid_key_container.logs(stdout: true, stderr: true)
+        after(:all) do
+          @invalid_key_container.kill if @invalid_key_container
+        end
 
-       expect(logs).to match(/Using SUBSCRIPTION_KEY environment variable/)
-       expect(@invalid_key_container.json['State']['Running']).to be true
-     end
-   end
+        it 'fails gracefully with invalid SUBSCRIPTION_KEY' do
+          logs = @invalid_key_container.logs(stdout: true, stderr: true)
 
-   context 'file subscription key and subscription variable precedence handling' do
-     before(:all) do
-       skip('SUBSCRIPTION_KEY not provided') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
-       skip('LOCAL_SUBSCRIPTION_KEY_PATH doesn\'t exist but is needed') unless File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
+          expect(logs).to match(/Using SUBSCRIPTION_KEY environment variable/)
+          expect(@invalid_key_container.json['State']['Running']).to be true
+        end
+      end
 
-       container_env = @container_env.clone
-       container_env << "SUBSCRIPTION_KEY=#{ENV['SUBSCRIPTION_KEY']}"
+      context 'file subscription key and subscription variable precedence handling' do
+        before(:all) do
+          skip('SUBSCRIPTION_KEY not provided') if ENV['SUBSCRIPTION_KEY'].to_s.empty?
+          unless File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
+            skip('LOCAL_SUBSCRIPTION_KEY_PATH doesn\'t exist but is needed')
+          end
 
-       @file_and_variable_key_container = Docker::Container.create(
-         'Env' => container_env,
-         'Image' => @image.id,
-         'HostConfig' => {
-           'Binds' => ["#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"]
-         }
-       )
-       @file_and_variable_key_container.start
-       sleep 15
-     end
+          container_env = @container_env.clone
+          container_env << "SUBSCRIPTION_KEY=#{ENV['SUBSCRIPTION_KEY']}"
 
-     after(:all) do
-       @file_and_variable_key_container.kill if @file_and_variable_key_container
-     end
+          @file_and_variable_key_container = Docker::Container.create(
+            'Env' => container_env,
+            'Image' => @image.id,
+            'HostConfig' => {
+              'Binds' => ["#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"]
+            }
+          )
+          @file_and_variable_key_container.start
+          sleep 15
+        end
 
-     it 'uses the subcription key file' do
-       logs = @file_and_variable_key_container.logs(stdout: true, stderr: true)
+        after(:all) do
+          @file_and_variable_key_container.kill if @file_and_variable_key_container
+        end
 
-       expect(logs).to match(/Subscription file found: \/etc\/passbolt\/subscription_key.txt/)
-       expect(logs).not_to match(/Using SUBSCRIPTION_KEY environment variable/)
-       expect(@file_and_variable_key_container.json['State']['Running']).to be true
-     end
-   end
+        it 'uses the subcription key file' do
+          logs = @file_and_variable_key_container.logs(stdout: true, stderr: true)
 
-   context 'file subscription key handling' do
-     before(:all) do
-       skip('LOCAL_SUBSCRIPTION_KEY_PATH doesn\'t exist but is needed') unless File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
-       @file_key_container = Docker::Container.create(
-         'Env' => @container_env,
-         'Image' => @image.id,
-         'HostConfig' => {
-           'Binds' => ["#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"]
-         }
-       )
-       @file_key_container.start
-       sleep 15
-     end
+          expect(logs).to match(%r{Subscription file found: /etc/passbolt/subscription_key.txt})
+          expect(logs).not_to match(/Using SUBSCRIPTION_KEY environment variable/)
+          expect(@file_and_variable_key_container.json['State']['Running']).to be true
+        end
+      end
 
-     after(:all) do
-       @file_key_container.kill if @file_key_container
-     end
+      context 'file subscription key handling' do
+        before(:all) do
+          unless File.file?(LOCAL_SUBSCRIPTION_KEY_PATH)
+            skip('LOCAL_SUBSCRIPTION_KEY_PATH doesn\'t exist but is needed')
+          end
+          @file_key_container = Docker::Container.create(
+            'Env' => @container_env,
+            'Image' => @image.id,
+            'HostConfig' => {
+              'Binds' => ["#{LOCAL_SUBSCRIPTION_KEY_PATH}:#{SUBSCRIPTION_KEY_PATH}"]
+            }
+          )
+          @file_key_container.start
+          sleep 15
+        end
 
-     it 'uses the subcription key file' do
-       logs = @file_key_container.logs(stdout: true, stderr: true)
+        after(:all) do
+          @file_key_container.kill if @file_key_container
+        end
 
-       expect(logs).to match(/Subscription file found: \/etc\/passbolt\/subscription_key.txt/)
-       expect(logs).not_to match(/Using SUBSCRIPTION_KEY environment variable/)
-       expect(@file_key_container.json['State']['Running']).to be true
-     end
-   end
- end
-end
+        it 'uses the subcription key file' do
+          logs = @file_key_container.logs(stdout: true, stderr: true)
+
+          expect(logs).to match(%r{Subscription file found: /etc/passbolt/subscription_key.txt})
+          expect(logs).not_to match(/Using SUBSCRIPTION_KEY environment variable/)
+          expect(@file_key_container.json['State']['Running']).to be true
+        end
+      end
+    end
+  end
 
   describe 'jwt configuration' do
     it 'should have the correct permissions' do

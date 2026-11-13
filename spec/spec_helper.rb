@@ -21,6 +21,12 @@ $buildargs = {
   PASSBOLT_COMPONENT: ENV['PASSBOLT_COMPONENT'].to_s
 }
 
+# Docker 29+ no longer populates the top-level NetworkSettings.IPAddress,
+# read it from the attached network instead (works on older engines too).
+def container_ip(container)
+  container.json['NetworkSettings']['Networks'].values.first['IPAddress']
+end
+
 set :backend, :docker
 Docker.options[:read_timeout]  = 3600
 Docker.options[:write_timeout] = 3600

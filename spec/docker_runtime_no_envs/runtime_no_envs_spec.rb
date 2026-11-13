@@ -44,7 +44,7 @@ describe 'passbolt_api service' do
 
     @container = Docker::Container.create(
       'Env' => [
-        "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}"
+        "DATASOURCES_DEFAULT_HOST=#{container_ip(@mysql)}"
       ],
       'HostConfig' => {
         'Binds' => @binds.append(
@@ -69,7 +69,7 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
-  let(:passbolt_host) { @container.json['NetworkSettings']['IPAddress'] }
+  let(:passbolt_host) { container_ip(@container) }
 
   describe 'php service' do
     it 'is running supervised' do

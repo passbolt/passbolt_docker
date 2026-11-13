@@ -54,7 +54,7 @@ describe 'passbolt_api service' do
 
     @container = Docker::Container.create(
       'Env' => [
-        "DATASOURCES_DEFAULT_HOST=#{@mysql.json['NetworkSettings']['IPAddress']}",
+        "DATASOURCES_DEFAULT_HOST=#{container_ip(@mysql)}",
         'DATASOURCES_DEFAULT_PASSWORD=±!@#$%^&*()_+=-}{|:;<>?',
         'DATASOURCES_DEFAULT_USERNAME=passbolt',
         'DATASOURCES_DEFAULT_DATABASE=passbolt',
@@ -84,7 +84,7 @@ describe 'passbolt_api service' do
     @container.kill
   end
 
-  let(:passbolt_host)     { @container.json['NetworkSettings']['IPAddress'] }
+  let(:passbolt_host)     { container_ip(@container) }
   let(:curl)              { "curl -sk -o /dev/null -w '%{http_code}' -H 'Host: passbolt.local' https://#{passbolt_host}:#{$https_port}/#{uri}" }
 
   describe 'force fingerprint calculation' do
